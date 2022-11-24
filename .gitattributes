@@ -1,1 +1,1 @@
-./server/data/** filter=lfs diff=lfs merge=lfs -text
+server/data/** filter=lfs diff=lfs merge=lfs -text
