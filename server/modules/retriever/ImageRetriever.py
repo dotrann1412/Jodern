@@ -6,7 +6,7 @@ import clip
 import cv2
 from io import BytesIO
 
-from retriever.Retriever import Retriever
+from modules.retriever.Retriever import Retriever
 
 class MyViTModel(torch.nn.Module):
     def __init__(self, name="ViT-B/16", device="cpu"):
@@ -22,7 +22,7 @@ class MyViTModel(torch.nn.Module):
     
 
 model = MyViTModel()
-images_idx = np.load('data/features/images/image_indices.npy')
+images_idx = np.load('data/res/features/images/image_indices.npy')
 
 
 def resize(inputs, size=224):
@@ -54,7 +54,7 @@ def image_preprocess(data):
 
 
 class ImageRetriever():
-    def __init__(self, features_folder='data/features/images/values', top_k=12, cut_off=1.0):
+    def __init__(self, features_folder='data/res/features/images/values', top_k=12, cut_off=1.0):
         '''
             Args:
                 features_folder: path to folder containing image features

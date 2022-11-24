@@ -1,10 +1,10 @@
 from sentence_transformers import SentenceTransformer
-from retriever.Retriever import Retriever
+from modules.retriever.Retriever import Retriever
 
 text_model = SentenceTransformer('keepitreal/vietnamese-sbert')
 
 class TextRetriever():
-    def __init__(self, features_folder='data/features/texts', top_k=12, cut_off=1.0):
+    def __init__(self, features_folder='data/res/features/texts', top_k=12, cut_off=1.0):
         '''
             Args:
                 features_folder: path to folder containing text features
