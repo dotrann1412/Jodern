@@ -1,0 +1,8 @@
+torch
+faiss
+requests
+Pillow
+numpy
+opencv-python
+sentence-transformers
+git+https://github.com/openai/CLIP.git
