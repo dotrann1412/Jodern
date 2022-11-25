@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,7 +23,7 @@ public class CartActivity extends AppCompatActivity {
     TextView subTotalTextView, shippingTextView, totalTextView;
 
     private double total;
-    private ScrollView scrollView;
+    private LinearLayout cartScrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +34,21 @@ public class CartActivity extends AppCompatActivity {
 
         initView();
         initCartList();
-//        renderCart();
-
+        renderCart();
     }
 
     private void initView() {
         cartRecyclerView = findViewById(R.id.cartRecyclerView);
-        scrollView = findViewById(R.id.cartScrollView);
+        cartScrollView = findViewById(R.id.cartScrollView);
+        subTotalTextView = findViewById(R.id.subTotalValueCartTextView);
+        shippingTextView = findViewById(R.id.shippingValueCartTextView);
+        totalTextView = findViewById(R.id.totalValueCartTextView);
     }
 
     private void initCartList() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         cartRecyclerView.setLayoutManager(linearLayoutManager);
+
         adapter = new CartAdapter(cartController.getCartList(), this, new ChangeNumItemsListener() {
             @Override
             public void onChanged() {
@@ -60,9 +64,9 @@ public class CartActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void renderCart() {
-        double shippingCost = 15000;
         double subTotal = cartController.getSubTotal();
-        double total = subTotal + shippingCost;
+        double shippingCost = (subTotal == -1) ? 0 : 15000;
+        total = subTotal + shippingCost;
 
         subTotalTextView.setText(String.valueOf(subTotal) + " VND");
         shippingTextView.setText(String.valueOf(shippingCost) + " VND");

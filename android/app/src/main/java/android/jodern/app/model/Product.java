@@ -2,7 +2,7 @@ package android.jodern.app.model;
 
 import java.util.List;
 
-public class Garment {
+public class Product {
     private List<String> images;
     private String name;
     private Long id;
@@ -10,8 +10,8 @@ public class Garment {
     private String category;
     private String color;
     private String description;
-    private Float cost;
-    private Integer numStocks;
+    private Long cost;
+    private Integer inventory;
 
     public String getName() {
         return name;
@@ -61,20 +61,20 @@ public class Garment {
         this.description = description;
     }
 
-    public Float getCost() {
+    public Long getCost() {
         return cost;
     }
 
-    public void setCost(Float cost) {
+    public void setCost(Long cost) {
         this.cost = cost;
     }
 
-    public Integer getNumStocks() {
-        return numStocks;
+    public Integer getInventory() {
+        return inventory;
     }
 
-    public void setNumStocks(Integer numStocks) {
-        this.numStocks = numStocks;
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
     }
 
     public List<String> getImages() {

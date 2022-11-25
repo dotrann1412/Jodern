@@ -5,7 +5,8 @@ import android.content.Context;
 import android.jodern.app.controller.CartController;
 import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
-import android.jodern.app.model.Garment;
+import android.jodern.app.model.Product;
+import android.jodern.app.model.OrderItem;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +16,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
-    private List<Garment> garmentList;
+    private List<OrderItem> orderItemList;
     private CartController cartController;
     private ChangeNumItemsListener changeNumItemsListener;
+    private Context parentContext;
 
-    public CartAdapter(List<Garment> garmentList, Context context, ChangeNumItemsListener changeNumItemsListener) {
-        this.garmentList = garmentList;
+    public CartAdapter(List<OrderItem> orderItemList, Context context, ChangeNumItemsListener changeNumItemsListener) {
+        this.orderItemList = orderItemList;
+        // TODO: change the orderItemList to load from the stored data
         this.cartController = new CartController(context);
         this.changeNumItemsListener = changeNumItemsListener;
+        this.parentContext = context;
     }
 
     @NonNull
@@ -33,21 +40,38 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_viewholder, parent, false);
 
-        return null;
+        return new ViewHolder(inflater);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         try {
-            Garment garment = garmentList.get(position);
-            holder.itemName.setText(garment.getName());
-            holder.itemCost.setText(String.valueOf(garment.getCost()));
-            holder.numItems.setText(String.valueOf(cartController.getOrderListSize()));
+            OrderItem orderItem = orderItemList.get(position);
 
-            Context itemViewContext = holder.itemView.getContext();
-            int drawableResource = itemViewContext.getResources()
-                    .getIdentifier(garment.getImages().get(0), "drawable", holder.itemView.getContext().getPackageName());
+            // TODO: change this product into the relevant product item to the order item
+            Product product = new Product();
+            product.setId(0l);
+            List<String> images = new ArrayList<>();
+            images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-4.jpg?v=1668244848000");
+            images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-5-308a032a-f9a4-4fb3-b73b-348e31c695db.jpg?v=1669013097000");
+            product.setImages(images);
+            product.setSex("nu");
+            product.setCategory("ao-khoac-nu");
+            product.setCost(499000l);
+            product.setInventory(109);
+            product.setName("Áo quần");
 
+            holder.itemName.setText(product.getName());
+            holder.itemCost.setText(String.valueOf(product.getCost()));
+            holder.numItems.setText(String.valueOf(orderItem.getQuantity()));
+
+//            Context itemViewContext = holder.itemView.getContext();
+//            int imageResource = itemViewContext.getResources()
+//                    .getIdentifier(product.getImages().get(0), null, itemViewContext.getPackageName());
+
+            String imageUri = product.getImages().get(0);
+
+            Glide.with(parentContext).load(imageUri).centerCrop().placeholder(R.drawable.item_placeholder).into(holder.itemImageUri);
 
             holder.incItem.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -94,7 +118,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         try {
-            return garmentList.size();
+            return orderItemList.size();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return -1;
@@ -103,13 +127,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemName, itemCost, numItems;
-        ImageView itemUri, incItem, decItem, removeItem;
+        ImageView itemImageUri, incItem, decItem, removeItem;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.cartViewHolderName);
             itemCost = itemView.findViewById(R.id.itemsCost);
-            itemUri = itemView.findViewById(R.id.cartViewHolderImage);
+            itemImageUri = itemView.findViewById(R.id.cartViewHolderImage);
             numItems = itemView.findViewById(R.id.cartNumItemsTextView);
             incItem = itemView.findViewById(R.id.cartItemIncrease);
             decItem = itemView.findViewById(R.id.cartItemDecrease);
