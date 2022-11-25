@@ -1,26 +1,55 @@
 package android.jodern.app;
 
+import android.content.Intent;
+import android.jodern.app.adapter.CategoryImageListAdapter;
+import android.jodern.app.provider.Provider;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
-import android.jodern.app.databinding.ActivityMainBinding;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initViews();
 
+        setupCategoryLists();
+    }
+
+    private void setupCategoryLists() {
+        // find views
+        RecyclerView maleView = findViewById(R.id.mainMaleCategoryImageList);
+        RecyclerView femaleView = findViewById(R.id.mainFemaleCategoryImageList);
+
+        // category list for male
+        CategoryImageListAdapter maleAdapter = new CategoryImageListAdapter(this);
+        maleAdapter.setCategoryList(Provider.getInstance().getCategoryList("nam"));
+        maleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        maleView.setAdapter(maleAdapter);
+
+        // category list for female
+        CategoryImageListAdapter femaleAdapter = new CategoryImageListAdapter(this);
+        femaleAdapter.setCategoryList(Provider.getInstance().getCategoryList("nu"));
+        femaleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        femaleView.setAdapter(femaleAdapter);
+    }
+
+    private void initViews() {
+        // assign view members (if any)
+    }
+
+    public void onMainSearchBarClicked(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void onMainCartBtnClicked(View view) {
+        // TODO: go to Cart Activity
     }
 }

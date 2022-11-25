@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/categoryImageWrapper"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/categoryImageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_search" />
+
+    <TextView
+        android:id="@+id/categoryImageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Áo khoác nữ 1 1 1"
+        android:textAlignment="center"
+        android:textColor="@color/text"
+        android:textSize="13sp"
+        />
+
+</LinearLayout>
