@@ -20,4 +20,10 @@
     <style name="Theme.Jodern.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Jodern.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Jodern.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Jodern.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Jodern.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

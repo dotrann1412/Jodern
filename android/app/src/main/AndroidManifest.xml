@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="android.jodern.app">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,15 +16,24 @@
         android:theme="@style/Jodern"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MapActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.CartActivity"
+            android:exported="false"
+            android:label="@string/title_activity_cart"
+            android:theme="@style/Jodern.NoActionBar" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SplashActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Jodern.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

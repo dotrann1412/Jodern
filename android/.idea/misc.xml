@@ -4,10 +4,19 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/background.xml" value="0.137" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/checkout_btn.xml" value="0.167" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.137" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/light_line.xml" value="0.167" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/font/font_primary.xml" value="0.298974358974359" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_cart.xml" value="0.264" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_main.xml" value="0.22780797101449277" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_map.xml" value="0.1453125" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/cart_viewholder.xml" value="0.6" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/content_cart.xml" value="0.159375" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/content_main.xml" value="0.22780797101449277" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_first.xml" value="0.159375" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_second.xml" value="0.159375" />
       </map>
     </option>
   </component>
@@ -16,5 +25,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.264" />
+      </ProjectState>
+    </option>
   </component>
 </project>

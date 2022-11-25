@@ -5,4 +5,13 @@
     <string name="previous">Previous</string>
     <string name="back">Back</string>
     <string name="hello_world">Hello world</string>
+    <string name="title_activity_cart">CartActivity</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="cart_header">My Cart</string>
+    <string name="check_out">CHECK OUT</string>
+    <string name="total">Total</string>
+    <string name="shipping">Shipping</string>
+    <string name="sub_total">Sub Total</string>
 </resources>
