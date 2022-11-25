@@ -22,7 +22,7 @@ class Test(APIView):
         return Response({"message", "Hello world!"}, status = status.HTTP_200_OK)
 
 textRetriever = TextRetriever.TextRetriever()
-# imageRetriever = ImageRetriever.ImageRetriever()
+imageRetriever = ImageRetriever.ImageRetriever()
 
 class SearchEngineInterface(APIView):
     def get(self, request, *args, **kwargs):
@@ -34,7 +34,7 @@ class SearchEngineInterface(APIView):
         elif searchType == 'image':
             if query == '':
                 query = np.array(request.data.decode('utf-8'))
-            # return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
+            return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
             
         return Response({"message": "Searching type not found"}, status = status.HTTP_501_NOT_IMPLEMENTED)
 
