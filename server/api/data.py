@@ -1,12 +1,11 @@
 import os, json, requests
 
 
-__productDataPath = './data/appdata/products.json'
-__ordersDataPath = './data/appdata/orders.json'
+__productDataPath = 'data/appdata/products.json'
+__ordersDataPath = 'data/appdata/orders.json'
 
-with open(__productDataPath, 'r') as fp:
+with open(__productDataPath, 'r', encoding='utf-8') as fp:
     __products = json.load(fp)
-    pass
 
 __categories = {}
 __products1Layer = {}
