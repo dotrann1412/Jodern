@@ -21,10 +21,10 @@ public class CartController {
         orderItem.setProductId(i++);
         List<OrderItem> orderItemList = new ArrayList<>();
         orderItemList.add(orderItem);
-//        orderItemList.add(orderItem);
-//        orderItemList.add(orderItem);
-//        orderItemList.add(orderItem);
-//        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
+        orderItemList.add(orderItem);
         this.orderItemList = orderItemList;
     }
 
@@ -32,9 +32,9 @@ public class CartController {
         return orderItemList;
     }
 
-    public double getSubTotal() {
+    public long getSubTotal() {
         try {
-            double result = 0f;
+            long result = 0l;
 
             for (OrderItem item : orderItemList) {
     //            result += item.getCost();
@@ -43,7 +43,7 @@ public class CartController {
             return result;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return -1f;
+            return -1l;
         }
     }
 

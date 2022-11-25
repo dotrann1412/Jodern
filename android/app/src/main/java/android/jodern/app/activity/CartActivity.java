@@ -5,6 +5,7 @@ import android.jodern.app.adapter.CartAdapter;
 import android.jodern.app.controller.CartController;
 import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
+import android.jodern.app.utils.StringUtils;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ public class CartActivity extends AppCompatActivity {
 
     TextView subTotalTextView, shippingTextView, totalTextView;
 
-    private double total;
+    private long total;
     private LinearLayout cartScrollView;
 
     @Override
@@ -64,13 +65,13 @@ public class CartActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void renderCart() {
-        double subTotal = cartController.getSubTotal();
-        double shippingCost = (subTotal == -1) ? 0 : 15000;
+        long subTotal = cartController.getSubTotal();
+        long shippingCost = (subTotal == -1) ? 0 : 15000;
         total = subTotal + shippingCost;
 
-        subTotalTextView.setText(String.valueOf(subTotal) + " VND");
-        shippingTextView.setText(String.valueOf(shippingCost) + " VND");
-        totalTextView.setText(String.valueOf(total) + "VND");
+        subTotalTextView.setText(StringUtils.long2money(subTotal));
+        shippingTextView.setText(StringUtils.long2money(shippingCost));
+        totalTextView.setText(StringUtils.long2money(total));
 
 
     }

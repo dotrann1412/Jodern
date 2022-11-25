@@ -7,6 +7,7 @@ import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
 import android.jodern.app.model.Product;
 import android.jodern.app.model.OrderItem;
+import android.jodern.app.utils.StringUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             product.setName("Áo quần");
 
             holder.itemName.setText(product.getName());
-            holder.itemCost.setText(String.valueOf(product.getCost()));
+//            holder.itemCost.setText(String.valueOf(product.getCost()));
+            holder.itemCost.setText(StringUtils.long2money(product.getCost()));
             holder.numItems.setText(String.valueOf(orderItem.getQuantity()));
 
 //            Context itemViewContext = holder.itemView.getContext();
@@ -128,6 +130,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemName, itemCost, numItems;
         ImageView itemImageUri, incItem, decItem, removeItem;
+        // TODO TextView itemSize;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
