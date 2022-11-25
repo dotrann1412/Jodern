@@ -5,7 +5,7 @@ __productDataPath = 'data/appdata/products.json'
 __ordersDataPath = 'data/appdata/orders.json'
 
 with open(__productDataPath, 'r', encoding='utf-8') as fp:
-    __products = json.load(fp)
+    __products = json.loads(fp.read().decode('utf-8-sig'))
 
 __categories = {}
 __products1Layer = {}
