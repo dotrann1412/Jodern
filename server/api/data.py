@@ -16,24 +16,27 @@ for sex, subcategories in __products.items():
         for item in value:
             __products1Layer[str(item["id"])] = item
 
+print('[STATUS] Data loaded')
+
+def GetProductsByList(l: list):
+    return [__products1Layer[str(i)] for i in l]
+
 def GetProducts(sex, category):
     if not sex and not category:
-        return []
+        return None
+    
+    if sex and category:
+        return __products.get(sex, {}).get(category, None)
+    
+    if sex and sex in __categories.keys():
+        return __products[sex]
     
     res = {}
     
-    if not sex:
-        sexList = list(__categories.keys())
-        for sex in sexList:
-            if category in __categories[sex]:
-                res[sex][category] = __products[sex][category]
-        
-
-    elif not category:
-        res = {
-            sex: __products[sex]
-        }
-    
+    for sex, value in __products.items():
+        if category in value:
+            res[sex] = value[category]            
+                
     return res
 
 def GetCategoriesTree():
