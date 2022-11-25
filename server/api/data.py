@@ -12,7 +12,7 @@ __products1Layer = {}
 
 for sex, subcategories in __products.items():
     __categories[sex] = list(subcategories.keys())
-    for key, value in subcategories:
+    for key, value in subcategories.items():
         for item in value:
             __products1Layer[str(item["id"])] = item
 
