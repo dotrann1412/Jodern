@@ -1,33 +1,54 @@
 package android.jodern.app.provider;
 
+import android.content.Context;
 import android.jodern.app.R;
 import android.jodern.app.model.Category;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Provider {
     private static Provider instance = null;
+    private RequestQueue requestQueue;
+    private static Context context;
+    private HashMap<String, ArrayList<Category>> categoryListMapping;
 
-    public static Provider getInstance() {
+    public static Provider getInstance(Context context) {
         // ref: https://www.digitalocean.com/community/tutorials/java-singleton-design-pattern-best-practices-examples#:~:text=safe%20singleton%20class.-,4.%20Thread%20Safe%20Singleton,-A%20simple%20way
         if (instance == null) {
             synchronized (Provider.class) {
                 if (instance == null) {
-                    instance = new Provider();
+                    instance = new Provider(context);
                 }
             }
         }
         return instance;
     }
 
-    private HashMap<String, ArrayList<Category>> categoryListMapping;
-
-    private Provider() {
+    private Provider(Context context) {
+        Provider.context = context;
+        
         if (categoryListMapping == null)
             categoryListMapping = new HashMap<>();
 
+        requestQueue = getRequestQueue();
         initData();
+    }
+
+    public RequestQueue getRequestQueue() {
+        if (requestQueue == null) {
+            // context.getApplicationContext() keeps us from leaking the Activity or BroadcastReceiver if someone passes one in.
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        }
+        return requestQueue;
+    }
+
+    public <T> void addToRequestQueue(Request<T> req) {
+        getRequestQueue().add(req);
     }
 
     private void initData() {
