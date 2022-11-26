@@ -1,6 +1,7 @@
 package android.jodern.app;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -8,9 +9,11 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -24,11 +27,7 @@ import java.util.List;
 Ref: https://gist.github.com/Mariovc/f06e70ebe8ca52fbbbe2
  */
 public class ImagePicker {
-
-    private static final int DEFAULT_MIN_WIDTH_QUALITY = 400;        // min pixels
     private static final String TEMP_IMAGE_NAME = "tempImage";
-
-    public static int minWidthQuality = DEFAULT_MIN_WIDTH_QUALITY;
 
     public static Intent getPickImageIntent(Context context) {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -44,6 +43,7 @@ public class ImagePicker {
         takePhotoIntent.putExtra("return-data", true);
         takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempFile(context)));
 
+        // choose intent
         intentList = addIntentsToList(context, intentList, pickIntent);
         intentList = addIntentsToList(context, intentList, takePhotoIntent);
         if (intentList.size() > 0) {
@@ -91,38 +91,42 @@ public class ImagePicker {
         imageFile.getParentFile().mkdirs();
         return imageFile;
     }
-
-    private static Bitmap decodeBitmap(Context context, Uri theUri, int sampleSize) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = sampleSize;
-
-        AssetFileDescriptor fileDescriptor = null;
-        try {
-            fileDescriptor = context.getContentResolver().openAssetFileDescriptor(theUri, "r");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Bitmap actuallyUsableBitmap = BitmapFactory.decodeFileDescriptor(
-                fileDescriptor.getFileDescriptor(), null, options);
-
-        return actuallyUsableBitmap;
-    }
-
     /**
      * Resize to avoid using too much memory loading big images (e.g.: 2560*1920)
      **/
     private static Bitmap getImageResized(Context context, Uri selectedImage) {
         Bitmap bm = null;
-        int[] sampleSizes = new int[]{10, 8, 6, 4, 2, 1};  // down sampling the images
-        int i = 0;
-        do {
-            bm = decodeBitmap(context, selectedImage, sampleSizes[i]);
-            i++;
-        } while (bm.getWidth() < minWidthQuality && i < sampleSizes.length);
+        ContentResolver contentResolver = context.getContentResolver();
+        try {
+            if(Build.VERSION.SDK_INT < 28) {
+                bm = MediaStore.Images.Media.getBitmap(contentResolver, selectedImage);
+            } else {
+                ImageDecoder.Source source = ImageDecoder.createSource(contentResolver, selectedImage);
+                bm = ImageDecoder.decodeBitmap(source);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        bm = resizeKeepRatio(bm, 224);
         return bm;
     }
 
+    private static Bitmap resizeKeepRatio(Bitmap image, int minSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int newWidth = width;
+        int newHeight = height;
+        if (width > height) {
+            newHeight = minSize;
+            newWidth = (int) (minSize * (float) width / height);
+        } else {
+            newWidth = minSize;
+            newHeight = (int) (minSize * (float) height / width);
+        }
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, newWidth, newHeight, true);
+        return scaledBitmap;
+    }
 
     private static int getRotation(Context context, Uri imageUri, boolean isCamera) {
         int rotation;
