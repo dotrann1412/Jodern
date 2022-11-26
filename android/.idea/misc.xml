@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.182" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/background.xml" value="0.137" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/checkout_btn.xml" value="0.167" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/dotted_line.xml" value="0.1775" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.137" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/light_line.xml" value="0.167" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/font/font_primary.xml" value="0.298974358974359" />
@@ -16,6 +18,7 @@
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/content_cart.xml" value="0.159375" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/content_main.xml" value="0.22780797101449277" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_first.xml" value="0.159375" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_map.xml" value="0.22010869565217392" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_second.xml" value="0.159375" />
       </map>
     </option>
