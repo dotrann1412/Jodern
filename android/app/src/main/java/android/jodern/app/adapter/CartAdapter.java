@@ -8,6 +8,7 @@ import android.jodern.app.R;
 import android.jodern.app.model.Product;
 import android.jodern.app.model.OrderItem;
 import android.jodern.app.utils.StringUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             OrderItem orderItem = orderItemList.get(position);
 
             // TODO: change this product into the relevant product item to the order item
+
             Product product = new Product();
             product.setId(0l);
             List<String> images = new ArrayList<>();
@@ -63,7 +65,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             product.setName("Áo quần");
 
             holder.itemName.setText(product.getName());
-//            holder.itemCost.setText(String.valueOf(product.getCost()));
             holder.itemCost.setText(StringUtils.long2money(product.getCost()));
             holder.numItems.setText(String.valueOf(orderItem.getQuantity()));
 
@@ -73,7 +74,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
             String imageUri = product.getImages().get(0);
 
-            Glide.with(parentContext).load(imageUri).centerCrop().placeholder(R.drawable.item_placeholder).into(holder.itemImageUri);
+            Glide.with(parentContext)
+                    .load(imageUri)
+                    .centerCrop()
+                    .placeholder(R.drawable.item_placeholder)
+                    .into(holder.itemImageUri);
 
             holder.incItem.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -111,9 +116,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 }
             });
         } catch (NullPointerException e) {
-            System.out.println("Garment list is empty");
+            Log.d("Cart Adapter", "Product list is empty");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.d("Cart Adapter", e.getMessage());
         }
     }
 
@@ -122,7 +127,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         try {
             return orderItemList.size();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.d("Cart Adapter", e.getMessage());
             return -1;
         }
     }

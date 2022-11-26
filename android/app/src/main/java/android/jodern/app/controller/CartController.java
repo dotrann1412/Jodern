@@ -2,6 +2,7 @@ package android.jodern.app.controller;
 
 import android.content.Context;
 import android.jodern.app.model.OrderItem;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class CartController {
 
             return result;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.d("Cart Controller", e.getMessage());
             return -1l;
         }
     }
@@ -51,7 +52,7 @@ public class CartController {
         try {
             return orderItemList.size();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.d("Cart Controller", e.getMessage());
             return -1;
         }
     }
