@@ -4,13 +4,17 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.SearchRecentSuggestions;
 import android.util.Base64;
 import android.view.View;
@@ -18,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,12 +32,17 @@ import java.io.ByteArrayOutputStream;
 public class SearchActivity extends AppCompatActivity {
     // Show search history? https://stackoverflow.com/questions/21585326/implementing-searchview-in-action-bar
     // It can be done later... :D
+    private static final int MY_CAMERA_REQUEST_CODE = 100;
+    private static final int MY_GALLERY_REQUEST_CODE = 101;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
+
     private LinearLayout searchWrapperLayout;
     private ImageButton backBtn;
     private SearchView inputField;
     private ImageButton cameraBtn;
     private MaterialButton submitBtn;
     private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
+    Intent chooseImageIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +66,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+                startActivity(new Intent(SearchActivity.this, MainActivity.class));
+                finish();
             }
         });
 
@@ -95,21 +107,21 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setupCamera() {
         cameraActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            Bitmap bitmap = ImagePicker.getImageFromResult(SearchActivity.this, data);
-                            if (bitmap != null) {
-                                submitImageQuery(bitmap);
-                            } else {
-                                Snackbar.make(searchWrapperLayout, "Đã có lỗi xảy ra. Vui lòng thử lại sau", Snackbar.LENGTH_SHORT).show();
-                            }
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        Bitmap bitmap = ImagePicker.getImageFromResult(SearchActivity.this, data);
+                        if (bitmap != null) {
+                            submitImageQuery(bitmap);
+                        } else {
+                            Toast.makeText(SearchActivity.this, "Đã có lỗi xảy ra, bạn vui thử lại sau nhé!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
+            }
         );
     }
 
@@ -137,7 +149,35 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void runImagePicker() {
+        // check camera and permission first
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+            return;
+        }
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_GALLERY_REQUEST_CODE);
+            return;
+        }
         Intent chooseImageIntent = ImagePicker.getPickImageIntent(this);
         cameraActivityResultLauncher.launch(chooseImageIntent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_CAMERA_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Không thể truy cập vào camera!", Toast.LENGTH_SHORT).show();
+            } else {
+                runImagePicker();
+            }
+        } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Không thể truy cập vào thư viện!", Toast.LENGTH_SHORT).show();
+            } else {
+                runImagePicker();
+            }
+        }
     }
 }
