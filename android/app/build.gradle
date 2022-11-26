@@ -1,6 +1,9 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+apply plugin: 'com.android.application'
 
 android {
     compileSdk 32
@@ -36,9 +39,19 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment:2.5.1'
     implementation 'androidx.navigation:navigation-ui:2.5.1'
+
+    // for api request
     implementation 'com.android.volley:volley:1.2.1'
+
+    // for image uri appearance
     implementation 'com.github.bumptech.glide:glide:4.14.2'
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // for google map
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+
+
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
