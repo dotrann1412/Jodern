@@ -17,17 +17,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.util.ArrayList;
 
 public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagListAdapter.ViewHolder> {
     private ArrayList<Category> categoryList;
     private final AppCompatActivity mContext;
-    private final RecyclerView recyclerView;
     private final String currentCategory;
 
-    public CategoryTagListAdapter(AppCompatActivity mContext, RecyclerView view, String currentCategory) {
+    public CategoryTagListAdapter(AppCompatActivity mContext, String currentCategory) {
         this.mContext = mContext;
-        this.recyclerView = view;
         this.currentCategory = currentCategory;
     }
 
@@ -41,12 +41,12 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Category category = categoryList.get(position);
-        holder.name.setText(category.getName());
-        if (category.getRaw().equals(currentCategory)) {
-            recyclerView.scrollToPosition(holder.getAdapterPosition());
-            holder.wrapper.setBackgroundResource(R.drawable.shape_cate_tag_selected);
-            holder.name.setTextColor(mContext.getColor(R.color.white));
-        }
+        holder.btn.setText(category.getName());
+//        holder.name.setText(category.getName());
+//        if (category.getRaw().equals(currentCategory)) {
+//            holder.wrapper.setBackgroundResource(R.drawable.shape_cate_tag_selected);
+//            holder.name.setTextColor(mContext.getColor(R.color.white));
+//        }
     }
 
     @Override
@@ -59,25 +59,29 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView name;
-        private final LinearLayout wrapper;
+//        private final TextView name;
+//        private final LinearLayout wrapper;
+        private final MaterialButton btn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.categoryTagName);
-            wrapper = itemView.findViewById(R.id.categoryTagWrapper);
+            btn = itemView.findViewById(R.id.categoryTagWrapper);
+
+//            name = itemView.findViewById(R.id.categoryTagName);
+//            wrapper = itemView.findViewById(R.id.categoryTagWrapper);
 
             setEvents();
         }
 
         public void setEvents() {
-            wrapper.setOnClickListener(new View.OnClickListener() {
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Category category = categoryList.get(getAdapterPosition());
                     Intent intent = new Intent(mContext, ProductListActivity.class);
-                    intent.putExtra("category", category.getRaw());
+                    intent.putExtra("categoryRaw", category.getRaw());
+                    intent.putExtra("categoryName", category.getName());
                     mContext.startActivity(intent);
                     mContext.overridePendingTransition( 0, 0);
                 }
