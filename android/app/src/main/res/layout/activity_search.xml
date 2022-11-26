@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="12dp"
+        android:layout_margin="16dp"
         >
 
         <ImageButton
@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@null"
-            android:paddingLeft="4dp"
+            android:paddingLeft="0dp"
             android:paddingRight="12dp"
             android:src="@drawable/ic_back" />
 
@@ -34,8 +34,11 @@
             <SearchView
                 android:id="@+id/searchInputField"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="40dp"
                 android:layout_weight="1"
+                android:layout_marginStart="-4dp"
+                app:theme="@style/MySearchView"
+                android:lineSpacingMultiplier="0"
                 android:iconifiedByDefault="false"
                 android:queryBackground="@null"
                 android:queryHint="Bạn tìm gì hôm nay?"
@@ -49,11 +52,13 @@
                 android:background="@null"
                 android:paddingLeft="12dp"
                 android:paddingRight="8dp"
-                android:src="@drawable/ic_camera" />
+                android:src="@drawable/ic_camera"
+                app:tint="@color/primary_dark"
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/searchSubmitBtn"
-                android:layout_width="52dp"
+                android:layout_width="44dp"
                 android:layout_height="match_parent"
                 android:backgroundTint="@color/primary"
                 android:insetLeft="0dp"
