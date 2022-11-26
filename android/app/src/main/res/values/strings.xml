@@ -8,7 +8,7 @@
     <string name="title_activity_cart">CartActivity</string>
 
     <string name="cart_header">Giỏ hàng</string>
-    <string name="check_out">ĐẶT HÀNG</string>
+    <string name="check_out">Đặt hàng</string>
     <string name="total">Tổng thanh toán</string>
     <string name="shipping">Vận chuyển</string>
     <string name="sub_total">Tổng cộng</string>
