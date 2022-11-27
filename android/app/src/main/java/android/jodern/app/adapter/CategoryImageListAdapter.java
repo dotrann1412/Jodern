@@ -70,6 +70,7 @@ public class CategoryImageListAdapter extends RecyclerView.Adapter<CategoryImage
                 public void onClick(View view) {
                     Category category = categoryList.get(getAdapterPosition());
                     Intent intent = new Intent(mContext, ProductListActivity.class);
+                    intent.putExtra("entry", "product-list");
                     intent.putExtra("categoryRaw", category.getRaw());
                     intent.putExtra("categoryName", category.getName());
                     mContext.startActivity(intent);

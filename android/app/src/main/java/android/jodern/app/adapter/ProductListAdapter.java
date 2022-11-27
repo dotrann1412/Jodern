@@ -1,5 +1,7 @@
 package android.jodern.app.adapter;
 
+import static android.jodern.app.util.Utils.vndFormatPrice;
+
 import android.content.Context;
 import android.content.Intent;
 import android.jodern.app.ProductDetailActivity;
@@ -14,6 +16,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 
@@ -37,11 +42,15 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productList.get(position);
-        holder.name.setText("Áo đẹp nha nha nha áo rất là đẹp");
-        holder.image.setImageResource(R.drawable.demo); // just demo
-        holder.price.setText("1.000.000 VNĐ");
-        // TODO: get image from URL
-
+        holder.name.setText(product.getName());
+        holder.price.setText(vndFormatPrice(product.getPrice()));
+        // TODO: add placeholder for Glide
+        Glide.with(mContext)
+                .load(product.getImageURL())
+                // optimize Glide
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
+                .override(holder.image.getWidth(),holder.image.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
+                .into(holder.image);
     }
 
     @Override

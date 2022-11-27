@@ -24,12 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Init instance of Singleton class
-        RequestQueue queue = Provider.getInstance(this.getApplicationContext()).getRequestQueue();
-//        Provider.getInstance(this.getApplicationContext());
+        Provider.getInstance(this.getApplicationContext());
 
         setupCategoryLists();
-
-
     }
 
     private void setupCategoryLists() {

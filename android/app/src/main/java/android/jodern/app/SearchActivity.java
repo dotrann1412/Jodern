@@ -36,13 +36,12 @@ public class SearchActivity extends AppCompatActivity {
     private static final int MY_GALLERY_REQUEST_CODE = 101;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
 
-    private LinearLayout searchWrapperLayout;
+//    private LinearLayout searchWrapperLayout;
     private ImageButton backBtn;
     private SearchView inputField;
     private ImageButton cameraBtn;
     private MaterialButton submitBtn;
     private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
-    Intent chooseImageIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +50,12 @@ public class SearchActivity extends AppCompatActivity {
         initViews();
 
         setEvents();
+
+        // TODO: auto focus in search view
     }
 
     private void initViews() {
-        searchWrapperLayout = findViewById(R.id.searchWrapperLayout);
+//        searchWrapperLayout = findViewById(R.id.searchWrapperLayout);
         backBtn = findViewById(R.id.searchBackBtn);
         inputField = findViewById(R.id.searchInputField);
         cameraBtn = findViewById(R.id.searchCameraBtn);
@@ -127,12 +128,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private void submitTextQuery(String query) {
         if (query.length() == 0) {
-            Snackbar.make(searchWrapperLayout, "Vui lòng nhập nội dung tìm kiếm", Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập nội dung tìm kiếm", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
-        intent.putExtra("text", query);
+        intent.putExtra("entry", "search");
+        intent.putExtra("type", "text");
+        intent.putExtra("query", query);
         startActivity(intent);
     }
 
@@ -144,7 +147,9 @@ public class SearchActivity extends AppCompatActivity {
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
-        intent.putExtra("image", encoded);
+        intent.putExtra("entry", "search");
+        intent.putExtra("type", "image");
+        intent.putExtra("query", encoded);
         startActivity(intent);
     }
 

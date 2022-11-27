@@ -24,11 +24,9 @@ import java.util.ArrayList;
 public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagListAdapter.ViewHolder> {
     private ArrayList<Category> categoryList;
     private final AppCompatActivity mContext;
-    private final String currentCategory;
 
-    public CategoryTagListAdapter(AppCompatActivity mContext, String currentCategory) {
+    public CategoryTagListAdapter(AppCompatActivity mContext) {
         this.mContext = mContext;
-        this.currentCategory = currentCategory;
     }
 
     @NonNull
@@ -42,11 +40,6 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Category category = categoryList.get(position);
         holder.btn.setText(category.getName());
-//        holder.name.setText(category.getName());
-//        if (category.getRaw().equals(currentCategory)) {
-//            holder.wrapper.setBackgroundResource(R.drawable.shape_cate_tag_selected);
-//            holder.name.setTextColor(mContext.getColor(R.color.white));
-//        }
     }
 
     @Override
@@ -59,18 +52,11 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-//        private final TextView name;
-//        private final LinearLayout wrapper;
         private final MaterialButton btn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             btn = itemView.findViewById(R.id.categoryTagWrapper);
-
-//            name = itemView.findViewById(R.id.categoryTagName);
-//            wrapper = itemView.findViewById(R.id.categoryTagWrapper);
-
             setEvents();
         }
 
@@ -80,8 +66,10 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
                 public void onClick(View view) {
                     Category category = categoryList.get(getAdapterPosition());
                     Intent intent = new Intent(mContext, ProductListActivity.class);
+                    intent.putExtra("entry", "product-list");
                     intent.putExtra("categoryRaw", category.getRaw());
                     intent.putExtra("categoryName", category.getName());
+                    intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); // Adds the FLAG_ACTIVITY_NO_HISTORY flag
                     mContext.startActivity(intent);
                     mContext.overridePendingTransition( 0, 0);
                 }

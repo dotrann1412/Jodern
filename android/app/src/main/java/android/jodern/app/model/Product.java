@@ -4,6 +4,7 @@ public class Product {
     private int id;
     private String name;
     private String imageURL;
+    private String[] imageURLs;
     private int price;
     private String description;
     private String category;
@@ -20,6 +21,16 @@ public class Product {
         this.id = id;
         this.name = name;
         this.imageURL = imageURL;
+        this.price = price;
+        this.description = description;
+        this.category = category;
+        this.inventory = inventory;
+    }
+
+    public Product(int id, String name, String[] imageURLs, int price, String description, String category, int[] inventory) {
+        this.id = id;
+        this.name = name;
+        this.imageURLs = imageURLs;
         this.price = price;
         this.description = description;
         this.category = category;
@@ -50,7 +61,7 @@ public class Product {
         return category;
     }
 
-    public int[] getInventory() {
-        return inventory;
+    public int getInventory(int i) {
+        return inventory[i];
     }
 }

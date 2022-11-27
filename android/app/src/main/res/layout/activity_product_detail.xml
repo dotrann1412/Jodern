@@ -1,299 +1,324 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
     android:orientation="vertical"
     tools:context=".ProductDetailActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <!-- Back and cart -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/detailBackBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:onClick="onDetailBackBtnClicked"
-                    android:paddingRight="12dp"
-                    android:src="@drawable/ic_back" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-
-                <ImageButton
-                    android:id="@+id/detailCartBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:contentDescription="cart icon"
-                    android:onClick="onDetailCartBtnClicked"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="8dp"
-                    android:src="@drawable/ic_cart"
-                    app:tint="@color/primary_dark" />
-            </LinearLayout>
-
-            <!-- Product name and price -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginEnd="48dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/detailName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Áo thun nữ cool ngầu"
-                    android:textAlignment="center"
-                    android:textColor="@color/primary_dark"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/detailPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="4dp"
-                    android:text="1.000.000 VNĐ"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Product image -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="16dp"
-                android:gravity="center">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="10dp">
-
-                    <ImageView
-                        android:id="@+id/detailImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="300dp"
-                        android:adjustViewBounds="true"
-                        app:srcCompat="@drawable/demo" />
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
-
-            <!-- Product size -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chọn size phù hợp với bạn:"
-                    android:textColor="@color/text"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp">
-
-                    <LinearLayout
-                        android:id="@+id/detailSizeS"
-                        android:layout_width="45dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/size_item"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:tag="sizeText"
-                            android:text="S"
-                            android:textColor="@color/text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detailSizeM"
-                        android:layout_width="45dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/size_item"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:tag="sizeText"
-                            android:text="M"
-                            android:textColor="@color/text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detailSizeL"
-                        android:layout_width="45dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/size_item"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:tag="sizeText"
-                            android:text="L"
-                            android:textColor="@color/text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detailSizeXL"
-                        android:layout_width="45dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/size_item"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:tag="sizeText"
-                            android:text="XL"
-                            android:textColor="@color/text" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detailSizeXXL"
-                        android:layout_width="45dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/size_item"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:tag="sizeText"
-                            android:text="XXL"
-                            android:textColor="@color/text" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Số sản phẩm hiện có: "
-                        android:textColor="@color/text_light" />
-
-                    <TextView
-                        android:id="@+id/detailInventory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10"
-                        android:textColor="@color/text"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!--  Product description  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mô tả sản phẩm:"
-                    android:textColor="@color/text"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:id="@+id/detailDescription"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi."
-                        android:textColor="@color/text" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/detailPrice2"
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingTop="4dp"
-            android:text="1.000.000 VNĐ"
-            android:textColor="@color/text"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:scrollbars="none">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/detailAddToCartBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="54dp"
-            android:backgroundTint="@color/primary"
-            android:onClick="onDetailCartBtnClicked"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:text="Thêm vào giỏ hàng"
-            android:textAllCaps="false"
-            app:cornerRadius="12dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <!-- Back and cart -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/detailBackBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:onClick="onDetailBackBtnClicked"
+                        android:paddingRight="12dp"
+                        android:src="@drawable/ic_back" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <ImageButton
+                        android:id="@+id/detailCartBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:contentDescription="cart icon"
+                        android:onClick="onDetailCartBtnClicked"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="8dp"
+                        android:src="@drawable/ic_cart"
+                        app:tint="@color/primary_dark" />
+                </LinearLayout>
+
+                <!-- Product name and price -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginEnd="48dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detailName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Áo thun nữ cool ngầu"
+                        android:textAlignment="center"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/detailPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="4dp"
+                        android:text="1.000.000 VNĐ"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Product image -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="10dp">
+
+                        <ImageView
+                            android:id="@+id/detailImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            app:srcCompat="@drawable/demo" />
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- Product size -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chọn size phù hợp với bạn:"
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp">
+
+                        <LinearLayout
+                            android:id="@+id/detailSizeS"
+                            android:layout_width="45dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/size_item"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:tag="sizeText"
+                                android:text="S"
+                                android:textColor="@color/text" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detailSizeM"
+                            android:layout_width="45dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/size_item"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:tag="sizeText"
+                                android:text="M"
+                                android:textColor="@color/text" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detailSizeL"
+                            android:layout_width="45dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/size_item"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:tag="sizeText"
+                                android:text="L"
+                                android:textColor="@color/text" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detailSizeXL"
+                            android:layout_width="45dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/size_item"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:tag="sizeText"
+                                android:text="XL"
+                                android:textColor="@color/text" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detailSizeXXL"
+                            android:layout_width="45dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/size_item"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:tag="sizeText"
+                                android:text="XXL"
+                                android:textColor="@color/text" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Số sản phẩm hiện có: "
+                            android:textColor="@color/text_light" />
+
+                        <TextView
+                            android:id="@+id/detailInventory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:textColor="@color/text"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--  Product description  -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mô tả sản phẩm:"
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:id="@+id/detailDescription"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi."
+                            android:textColor="@color/text" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/detailPrice2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingTop="4dp"
+                android:text="1.000.000 VNĐ"
+                android:textColor="@color/text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detailAddToCartBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:backgroundTint="@color/primary"
+                android:onClick="onDetailCartBtnClicked"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Thêm vào giỏ hàng"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/detailLoadingWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_overlay"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/primary" />
+
+    </LinearLayout>
+</RelativeLayout>
