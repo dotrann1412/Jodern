@@ -78,4 +78,4 @@ class HandleCategoriesTree(APIView):
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
         print('[STATUS] GET api/stores-location')
-        return Response({"message": "Searching type not found"}, status = status.HTTP_200_OK)
+        return Response(LocationList(), status = status.HTTP_200_OK)
