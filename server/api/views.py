@@ -8,6 +8,7 @@ from  rest_framework.request import Request
 from django.views.generic import TemplateView
 import numpy as np
 from django.http import HttpResponse
+from django.views.generic import View
 
 import base64
 import numpy as np
@@ -30,27 +31,40 @@ class Test(APIView):
 
 textRetriever = TextRetriever.TextRetriever()
 imageRetriever = ImageRetriever.ImageRetriever()
-
-class SearchEngineInterface(APIView):
+import traceback
+class SearchEngineInterface(View):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
         searchType = request.query_params.get('type', '').lower()
         
         print(f'[STATUS] GET/ api/search/{searchType}')
-        
+
         try:
             if searchType == 'text':
                 return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
             
-            if searchType == 'image':
-                query = np.frombuffer(base64.decodestring(query), dtype=np.float32)
-                return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
+            # if searchType == 'image':
+            #    query = np.frombuffer(query.encode('ascii'), dtype=np.float32)
+            #    return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
             
         except Exception as err:
-            print(err)
+            traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
         
-        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST) 
+        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST)
+    
+    def post(self, request: Request, *args, **kwargs):
+        query = request.POST.get('query', '').lower()
+        searchType = request.POST.get('type', '').lower()
+        # try:
+        #     if searchType == 'image':
+        #         query = np.frombuffer(query.encode('ascii'), np.float32)
+        #         print("Searching...")
+        #         return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
+        # except Exception as err:
+        #     traceback.print_exc()
+        #     return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST)
 
 class HandleProductsList(APIView):
     def get(self, request: Request, *args, **kwargs):
@@ -82,4 +96,4 @@ class HandleCategoriesTree(APIView):
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
         print('[STATUS] GET api/stores-location')
-        return Response(LocationList(), status = status.HTTP_200_OK)
+        return Response(StoresLocationJson(), status = status.HTTP_200_OK)

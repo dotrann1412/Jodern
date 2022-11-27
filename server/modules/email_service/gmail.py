@@ -1,7 +1,6 @@
 from smtplib import SMTP_SSL, SMTP_SSL_PORT
 import imaplib
 import email
-from utils import print_color, print_indent, text_format
 import email.message
 import mimetypes
 
@@ -203,7 +202,7 @@ class MailService:
             
             id_list = mail_ids[0].split()
             if len(id_list) == 0:
-                print('All mails are read', text_format.OKGREEN)
+                print('All mails are read')
                 return []
             
             first_email_id = int(id_list[0])
@@ -234,14 +233,14 @@ class MailService:
                 })
 
         except Exception as e:
-            print('Error while reading the mail inbox as below:', text_format.YELLOW)
-            print_indent(str(e), level = 1, option = text_format.YELLOW)
+            print('Error while reading the mail inbox as below:')
+            print(str(e))
             
         return mail_list
 
     def send_mail(self, mail):
         try: self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
         except Exception as e:
-            print(str(e), text_format.FAIL)
+            print(str(e))
             return False
         return True

@@ -114,7 +114,7 @@ def IsAbleForOrdering(id, num):
     if type(id) != str: id = str(id)
     return __products1Layer[id]['inventory'] >= num
 
-def LocationList():
+def StoresLocationJson():
     return {'location': __location}
 
 # update data
