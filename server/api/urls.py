@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from .views import (
-    Test, HandleProductsList, HandleProductsByID, SearchEngineInterface, HandleCategoriesTree
+    Test, HandleProductsList, HandleProductsByID, SearchEngineInterface, HandleCategoriesTree, StoresLocation
 )
 
 urlpatterns = [ 
@@ -11,5 +11,6 @@ urlpatterns = [
     path('search/', SearchEngineInterface.as_view()),
     path('submit-order/', Test.as_view()),
     path('validate-order/', Test.as_view()),
-    path('categories/', HandleCategoriesTree.as_view())
+    path('categories/', HandleCategoriesTree.as_view()),
+    path('stores-location/', StoresLocation.as_view())
 ]

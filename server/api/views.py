@@ -58,12 +58,16 @@ class HandleProductsList(APIView):
         print('[STATUS] GET api/product-list')
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
-                
+
         res = GetProducts(sex, category)
         if not res:
             return Response({}, status = status.HTTP_400_BAD_REQUEST)
 
         return Response(res, status = status.HTTP_200_OK)
+    
+class HanldeOrder(APIView):
+    def get(self, request: Request, *arg, **kwargs):
+        pass
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
@@ -78,4 +82,4 @@ class HandleCategoriesTree(APIView):
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
         print('[STATUS] GET api/stores-location')
-        return Response({"message": "Searching type not found"}, status = status.HTTP_200_OK)
+        return Response(LocationList(), status = status.HTTP_200_OK)
