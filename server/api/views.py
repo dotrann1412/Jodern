@@ -21,10 +21,12 @@ from modules.retriever import (
 
 class Test(APIView):
     def get(self, request, *args, **kwargs):
-        return Response({"message", "Hello world!"}, status = status.HTTP_200_OK)
+        print('[STATUS] GET api/test')
+        return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        return Response({"message", "Hello world!"}, status = status.HTTP_200_OK)
+        print('[STATUS] POST api/test')
+        return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
 textRetriever = TextRetriever.TextRetriever()
 imageRetriever = ImageRetriever.ImageRetriever()
@@ -53,7 +55,7 @@ class SearchEngineInterface(APIView):
 class HandleProductsList(APIView):
     def get(self, request: Request, *args, **kwargs):
         sex, category = None, None
-        
+        print('[STATUS] GET api/product-list')
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
                 
@@ -65,13 +67,15 @@ class HandleProductsList(APIView):
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
+        print('[STATUS] GET api/product')
         return Response(GetProductDetails(kwargs['id']), status = status.HTTP_200_OK)
 
 class HandleCategoriesTree(APIView):
     def get(self, request, *args, **kwargs):
+        print('[STATUS] GET api/categories')
         return Response(GetCategoriesTree(), status = status.HTTP_200_OK)
 
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
-        data = request.data
+        print('[STATUS] GET api/stores-location')
         return Response({"message": "Searching type not found"}, status = status.HTTP_200_OK)
