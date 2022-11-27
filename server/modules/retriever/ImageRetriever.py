@@ -2,44 +2,27 @@ import numpy as np
 import requests
 from PIL import Image
 import torch
-import clip
-import cv2
+from transformers import AutoFeatureExtractor, Swinv2Model
 from io import BytesIO
 
 from modules.retriever.Retriever import Retriever
 
-class MyViTModel(torch.nn.Module):
+class MySwinT2(torch.nn.Module):
     def __init__(self, name="ViT-B/16", device="cpu"):
         super().__init__()
-        self.model, self.preprocess = clip.load(name, device=device)
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained("microsoft/swinv2-tiny-patch4-window8-256")
+        self.model = Swinv2Model.from_pretrained("microsoft/swinv2-tiny-patch4-window8-256")
         self.model.eval()
-
-    def forward(self, x):
-        x = self.preprocess(x).unsqueeze(0)
+        
+    def forward(self, image):
+        # x: an image loaded by PIL.Image.Open
+        inputs = self.feature_extractor(image, return_tensors="pt")
         with torch.no_grad():
-            x = self.model.encode_image(x)
-        return x
+            outputs = self.model(**inputs)
+        return outputs.pooler_output[0].numpy()
     
-
-model = MyViTModel()
+model = MySwinT2()
 images_idx = np.load('data/res/features/images/image_indices.npy')
-
-
-def resize(inputs, size=224):
-    '''
-        inputs: numpy array with shape H * W * C
-
-        resize to new_h * new_w * c with keeping the aspect ratio (mininum is size)
-    '''
-    h, w, c = inputs.shape
-    if h < w:
-        new_h = size
-        new_w = int(w * size / h)
-    else:
-        new_w = size
-        new_h = int(h * size / w)
-    inputs = cv2.resize(inputs, (new_w, new_h))
-    return inputs
 
 
 def image_preprocess(data):
@@ -50,6 +33,8 @@ def image_preprocess(data):
         img = Image.open(BytesIO(response.content))
     else:
         img = Image.open(data)
+    if np.asarray(img).shape[-1] > 3:
+        img = Image.fromarray(np.asarray(img)[:,:,:3])
     return img
 
 
@@ -75,8 +60,7 @@ class ImageRetriever():
         '''
         img = image_preprocess(query)
         with torch.no_grad():
-            features = model(img)
-        features = features.cpu().numpy()
+            features = np.array([model(img)])
         indices = self.__retriever.search(features, top_k=self.top_k, cut_off=self.cut_off)
         res = []
         for i in indices:
