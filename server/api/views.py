@@ -9,6 +9,8 @@ from django.views.generic import TemplateView
 import numpy as np
 from django.http import HttpResponse
 from django.views.generic import View
+from PIL import Image
+import io
 
 import base64
 import numpy as np
@@ -30,7 +32,7 @@ class Test(APIView):
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
 textRetriever = TextRetriever.TextRetriever()
-# imageRetriever = ImageRetriever.ImageRetriever()
+imageRetriever = ImageRetriever.ImageRetriever()
 import traceback
 class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
@@ -50,14 +52,17 @@ class SearchEngineInterface(APIView):
     def post(self, request: Request, *args, **kwargs):
         query = request.POST.get('query', '').lower()
         print('POST request for search image triggered')
-        # try:
-        #     if searchType == 'image':
-        #         query = np.frombuffer(query.encode('ascii'), np.float32)
-        #         print("Searching...")
-        #         return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
-        # except Exception as err:
-        #     traceback.print_exc()
-        #     return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        try:
+            # print(type(query), type(query.encode('utf-8')))
+            query = base64.decodebytes(query.encode('utf-8'))
+            query = np.frombuffer(query, dtype = np.uint8)
+            query = np.reshape(query, (256, 256, 3))
+            
+            print("Searching...")
+            return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
+        except Exception as err:
+            traceback.print_exc()
+            return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
         return Response({"message": "Method not implemented"}, status = status.HTTP_400_BAD_REQUEST)
 
 class HandleProductsList(APIView):
