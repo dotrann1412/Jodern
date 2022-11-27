@@ -107,23 +107,11 @@ public class ImagePicker {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        bm = resizeKeepRatio(bm, 224);
+        bm = resizeBitmap(bm, 256, 256);
         return bm;
     }
 
-    private static Bitmap resizeKeepRatio(Bitmap image, int minSize) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int newWidth = width;
-        int newHeight = height;
-        if (width > height) {
-            newHeight = minSize;
-            newWidth = (int) (minSize * (float) width / height);
-        } else {
-            newWidth = minSize;
-            newHeight = (int) (minSize * (float) height / width);
-        }
-
+    private static Bitmap resizeBitmap(Bitmap image, int newWidth, int newHeight) {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, newWidth, newHeight, true);
         return scaledBitmap;
     }
