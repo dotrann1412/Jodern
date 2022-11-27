@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Jodern" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Jodern" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -12,5 +12,17 @@
         <!-- Customize your theme here. -->
 
         <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.SearchBtn" parent="">
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+    </style>
+
+    <style name="MySearchView" parent="Widget.AppCompat.SearchView" >
+        <item name="android:textSize">14dp</item>
+        <item name="android:padding">0sp</item>
     </style>
 </resources>
