@@ -22,11 +22,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-
-
         // Init instance of Singleton class
         Provider.getInstance(this.getApplicationContext());
-
         setupCategoryLists();
     }
 

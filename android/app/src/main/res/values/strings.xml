@@ -6,4 +6,5 @@
     <string name="back">Back</string>
     <string name="hello_world">Hello world</string>
     <string name="error_message">Đã có lỗi xảy ra. Bạn vui lòng thử lại nhé!</string>
+    <string name="search_hint">Bạn tìm gì hôm nay?</string>
 </resources>

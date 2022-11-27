@@ -8,7 +8,7 @@ public class Product {
     private ArrayList<String> images = new ArrayList<>();
     private final int price;
     private String description;
-    private String category;
+    private String category;    // category raw, like ao-thun-nam,...
     private int[] inventory;
 
     public Product(int id, String name, String imageURL, int price) {

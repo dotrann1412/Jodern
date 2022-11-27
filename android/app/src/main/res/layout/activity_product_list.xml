@@ -50,7 +50,7 @@
                         android:layout_weight="1"
                         android:gravity="center|left"
                         android:paddingLeft="12dp"
-                        android:text="Bạn tìm gì hôm nay?"
+                        android:text="@string/search_hint"
                         android:textColor="@color/text_light" />
 
                     <ImageView
@@ -203,6 +203,7 @@
     </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/productLoadingWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

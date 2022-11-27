@@ -42,10 +42,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initViews();
-
         setEvents();
-
-        // TODO: auto focus in search view
     }
 
     private void initViews() {
@@ -129,7 +126,6 @@ public class SearchActivity extends AppCompatActivity {
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("type", "text");
         intent.putExtra("query", query);
         startActivity(intent);
     }
@@ -143,8 +139,8 @@ public class SearchActivity extends AppCompatActivity {
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("type", "image");
         intent.putExtra("query", encoded);
+        intent.putExtra("method", "post");
         startActivity(intent);
     }
 
