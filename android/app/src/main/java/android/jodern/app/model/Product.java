@@ -1,11 +1,12 @@
 package android.jodern.app.model;
 
+import java.util.ArrayList;
+
 public class Product {
-    private int id;
-    private String name;
-    private String imageURL;
-    private String[] imageURLs;
-    private int price;
+    private final int id;
+    private final String name;
+    private ArrayList<String> images = new ArrayList<>();
+    private final int price;
     private String description;
     private String category;
     private int[] inventory;
@@ -13,24 +14,14 @@ public class Product {
     public Product(int id, String name, String imageURL, int price) {
         this.id = id;
         this.name = name;
-        this.imageURL = imageURL;
+        this.images.add(imageURL);
         this.price = price;
     }
 
-    public Product(int id, String name, String imageURL, int price, String description, String category, int[] inventory) {
+    public Product(int id, String name, ArrayList<String> imageURLs, int price, String description, String category, int[] inventory) {
         this.id = id;
         this.name = name;
-        this.imageURL = imageURL;
-        this.price = price;
-        this.description = description;
-        this.category = category;
-        this.inventory = inventory;
-    }
-
-    public Product(int id, String name, String[] imageURLs, int price, String description, String category, int[] inventory) {
-        this.id = id;
-        this.name = name;
-        this.imageURLs = imageURLs;
+        this.images = imageURLs;
         this.price = price;
         this.description = description;
         this.category = category;
@@ -45,8 +36,8 @@ public class Product {
         return name;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getFirstImageURL() {
+        return images.get(0);
     }
 
     public int getPrice() {

@@ -46,7 +46,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         holder.price.setText(vndFormatPrice(product.getPrice()));
         // TODO: add placeholder for Glide
         Glide.with(mContext)
-                .load(product.getImageURL())
+                .load(product.getFirstImageURL())
                 // optimize Glide
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
                 .override(holder.image.getWidth(),holder.image.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;

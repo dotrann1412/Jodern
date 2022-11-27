@@ -3,6 +3,7 @@ package android.jodern.app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.jodern.app.customwidget.MyToast;
 import android.jodern.app.model.Product;
 import android.jodern.app.provider.Provider;
 import android.jodern.app.util.Utils;
@@ -23,6 +24,8 @@ import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private TextView detailName, detailPrice, detailPrice2, detailInventory, detailDescription;
@@ -68,8 +71,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         System.out.println("Error");
                         loadingWrapper.setVisibility(View.GONE);
-                        onDetailBackBtnClicked(null);
-                        Toast.makeText(ProductDetailActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        MyToast.makeText(ProductDetailActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
                     }
                 }
         );
@@ -87,7 +89,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // TODO: update after add image select
         Glide.with(this)
-                .load(currentProduct.getImageURL())
+                .load(currentProduct.getFirstImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
                 .override(detailImage.getWidth(),detailImage.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
                 .into(detailImage);
@@ -102,7 +104,10 @@ public class ProductDetailActivity extends AppCompatActivity {
             // images
             JSONArray imageURLs = response.getJSONArray("images");
             // TODO: image select feature, currently just use the first image
-            String imageURL = imageURLs.get(0).toString();
+            ArrayList<String> images = new ArrayList<>();
+            for (int i = 0; i < imageURLs.length(); i++) {
+                images.add(imageURLs.get(i).toString());
+            }
 
             // inventory quantities
             int price = response.getInt("price");
@@ -115,7 +120,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             String category = response.getString("category");
 
             // TODO: constructor with imageURLs
-            currentProduct = new Product(id, name, imageURL, price, description, category, inventory);
+            currentProduct = new Product(id, name, images, price, description, category, inventory);
         }
         catch (Exception e) {
             System.out.println("[ERROR]");
@@ -182,5 +187,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void onDetailCartBtnClicked(View view) {
         // TODO: Go to cart activity
+        int id = currentProduct.getId();
+
     }
 }

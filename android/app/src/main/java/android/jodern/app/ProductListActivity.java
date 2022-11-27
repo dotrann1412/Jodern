@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.jodern.app.adapter.CategoryTagListAdapter;
 import android.jodern.app.adapter.ProductListAdapter;
+import android.jodern.app.customwidget.MyToast;
 import android.jodern.app.model.Product;
 import android.jodern.app.provider.Provider;
 import android.os.Bundle;
@@ -20,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,15 +28,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Objects;
 
 public class ProductListActivity extends AppCompatActivity {
-    private String currentCateRaw = "";
-    private TextView searchBarText;
     private TextView currentCateText;
     private LinearLayout currentCateWrapper;
     private LinearLayout loadingWrapper;
+    private LinearLayout emptyWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +50,7 @@ public class ProductListActivity extends AppCompatActivity {
         String params = parseSearchParams(intent);
         // TODO: hide API KEY
         String url = "http://joderm.store:8000/api/" + params;
+
         // start loading effect
         loadingWrapper.setVisibility(View.VISIBLE);
         JsonObjectRequest stringRequest = new JsonObjectRequest (
@@ -61,6 +60,7 @@ public class ProductListActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        System.out.println("success");
                         loadingWrapper.setVisibility(View.GONE);
                         ArrayList<Product> productList = parseProductListResponse(response);
                         setupProductList(productList);
@@ -69,16 +69,16 @@ public class ProductListActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        System.out.println("error");
                         loadingWrapper.setVisibility(View.GONE);
-                        Toast.makeText(ProductListActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        MyToast.makeText(ProductListActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
                     }
                 }
         );
         Provider.getInstance(this).addToRequestQueue(stringRequest);
 
-        String categoryRaw = intent.getStringExtra("categoryRaw");
         String categoryName = intent.getStringExtra("categoryName");
-        if (categoryRaw != null) {
+        if (categoryName != null) {
             currentCateWrapper.setVisibility(View.VISIBLE);
             currentCateText.setText(categoryName);
         } else
@@ -139,10 +139,10 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        searchBarText = findViewById(R.id.productSearchBarText);
         currentCateText = findViewById(R.id.productCurrentCateText);
         currentCateWrapper = findViewById(R.id.productCurrentCateWrapper);
         loadingWrapper = findViewById(R.id.productLoadingWrapper);
+        emptyWrapper = findViewById(R.id.productEmptyWrapper);
     }
 
     private void setupCategoryLists() {
@@ -175,7 +175,12 @@ public class ProductListActivity extends AppCompatActivity {
         ProductListAdapter adapter = new ProductListAdapter(this);
         adapter.setProductList(productList);
 
-        productListView.setAdapter(adapter);
+        if (productList.size() == 0) {
+            emptyWrapper.setVisibility(View.VISIBLE);
+        } else {
+            emptyWrapper.setVisibility(View.GONE);
+            productListView.setAdapter(adapter);
+        }
     }
 
     public void onProductSearchBarClicked(View view) {

@@ -72,6 +72,7 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
                     intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); // Adds the FLAG_ACTIVITY_NO_HISTORY flag
                     mContext.startActivity(intent);
                     mContext.overridePendingTransition( 0, 0);
+                    mContext.finish();
                 }
             });
         }

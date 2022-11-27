@@ -2,6 +2,7 @@ package android.jodern.app;
 
 import android.content.Intent;
 import android.jodern.app.adapter.CategoryImageListAdapter;
+import android.jodern.app.model.Category;
 import android.jodern.app.provider.Provider;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,5 +59,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMainCartBtnClicked(View view) {
         // TODO: go to Cart Activity
+    }
+
+    public void onMainMaleSeeAllBtnClicked(View view) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("entry", "product-list");
+        intent.putExtra("sex", "nam");
+        intent.putExtra("categoryName", "Thời trang nam");
+        startActivity(intent);
+    }
+
+    public void onMainFemaleSeeAllBtnClicked(View view) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("entry", "product-list");
+        intent.putExtra("sex", "nu");
+        intent.putExtra("categoryName", "Thời trang nữ");
+        startActivity(intent);
     }
 }

@@ -5,4 +5,5 @@
     <string name="previous">Previous</string>
     <string name="back">Back</string>
     <string name="hello_world">Hello world</string>
+    <string name="error_message">Đã có lỗi xảy ra. Bạn vui lòng thử lại nhé!</string>
 </resources>

@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
 
@@ -154,6 +154,40 @@
             </LinearLayout>
 
             <!-- Product List  -->
+
+            <LinearLayout
+                android:id="@+id/productEmptyWrapper"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginBottom="8dp">
+                    <ImageView
+                        android:id="@+id/searchImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/search_empty" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/searchTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Không tìm thấy kết quả phù hợp"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary"
+                    />
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/productListWrapper"
                 android:layout_width="match_parent"
@@ -164,22 +198,23 @@
                 android:layout_marginBottom="12dp"
                 android:nestedScrollingEnabled="false"
                 android:paddingBottom="8dp" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
-        android:id="@+id/productLoadingWrapper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/shape_overlay"
-        android:gravity="center">
+        <LinearLayout
+            android:id="@+id/productLoadingWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_overlay"
+            android:gravity="center">
 
-        <ProgressBar
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/primary" />
+            <ProgressBar
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/primary" />
 
-    </LinearLayout>
+        </LinearLayout>
 
 </RelativeLayout>
