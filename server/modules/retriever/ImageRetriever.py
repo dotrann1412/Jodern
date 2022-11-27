@@ -46,7 +46,7 @@ class ImageRetriever():
                 top_k: maximum number of images to return
                 cut_off: cut off distance
         '''
-        self.__retriever = Retriever(features_folder, vector_dim=512, multiple_features=True)
+        self.__retriever = Retriever(features_folder, vector_dim=768, multiple_features=True)
         self.top_k = top_k
         self.cut_off = cut_off
     
