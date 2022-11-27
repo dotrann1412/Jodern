@@ -12,5 +12,4 @@ urlpatterns = [
     path('submit-order/', Test.as_view()),
     path('validate-order/', Test.as_view()),
     path('categories/', HandleCategoriesTree.as_view())
-
 ]

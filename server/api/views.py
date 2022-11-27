@@ -5,6 +5,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from  rest_framework.request import Request
+from django.views.generic import TemplateView
+import numpy as np
+from django.http import HttpResponse
+
+import base64
 import numpy as np
 
 from .data import *
@@ -25,18 +30,25 @@ textRetriever = TextRetriever.TextRetriever()
 imageRetriever = ImageRetriever.ImageRetriever()
 
 class SearchEngineInterface(APIView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
         searchType = request.query_params.get('type', '').lower()
         
-        if searchType == 'text': # process searching for image
-            return Response(GetProductsByList(textRetriever.search(query)), status = status.HTTP_200_OK)
-        elif searchType == 'image':
-            if query == '':
-                query = np.array(request.data.decode('utf-8'))
-            return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
+        print(f'[STATUS] GET/ api/search/{searchType}')
+        
+        try:
+            if searchType == 'text':
+                return Response(GetProductsByList(textRetriever.search(query)), status = status.HTTP_200_OK)
             
-        return Response({"message": "Searching type not found"}, status = status.HTTP_501_NOT_IMPLEMENTED)
+            if searchType == 'image':
+                query = np.frombuffer(base64.decodestring(query), dtype=np.float32)
+                return Response(GetProductsByList(textRetriever.search(query)), status = status.HTTP_200_OK)
+            
+        except Exception as err:
+            print(err)
+            return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        
+        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST) 
 
 class HandleProductsList(APIView):
     def get(self, request: Request, *args, **kwargs):
