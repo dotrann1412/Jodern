@@ -30,32 +30,26 @@ class Test(APIView):
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
 textRetriever = TextRetriever.TextRetriever()
-imageRetriever = ImageRetriever.ImageRetriever()
+# imageRetriever = ImageRetriever.ImageRetriever()
 import traceback
-class SearchEngineInterface(View):
+class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
-        searchType = request.query_params.get('type', '').lower()
         
-        print(f'[STATUS] GET/ api/search/{searchType}')
+        print(f'[STATUS] GET api/search/text')
 
         try:
-            if searchType == 'text':
-                return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
-            
-            # if searchType == 'image':
-            #    query = np.frombuffer(query.encode('ascii'), dtype=np.float32)
-            #    return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
-            
+            ids = textRetriever.search(query)
+            return Response({'data' : GetProductsByList(ids)}, status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
         
-        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Hjhj"}, status = status.HTTP_400_BAD_REQUEST)
     
     def post(self, request: Request, *args, **kwargs):
         query = request.POST.get('query', '').lower()
-        searchType = request.POST.get('type', '').lower()
+        print('POST request for search image triggered')
         # try:
         #     if searchType == 'image':
         #         query = np.frombuffer(query.encode('ascii'), np.float32)
@@ -64,7 +58,7 @@ class SearchEngineInterface(View):
         # except Exception as err:
         #     traceback.print_exc()
         #     return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
-        return Response({"message": "Type not supported"}, status = status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Method not implemented"}, status = status.HTTP_400_BAD_REQUEST)
 
 class HandleProductsList(APIView):
     def get(self, request: Request, *args, **kwargs):
