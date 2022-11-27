@@ -5,4 +5,4 @@ Pillow
 numpy
 opencv-python
 sentence-transformers
-git+https://github.com/openai/CLIP.git
+transformers==4.24.0
