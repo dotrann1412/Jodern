@@ -141,7 +141,7 @@ def html_mail(request, content):
     '''
     
     '''
-    <p class="app__name">Joderm Store</p>
+    <p class="app__name">Jodern Store</p>
     <p class="app__greeting">Greeting from <span style='font-weight: bold;'>Group 8</span> - Honors Program 2020, University of Science, VNUHCM.</p>
     <p class="app__desc">Thanks for chosing our service! Your order is being processed...</p>      
     '''

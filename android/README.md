@@ -2,4 +2,4 @@
 
 ## General 
 
-Joderm android app : >
+Jodern android app : >
