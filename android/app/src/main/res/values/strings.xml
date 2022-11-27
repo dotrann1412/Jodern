@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Baseline</string>
+    <string name="app_name">Jodern</string>
+    <string name="title_activity_main">Jodern</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="back">Back</string>
+    <string name="hello_world">Hello world</string>
 </resources>

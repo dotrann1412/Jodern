@@ -1,4 +1,4 @@
-package android.jodern.baseline;
+package android.jodern.app;
 
 import org.junit.Test;
 
