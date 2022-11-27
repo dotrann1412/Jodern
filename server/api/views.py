@@ -40,11 +40,11 @@ class SearchEngineInterface(APIView):
         
         try:
             if searchType == 'text':
-                return Response(GetProductsByList(textRetriever.search(query)), status = status.HTTP_200_OK)
+                return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
             
             if searchType == 'image':
                 query = np.frombuffer(base64.decodestring(query), dtype=np.float32)
-                return Response(GetProductsByList(textRetriever.search(query)), status = status.HTTP_200_OK)
+                return Response({'data' : GetProductsByList(textRetriever.search(query))}, status = status.HTTP_200_OK)
             
         except Exception as err:
             print(err)
