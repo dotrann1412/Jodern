@@ -24,11 +24,9 @@ from modules.retriever import (
 
 class Test(APIView):
     def get(self, request, *args, **kwargs):
-        print('[STATUS] GET api/test')
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        print('[STATUS] POST api/test')
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
 textRetriever = TextRetriever.TextRetriever()
@@ -38,7 +36,6 @@ class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
         
-        print(f'[STATUS] GET api/search/text')
 
         try:
             ids = textRetriever.search(query)
@@ -51,14 +48,11 @@ class SearchEngineInterface(APIView):
     
     def post(self, request: Request, *args, **kwargs):
         query = request.POST.get('query', '').lower()
-        print('POST request for search image triggered')
         try:
-            # print(type(query), type(query.encode('utf-8')))
             query = base64.decodebytes(query.encode('utf-8'))
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
             
-            print("Searching...")
             return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
@@ -68,7 +62,6 @@ class SearchEngineInterface(APIView):
 class HandleProductsList(APIView):
     def get(self, request: Request, *args, **kwargs):
         sex, category = None, None
-        print('[STATUS] GET api/product-list')
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
 
@@ -84,15 +77,25 @@ class HanldeOrder(APIView):
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
-        print('[STATUS] GET api/product')
         return Response(GetProductDetails(kwargs['id']), status = status.HTTP_200_OK)
 
 class HandleCategoriesTree(APIView):
     def get(self, request, *args, **kwargs):
-        print('[STATUS] GET api/categories')
         return Response(GetCategoriesTree(), status = status.HTTP_200_OK)
 
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
-        print('[STATUS] GET api/stores-location')
         return Response(StoresLocationJson(), status = status.HTTP_200_OK)
+
+class Trending(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({'data': TrendingItems(kwargs['top_k'])}, status = status.HTTP_200_OK)
+
+class Highlight(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            res = {'data': HighlightItems(kwargs['top_k'])}
+        except Exception as err:
+            print('[EXCEPTION] Processing error. Details here: ', err)
+            return Response({'message': 'Processing error'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(res, status = status.HTTP_200_OK)
