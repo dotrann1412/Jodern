@@ -7,8 +7,7 @@
     tools:context=".activity.CartActivity"
     android:background="@drawable/background">
 
-  <LinearLayout
-      android:id="@+id/cartLayout"
+  <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       app:layout_constraintBottom_toBottomOf="parent"
@@ -16,24 +15,26 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
+    <TextView
+        android:id="@+id/cartTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/quicksand_bold"
+        android:text="@string/cart_header"
+        android:textAlignment="center"
+        android:textColor="@color/primary_dark"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
     <LinearLayout
+        android:id="@+id/cartLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
         android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginTop="50dp">
-
-      <TextView
-          android:id="@+id/cartTextView"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="10dp"
-          android:fontFamily="@font/quicksand_bold"
-          android:text="@string/cart_header"
-          android:textAlignment="center"
-          android:textColor="@color/primary_dark"
-          android:textSize="20sp"
-          android:textStyle="bold" />
+        android:orientation="vertical">
 
       <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/cartRecyclerView"
@@ -43,7 +44,8 @@
           android:layout_marginTop="10dp"
           android:layout_marginRight="30dp"
           android:layout_marginBottom="10dp"
-          android:layout_weight="1"/>
+          android:layout_weight="1"
+          android:paddingBottom="5dp"/>
 
       <LinearLayout
           android:layout_width="match_parent"
@@ -59,19 +61,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
             android:fontFamily="@font/quicksand_semibold"
-            android:text="@string/sub_total" />
+            android:text="@string/sub_total"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/subTotalValueCartTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="18sp"
             android:fontFamily="@font/quicksand_bold"
             android:text="TextView"
-            android:textAlignment="viewEnd"/>
+            android:textAlignment="viewEnd"
+            android:textSize="18sp" />
       </LinearLayout>
 
       <LinearLayout
@@ -88,19 +90,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
             android:fontFamily="@font/quicksand_semibold"
-            android:text="@string/shipping" />
+            android:text="@string/shipping"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/shippingValueCartTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="18sp"
             android:fontFamily="@font/quicksand_bold"
             android:text="TextView"
-            android:textAlignment="viewEnd"/>
+            android:textAlignment="viewEnd"
+            android:textSize="18sp" />
       </LinearLayout>
 
 
@@ -126,19 +128,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
             android:fontFamily="@font/quicksand_semibold"
-            android:text="@string/total" />
+            android:text="@string/total"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/totalValueCartTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="18sp"
             android:fontFamily="@font/quicksand_bold"
             android:text="TextView"
-            android:textAlignment="viewEnd"/>
+            android:textAlignment="viewEnd"
+            android:textSize="18sp" />
       </LinearLayout>
 
       <Button
@@ -150,15 +152,46 @@
           android:layout_marginRight="30dp"
           android:layout_marginBottom="20dp"
           android:backgroundTint="@color/primary"
-          app:cornerRadius="10dp"
           android:fontFamily="@font/quicksand_bold"
           android:paddingTop="10dp"
           android:paddingBottom="10dp"
-          android:textSize="16sp"
+          android:text="@string/check_out"
           android:textAllCaps="false"
-          android:text= "@string/check_out"
+          android:textSize="16sp"
+          app:cornerRadius="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cartEmptyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        >
+      <ImageView
+          android:id="@+id/cartEmptyView"
+          android:layout_width="wrap_content"
+          android:layout_height="200dp"
+          android:layout_marginTop="-100dp"
+          android:adjustViewBounds="true"
+          android:src="@drawable/ic_launcher_background" />
+      <TextView
+          android:id="@+id/cartEmptyTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Giỏ hàng của bạn đang trống. Mua sắm với Jodern ngay nào!"
+          android:textColor="@color/primary"
+          android:textSize="18sp"
+          android:layout_gravity="center"
+          android:paddingLeft="50dp"
+          android:paddingRight="50dp"
+          android:textAlignment="center"
           />
     </LinearLayout>
-  </LinearLayout>
+  </RelativeLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
