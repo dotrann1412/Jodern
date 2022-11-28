@@ -1,7 +1,9 @@
 from django.urls import path, include
 
 from .views import (
-    Test, HandleProductsList, HandleProductsByID, SearchEngineInterface, HandleCategoriesTree, StoresLocation
+    Test, HandleProductsList, HandleProductsByID, 
+    SearchEngineInterface, HandleCategoriesTree, StoresLocation,
+    Trending, Highlight
 )
 
 urlpatterns = [ 
@@ -12,5 +14,9 @@ urlpatterns = [
     path('submit-order/', Test.as_view()),
     path('validate-order/', Test.as_view()),
     path('categories/', HandleCategoriesTree.as_view()),
-    path('stores-location/', StoresLocation.as_view())
+    path('stores-location/', StoresLocation.as_view()),
+    path('trending/<int:top_k>', Trending.as_view()),
+    path('best-selling/<int:top_k>', Trending.as_view()),
+    path('highlight/<int:top_k>', Highlight.as_view()),
+    path('related/', Test.as_view())
 ]
