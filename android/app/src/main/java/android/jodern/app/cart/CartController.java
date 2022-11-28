@@ -5,7 +5,16 @@ import android.jodern.app.cart.cartitem.CartItem;
 import android.jodern.app.cart.cartitem.CartItemDB;
 import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.model.Product;
+import android.jodern.app.provider.Provider;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,59 +24,40 @@ public class CartController {
 
     private List<CartItem> cartItemList;
     private CartItemDB cartItemDB;
+    private final Context context;
+
 
     private CartController(Context context) {
-
+        this.context = context;
         try {
             Log.d(TAG, "CartController: retrieving cart items data");
-            cartItemDB = CartItemDB.getInstance(context);
+            cartItemDB = CartItemDB.with(context);
             cartItemList = cartItemDB.orderItemDao().loadAll();
+            Log.d(TAG, "CartController: retrieving cart successfully");
         } catch (Exception e) {
             Log.d(TAG, "CartController: failed to retrieve cart items data");
             e.printStackTrace();
         }
 
-        initCartItemList();
+        for (int i = 0; i < cartItemList.size(); ++i) {
+            Log.d(TAG, "CartController: " + cartItemList.get(i));
+        }
     }
 
     public static CartController with(Context context) {
         return new CartController(context);
     }
 
-    private void initCartItemList() {
-        // TODO get cart item list from storage instead of this dummy data
-
-        for (int i = 100; i < 5; ++i) {
-            CartItem cartItem = new CartItem();
-            cartItem.setQuantity(150);
-            cartItem.setSize("XL");
-            cartItem.setProductId(Long.valueOf(i));
-            cartItemDB.orderItemDao().insert(cartItem);
+    public void addToCart(CartItem cartItem) {
+        try {
+            cartItemList.add(cartItem);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public List<CartItem> getCartList() {
         return cartItemList;
-    }
-
-    public long getSubTotal() {
-        try {
-            long result = 0L;
-
-            Product product = null;
-            for (CartItem item : cartItemList) {
-//                // TODO: retrieve product
-//                // product = new Product(...)
-//                assert product != null;
-//                result += product.getPrice() * item.getQuantity();
-            }
-
-            Log.d(TAG, "getSubTotal: get subtotal successfully");
-            return result;
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-            return -1L;
-        }
     }
 
     public int getCartListSize() {
@@ -114,6 +104,14 @@ public class CartController {
     }
 
     public void deleteItem(List<CartItem> cartItemList, int position, ChangeNumItemsListener changeNumItemsListener) {
+        // update on database
         cartItemDB.orderItemDao().delete(cartItemList.get(position));
+
+        // update on code
+        cartItemList.remove(position);
+
+        changeNumItemsListener.onChanged();
     }
+
+
 }

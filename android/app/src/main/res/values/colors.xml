@@ -13,4 +13,8 @@
     <color name="secondary">#64b5f6</color>
     <color name="grey">#333333</color>
     <color name="light_grey">#999</color>
+    <color name="secondary_light">#72BBF6</color>
+    <color name="text">#333</color>
+    <color name="text_light">#888</color>
+
 </resources>

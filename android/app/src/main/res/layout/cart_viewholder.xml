@@ -29,12 +29,12 @@
 
     <TextView
         android:id="@+id/cartViewHolderName"
-        android:layout_width="wrap_content"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@+id/cartViewHolderImageCard"
         app:layout_constraintStart_toEndOf="@id/cartViewHolderImageCard"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:text="Item Name"
@@ -107,7 +107,7 @@
         android:layout_height="15dp"
         app:srcCompat="@drawable/cancel"
         app:tint="@color/light_grey"
-        android:layout_marginStart="100dp"
+        android:layout_marginStart="75dp"
         android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toBottomOf="@id/cartItemDecrease"
         app:layout_constraintStart_toEndOf="@id/cartItemIncrease"

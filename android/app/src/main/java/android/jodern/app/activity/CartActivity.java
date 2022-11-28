@@ -1,8 +1,10 @@
 package android.jodern.app.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.jodern.app.cart.CartAdapter;
 import android.jodern.app.cart.CartController;
+import android.jodern.app.cart.cartitem.CartItem;
 import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
 import android.jodern.app.utils.StringUtils;
@@ -12,20 +14,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class CartActivity extends AppCompatActivity {
-    private RecyclerView.Adapter adapter;
+    private static final String TAG = CartActivity.class.getName();
     private RecyclerView cartRecyclerView;
     private CartController cartController;
 
-    private static String API_URL = null;
-
     TextView subTotalTextView, shippingTextView, totalTextView;
 
-    private long total;
     private LinearLayout cartLayout, emptyLayout;
 
     @Override
@@ -41,6 +41,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        Log.d(TAG, "initView: initializing cart activity view");
         cartRecyclerView = findViewById(R.id.cartRecyclerView);
         cartLayout = findViewById(R.id.cartLayout);
         subTotalTextView = findViewById(R.id.subTotalValueCartTextView);
@@ -50,10 +51,27 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void initCartList() {
+        Log.d(TAG, "initCartList: initializing cart list recycler view");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         cartRecyclerView.setLayoutManager(linearLayoutManager);
 
-        adapter = new CartAdapter(cartController.getCartList(), this, new ChangeNumItemsListener() {
+        // handle add to cart intent
+        Intent intent = getIntent();
+        CartItem item = new CartItem();
+        try {
+            item.setProductId(intent.getLongExtra("productID", -1));
+            if (item.getProductId() != -1) {
+                item.setSize(intent.getStringExtra("size"));
+                item.setQuantity(intent.getIntExtra("quantity", 1));
+                cartController.addToCart(item);
+            } else {
+                throw new Exception("is not add to cart intent");
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "initCartList: " + e.getMessage());
+        }
+
+        RecyclerView.Adapter<CartAdapter.ViewHolder> adapter = new CartAdapter(cartController.getCartList(), this, new ChangeNumItemsListener() {
             @Override
             public void onChanged() {
                 renderCartBottomSection();
@@ -62,46 +80,21 @@ public class CartActivity extends AppCompatActivity {
 
         cartRecyclerView.setAdapter(adapter);
         if (cartController.getCartList() == null || cartController.getCartList().isEmpty()) {
-            // TODO do something when cart is empty
             emptyLayout.setVisibility(View.VISIBLE);
             cartLayout.setVisibility(View.GONE);
         } else {
             emptyLayout.setVisibility(View.GONE);
             cartLayout.setVisibility(View.VISIBLE);
         }
-
-
-//        API_URL = "http://joderm.store:8000/api/test";
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, API_URL, null,
-//                new Response.Listener<JSONArray>() {
-//                    @Override
-//                    public void onResponse(JSONArray response) {
-//                        try {
-////                            for (int i = 0; i < response.length(); ++i) {
-////                                JSONObject responseObj = response.getJSONObject(i);
-////                                Log.d("VOLLEY", responseObj.toString());
-////                            }
-//                            Log.d("VOLLEY", response.toString());
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d("VOLLEY", "Error " + error.getMessage());
-//                    }
-//                });
-//        queue.add(jsonArrayRequest);
     }
 
     @SuppressLint("SetTextI18n")
     private void renderCartBottomSection() {
-        long subTotal = cartController.getSubTotal();
+        Log.d(TAG, "renderCartBottomSection: ");
+//        long subTotal = cartController.getSubTotal();
+        long subTotal = -1L;
         long shippingCost = (subTotal == -1) ? 0 : 15000;
-        total = subTotal + shippingCost;
+        long total = subTotal + shippingCost;
 
         subTotalTextView.setText(StringUtils.long2money(subTotal));
         shippingTextView.setText(StringUtils.long2money(shippingCost));

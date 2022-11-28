@@ -6,6 +6,7 @@ import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
 import android.jodern.app.model.Product;
 import android.jodern.app.cart.cartitem.CartItem;
+import android.jodern.app.provider.Provider;
 import android.jodern.app.utils.StringUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,26 +14,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 
-import java.text.BreakIterator;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
-    private List<CartItem> cartItemList;
-    private CartController cartController;
-    private ChangeNumItemsListener changeNumItemsListener;
+    private static final String TAG = CartAdapter.class.getName();
+    private final List<CartItem> cartItemList;
+    private final CartController cartController;
+    private final ChangeNumItemsListener changeNumItemsListener;
+    private final Context context;
+    private Product product = null;
+
+    // TODO: total injection
+    private final List<Long> prices;
 
     public CartAdapter(List<CartItem> cartItemList, Context context, ChangeNumItemsListener changeNumItemsListener) {
         this.cartItemList = cartItemList;
-        // TODO: change the orderItemList to load from the stored data
         this.cartController = CartController.with(context);
         this.changeNumItemsListener = changeNumItemsListener;
+        this.context = context;
+
+        this.prices = new ArrayList<>();
     }
 
     @NonNull
@@ -47,39 +62,31 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         try {
+            Log.d(TAG, "onBindViewHolder: binding view holder");
             CartItem cartItem = cartItemList.get(position);
 
-            // TODO: play with the API and try to convert to id, name, uri, price
-            // query id and get product
-            // Product product = Provider.getProduct(cartItem.getId());
-
-            Product product = new Product();
-
-            product.setId(0L);
-            List<String> images = new ArrayList<>();
-            images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-4.jpg?v=1668244848000");
-            images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-5-308a032a-f9a4-4fb3-b73b-348e31c695db.jpg?v=1669013097000");
-            product.setImages(images);
-            product.setSex("nu");
-            product.setCategory("ao-khoac-nu");
-            product.setPrice(499000L);
-            product.setName("Áo quần");
-
-            holder.itemName.setText(product.getName());
-            holder.itemCost.setText(StringUtils.long2money(product.getPrice()));
-            holder.numItems.setText(String.valueOf(cartItem.getQuantity()));
-            holder.itemSize.setText("Size " + cartItem.getSize());
-//            Context itemViewContext = holder.itemView.getContext();
-//            int imageResource = itemViewContext.getResources()
-//                    .getIdentifier(product.getImages().get(0), null, itemViewContext.getPackageName());
-
-            String imageUri = product.getImages().get(0);
-
-            Glide.with(holder.itemView.getContext())
-                    .load(imageUri)
-                    .centerCrop()
-                    .placeholder(R.drawable.item_placeholder)
-                    .into(holder.itemImageUri);
+            String url = "http://jodern.store:8000/api/product/" + String.valueOf(cartItem.getProductId());
+            JsonObjectRequest stringRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        parseProductResponse(response);
+                        initCartItemView(holder, cartItem);
+                        Log.d(TAG, "onResponse: successful");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+                    }
+                }
+            );
+            Provider.with(context).addToRequestQueue(stringRequest);
 
             holder.incItem.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("NotifyDataSetChanged")
@@ -122,24 +129,52 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     });
                 }
             });
+            Log.d(TAG, "onBindViewHolder: bind view holder successfully");
         } catch (NullPointerException e) {
-            Log.d("Cart Adapter", "Product list is empty");
+            Log.d(TAG, "NullPointerException: " + e.getMessage());
         } catch (Exception e) {
-            Log.d("Cart Adapter", e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void initCartItemView(ViewHolder holder, CartItem cartItem) {
+        if (product == null) {
+            throw new NullPointerException("product get from API response is null");
+        }
+        holder.itemName.setText(product.getName());
+        holder.itemCost.setText(StringUtils.long2money(product.getPrice()));
+        holder.numItems.setText(String.valueOf(cartItem.getQuantity()));
+        holder.itemSize.setText("Size " + cartItem.getSize());
+
+        Glide.with(context)
+                .load(product.getImageURL())
+                .centerCrop()
+                .placeholder(R.drawable.item_placeholder)
+                .into(holder.itemImageUri);
+
+        prices.add(product.getPrice());
+    }
+
+    private void parseProductResponse(JSONObject response) {
+        Log.d(TAG, "parseProductResponse: parsing from API call");
+        product = Product.parseJSON(response);
+    }
+
+    public Long getCartSubTotal() {
+        Long result = 0L;
+        for (Long price : prices) {
+            result += price;
+        }
+        return result;
     }
 
     @Override
     public int getItemCount() {
-        try {
-            return cartItemList.size();
-        } catch (Exception e) {
-            Log.d("Cart Adapter", e.getMessage());
-            return -1;
-        }
+        return cartItemList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemName, itemCost, numItems, itemSize;
         ImageView itemImageUri, incItem, decItem, removeItem;
 

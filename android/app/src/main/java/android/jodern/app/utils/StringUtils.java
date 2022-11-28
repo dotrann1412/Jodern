@@ -3,7 +3,7 @@ package android.jodern.app.utils;
 public class StringUtils {
     public static String long2money(long number) {
         String string = String.valueOf(number);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         for (int i = string.length() - 1; i >= 0; i--) {
             buffer.append(string.charAt(i));
