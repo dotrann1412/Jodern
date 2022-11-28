@@ -1,12 +1,11 @@
-package android.jodern.app.adapter;
+package android.jodern.app.cart;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.jodern.app.controller.CartController;
 import android.jodern.app.interfaces.ChangeNumItemsListener;
 import android.jodern.app.R;
 import android.jodern.app.model.Product;
-import android.jodern.app.model.OrderItem;
+import android.jodern.app.cart.cartitem.CartItem;
 import android.jodern.app.utils.StringUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,21 +19,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
-    private List<OrderItem> orderItemList;
+    private List<CartItem> cartItemList;
     private CartController cartController;
     private ChangeNumItemsListener changeNumItemsListener;
-    private Context parentContext;
 
-    public CartAdapter(List<OrderItem> orderItemList, Context context, ChangeNumItemsListener changeNumItemsListener) {
-        this.orderItemList = orderItemList;
+    public CartAdapter(List<CartItem> cartItemList, Context context, ChangeNumItemsListener changeNumItemsListener) {
+        this.cartItemList = cartItemList;
         // TODO: change the orderItemList to load from the stored data
-        this.cartController = new CartController(context);
+        this.cartController = CartController.with(context);
         this.changeNumItemsListener = changeNumItemsListener;
-        this.parentContext = context;
     }
 
     @NonNull
@@ -45,74 +43,83 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return new ViewHolder(inflater);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         try {
-            OrderItem orderItem = orderItemList.get(position);
+            CartItem cartItem = cartItemList.get(position);
 
-            // TODO: change this product into the relevant product item to the order item
+            // TODO: play with the API and try to convert to id, name, uri, price
+            // query id and get product
+            // Product product = Provider.getProduct(cartItem.getId());
 
             Product product = new Product();
-            product.setId(0l);
+
+            product.setId(0L);
             List<String> images = new ArrayList<>();
             images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-4.jpg?v=1668244848000");
             images.add("https://bizweb.sapocdn.net/100/438/408/products/akn5040-den-5-308a032a-f9a4-4fb3-b73b-348e31c695db.jpg?v=1669013097000");
             product.setImages(images);
             product.setSex("nu");
             product.setCategory("ao-khoac-nu");
-            product.setCost(499000l);
-            product.setInventory(109);
+            product.setPrice(499000L);
             product.setName("Áo quần");
 
             holder.itemName.setText(product.getName());
-            holder.itemCost.setText(StringUtils.long2money(product.getCost()));
-            holder.numItems.setText(String.valueOf(orderItem.getQuantity()));
-
+            holder.itemCost.setText(StringUtils.long2money(product.getPrice()));
+            holder.numItems.setText(String.valueOf(cartItem.getQuantity()));
+            holder.itemSize.setText("Size " + cartItem.getSize());
 //            Context itemViewContext = holder.itemView.getContext();
 //            int imageResource = itemViewContext.getResources()
 //                    .getIdentifier(product.getImages().get(0), null, itemViewContext.getPackageName());
 
             String imageUri = product.getImages().get(0);
 
-            Glide.with(parentContext)
+            Glide.with(holder.itemView.getContext())
                     .load(imageUri)
                     .centerCrop()
                     .placeholder(R.drawable.item_placeholder)
                     .into(holder.itemImageUri);
 
             holder.incItem.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-                    //                cartController.increaseNumItems(garmentList, position, new ChangeNumItemsListener() {
-                    //                    @Override
-                    //                    public void onChanged() {
-                    //                        changeNumItemsListener.onChanged();
-                    //                    }
-                    //                });
+                    cartController.increaseNumItems(cartItemList, position, new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
                 }
             });
 
             holder.decItem.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-                    //                cartController.decreaseNumItems(garmentList, position, new ChangeNumItemsListener() {
-                    //                    @Override
-                    //                    public void onChanged() {
-                    //                        changeNumItemsListener.onChanged();
-                    //                    }
-                    //                });
+                    cartController.decreaseNumItems(cartItemList, position, new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
                 }
             });
 
             holder.removeItem.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-                    //                cartManager.removeItem(garmentList, position, new ChangeNumItemsListener() {
-                    //                    @Override
-                    //                    public void onChanged() {
-                    //                        changeNumItemsListener.onChanged();
-                    //                    }
-                    //                });
+                    cartController.deleteItem(cartItemList, position, new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
                 }
             });
         } catch (NullPointerException e) {
@@ -125,7 +132,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         try {
-            return orderItemList.size();
+            return cartItemList.size();
         } catch (Exception e) {
             Log.d("Cart Adapter", e.getMessage());
             return -1;
@@ -133,9 +140,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView itemName, itemCost, numItems;
+        TextView itemName, itemCost, numItems, itemSize;
         ImageView itemImageUri, incItem, decItem, removeItem;
-        // TODO TextView itemSize;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -146,6 +152,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             incItem = itemView.findViewById(R.id.cartItemIncrease);
             decItem = itemView.findViewById(R.id.cartItemDecrease);
             removeItem = itemView.findViewById(R.id.cartItemRemoveBtn);
+            itemSize = itemView.findViewById(R.id.itemSize);
         }
     }
 }
