@@ -73,12 +73,12 @@ from modules.email_service import gmail
 
 __mailInstance = gmail.MailService()
 
-try: __mailInstance.login('jodern.store@gmail.com', 'isowkkrraoqqihqk')
+try: __mailInstance.login('joderm.store@gmail.com', 'isowkkrraoqqihqk')
 except: __mailInstance = None
 
 import time
 
-def ProcessOrder(order):
+def ProcessOrderData(order):
     response = {}
 
     while __commit.lock:
@@ -90,12 +90,18 @@ def ProcessOrder(order):
             __orderedItems[id] += num
 
     if __mailInstance:
-        mailContent = gmail.build_email_content('jodern.store@gmail.com', order['info']['email'], subject = '', content = '')
-        __mailInstance.send_mail(mailContent)
-    
+        try:
+            mailContent = gmail.build_email_content('jodern.store@gmail.com', [order.get('info', {}).get('email', None)], subject = 'Test send mail', content = 'Haha')
+            __mailInstance.send_mail(mailContent)
+        except:
+            print('[EXCEPTION] Failed on sending email!')
+
     __commit()
 
     return True
+
+def __rollback(order):
+    pass
 
 def TrendingItems(top_k = 5):
     items = [{'id': key, 'count': val} for key, val in __orderedItems.items()]
@@ -117,7 +123,7 @@ def HighlightItems(top_k = 5):
     items.sort(key = lambda item: sum([val for _, val in item['inventory'].items()]))
     return items[:top_k]
 
-def ValidateOrder(order):
+def ValidateOrderData(order):    
     if len(list(order.keys())) == 0:
         return {"message": "Empty cart!" , 'status': 'nOK'}
     
@@ -126,19 +132,23 @@ def ValidateOrder(order):
     }
     
     has_issues = False
+    total_price = 0
     
     for id, val in order.items():
         for size, num in val.items():
             if __products1Layer[id]['inventory'][size] < num:
-                issues[size] = __products1Layer[id]['inventory'][size]
+                issues[id][size] = __products1Layer[id]['inventory'][size]
                 has_issues = True
-    
+            total_price += num * __products1Layer[id]['price']
+            
     response = {
         "status": "OK" if not has_issues else "nOK"
     }
     
     if has_issues:
         response['issues'] = issues
+    else:
+        response['total_price'] = total_price
     
     return response
 
@@ -174,12 +184,13 @@ def __drop(id: str, size: str, num: int):
         if item['id'] == int(id):
             pos = iter
             break
-        
-    if pos != -1:
-        __products[sex][cat][pos]['inventory'][size] = max(0, __products1Layer[id]['inventory'][size] - num)
-        __productsLightWeight[sex][cat][pos]['inventory'][size] = max(0, __products1Layer[id]['inventory'][size] - num)
     
-    __products1Layer[id]['inventory'][size] = max(0, __products1Layer[id]['inventory'][size] - num)
+    remain = __products1Layer[id]['inventory'][size] - num
+    if pos != -1:
+        __products[sex][cat][pos]['inventory'][size] = max(0, remain)
+        __productsLightWeight[sex][cat][pos]['inventory'][size] = max(0, remain)
+    
+    __products1Layer[id]['inventory'][size] = max(0, remain)
 
 def __sync():
     while True:
@@ -209,7 +220,7 @@ def __cloneUser():
                     __orderedItems[item['id']] -= num
                 else:  __orderedItems[item['id']] = -num
             
-            __drop(item['id'], size, num)
+            __drop(item['id'], size, -num)
         
         time.sleep(60)
         
