@@ -5,4 +5,11 @@
     <string name="previous">Previous</string>
     <string name="back">Back</string>
     <string name="hello_world">Hello world</string>
+    <string name="title_activity_cart">CartActivity</string>
+
+    <string name="cart_header">Giỏ hàng</string>
+    <string name="check_out">Đặt hàng</string>
+    <string name="total">Tổng thanh toán</string>
+    <string name="shipping">Vận chuyển</string>
+    <string name="sub_total">Tổng cộng</string>
 </resources>

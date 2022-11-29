@@ -44,10 +44,13 @@
             android:name=".SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SplashActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Jodern.NoActionBar">

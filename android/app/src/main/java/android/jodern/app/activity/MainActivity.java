@@ -1,9 +1,10 @@
-package android.jodern.app;
+package android.jodern.app.activity;
 
+import android.jodern.app.R;
 import android.content.Intent;
+import android.jodern.app.SearchActivity;
 import android.jodern.app.adapter.CategoryImageListAdapter;
 import android.jodern.app.provider.Provider;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,9 +14,8 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-
 public class MainActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Init instance of Singleton class
-        Provider.getInstance(this.getApplicationContext());
+        Provider.with(this.getApplicationContext());
 
         setupCategoryLists();
     }
@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         // category list for male
         CategoryImageListAdapter maleAdapter = new CategoryImageListAdapter(this);
-        maleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nam"));
+        maleAdapter.setCategoryList(Provider.with(this).getCategoryList("nam"));
         maleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         CategoryImageListAdapter femaleAdapter = new CategoryImageListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nu"));
+        femaleAdapter.setCategoryList(Provider.with(this).getCategoryList("nu"));
         femaleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         femaleView.setAdapter(femaleAdapter);
     }
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onMainCartBtnClicked(View view) {
-        // TODO: go to Cart Activity
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
     }
 }

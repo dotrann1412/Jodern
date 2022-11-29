@@ -295,7 +295,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="54dp"
                 android:backgroundTint="@color/primary"
-                android:onClick="onDetailCartBtnClicked"
+                android:onClick="onDetailAddToCartBtnClicked"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="Thêm vào giỏ hàng"

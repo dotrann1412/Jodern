@@ -3,6 +3,7 @@ package android.jodern.app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.jodern.app.activity.CartActivity;
 import android.jodern.app.model.Product;
 import android.jodern.app.provider.Provider;
 import android.jodern.app.util.Utils;
@@ -47,7 +48,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String params = parseSearchParams(intent);
         // TODO: hide API KEY
-        String url = "http://joderm.store:8000/api/" + params;
+        String url = "http://jodern.store:8000/api/" + params;
         // start loading effect
         loadingWrapper.setVisibility(View.VISIBLE);
         JsonObjectRequest stringRequest = new JsonObjectRequest(
@@ -73,7 +74,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     }
                 }
         );
-        Provider.getInstance(this).addToRequestQueue(stringRequest);
+        Provider.with(this).addToRequestQueue(stringRequest);
     }
 
     private void showProductDetail() {
@@ -95,7 +96,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void parseProductDetailResponse(JSONObject response) {
         try {
-            int id = response.getInt("id");
+            Long id = response.getLong("id");
             String name = response.getString("title");
             String description = response.getString("description");
 
@@ -105,9 +106,9 @@ public class ProductDetailActivity extends AppCompatActivity {
             String imageURL = imageURLs.get(0).toString();
 
             // inventory quantities
-            int price = response.getInt("price");
+            Long price = response.getLong("price");
             JSONObject inventories = response.getJSONObject("inventory");
-            int[] inventory = new int[5];
+            Integer[] inventory = new Integer[5];
             for (int i = 0; i < sizes.length; i++) {
                 inventory[i] = inventories.getInt(sizes[i]);
             }
@@ -125,8 +126,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private String parseSearchParams(Intent intent) {
         int id = intent.getIntExtra("productId", 0);
-        String params = "product/" + Integer.toString(id);
-        return params;
+        return "product/" + Integer.toString(id);
     }
 
     private void initViews() {
@@ -181,6 +181,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void onDetailCartBtnClicked(View view) {
-        // TODO: Go to cart activity
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
+    }
+
+    public void onDetailAddToCartBtnClicked(View view) {
+        Intent intent = new Intent(this, CartActivity.class);
+        intent.putExtra("productID", currentProduct.getId());
+        intent.putExtra("size", currentSize);
+        startActivity(intent);
     }
 }

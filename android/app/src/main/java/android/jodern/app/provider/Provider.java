@@ -17,7 +17,7 @@ public class Provider {
     private static Context context;
     private HashMap<String, ArrayList<Category>> categoryListMapping;
 
-    public static Provider getInstance(Context context) {
+    public static Provider with(Context context) {
         // ref: https://www.digitalocean.com/community/tutorials/java-singleton-design-pattern-best-practices-examples#:~:text=safe%20singleton%20class.-,4.%20Thread%20Safe%20Singleton,-A%20simple%20way
         if (instance == null) {
             synchronized (Provider.class) {

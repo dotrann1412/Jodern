@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.jodern.app.activity.CartActivity;
 import android.jodern.app.adapter.CategoryTagListAdapter;
 import android.jodern.app.adapter.ProductListAdapter;
 import android.jodern.app.model.Product;
@@ -20,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +28,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Objects;
 
 public class ProductListActivity extends AppCompatActivity {
@@ -51,7 +50,7 @@ public class ProductListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String params = parseSearchParams(intent);
         // TODO: hide API KEY
-        String url = "http://joderm.store:8000/api/" + params;
+        String url = "http://jodern.store:8000/api/" + params;
         // start loading effect
         loadingWrapper.setVisibility(View.VISIBLE);
         JsonObjectRequest stringRequest = new JsonObjectRequest (
@@ -74,7 +73,7 @@ public class ProductListActivity extends AppCompatActivity {
                     }
                 }
         );
-        Provider.getInstance(this).addToRequestQueue(stringRequest);
+        Provider.with(this).addToRequestQueue(stringRequest);
 
         String categoryRaw = intent.getStringExtra("categoryRaw");
         String categoryName = intent.getStringExtra("categoryName");
@@ -95,9 +94,9 @@ public class ProductListActivity extends AppCompatActivity {
                 JSONArray products = (JSONArray)response.get(key);
                 for (int j = 0; j < products.length(); j++) {
                     JSONObject product = products.getJSONObject(j);
-                    int id = product.getInt("id");
+                    Long id = product.getLong("id");
                     String name = product.getString("title");
-                    int price = product.getInt("price");
+                    Long price = product.getLong("price");
                     String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
                     productList.add(new Product(id, name, imageURL, price));
                 }
@@ -131,9 +130,9 @@ public class ProductListActivity extends AppCompatActivity {
             }
         }
 
-        String url = entry + "?";
+        StringBuilder url = new StringBuilder(entry + "?");
         for (String key : params.keySet()) {
-            url += key + "=" + params.get(key) + "&";
+            url.append(key).append("=").append(params.get(key)).append("&");
         }
         return url.substring(0, url.length() - 1);
     }
@@ -154,14 +153,14 @@ public class ProductListActivity extends AppCompatActivity {
         LinearLayoutManager maleLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         maleView.setLayoutManager(maleLayout);
         CategoryTagListAdapter maleAdapter = new CategoryTagListAdapter(this);
-        maleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nam"));
+        maleAdapter.setCategoryList(Provider.with(this).getCategoryList("nam"));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         LinearLayoutManager femaleLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         femaleView.setLayoutManager(femaleLayout);
         CategoryTagListAdapter femaleAdapter = new CategoryTagListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nu"));
+        femaleAdapter.setCategoryList(Provider.with(this).getCategoryList("nu"));
 
         femaleView.setAdapter(femaleAdapter);
     }
@@ -189,6 +188,7 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     public void onProductCartBtnClicked(View view) {
-        // TODO: Go to Cart Activity
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
     }
 }
