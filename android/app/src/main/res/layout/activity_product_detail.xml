@@ -64,8 +64,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
-                    android:layout_marginEnd="48dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -264,10 +264,39 @@
                             android:id="@+id/detailDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi. Áo thun nữ cool ngầu. Mua đi mua đi."
+                            android:text="Áo thun nữ cool ngầu. Mua đi mua đi."
                             android:textColor="@color/text" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- Other products (in the same categories) -->
+                <LinearLayout
+                    android:id="@+id/detailOtherProductsWrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Các sản phẩm cùng danh mục:"
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/detailOtherProductsView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="12dp"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="8dp" />
+                </LinearLayout>
+
+
             </LinearLayout>
         </ScrollView>
 
@@ -308,6 +337,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/detailLoadingWrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

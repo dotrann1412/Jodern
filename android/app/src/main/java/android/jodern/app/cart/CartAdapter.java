@@ -148,7 +148,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.itemSize.setText("Size " + cartItem.getSize());
 
         Glide.with(context)
-                .load(product.getImageURL())
+                .load(product.getFirstImageURL())
                 .centerCrop()
                 .placeholder(R.drawable.item_placeholder)
                 .into(holder.itemImageUri);

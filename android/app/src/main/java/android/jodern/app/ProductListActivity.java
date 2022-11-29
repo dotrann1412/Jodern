@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.jodern.app.activity.CartActivity;
 import android.jodern.app.adapter.CategoryTagListAdapter;
 import android.jodern.app.adapter.ProductListAdapter;
+import android.jodern.app.customwidget.MyToast;
 import android.jodern.app.model.Product;
 import android.jodern.app.provider.Provider;
 import android.os.Bundle;
@@ -31,60 +32,115 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ProductListActivity extends AppCompatActivity {
-    private String currentCateRaw = "";
-    private TextView searchBarText;
     private TextView currentCateText;
+    private TextView searchBarText;
     private LinearLayout currentCateWrapper;
     private LinearLayout loadingWrapper;
+    private LinearLayout emptyWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
         initViews();
-
-        // two category lists
         setupCategoryLists();
+        handleAPICalls();
+        updateTextsBaseOnIntent();
+    }
 
-        // get search params from intent
-        Intent intent = getIntent();
-        String params = parseSearchParams(intent);
-        // TODO: hide API KEY
-        String url = "http://jodern.store:8000/api/" + params;
+    private void handleAPICalls() {
         // start loading effect
         loadingWrapper.setVisibility(View.VISIBLE);
-        JsonObjectRequest stringRequest = new JsonObjectRequest (
-                Request.Method.GET,
-                url,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        loadingWrapper.setVisibility(View.GONE);
-                        ArrayList<Product> productList = parseProductListResponse(response);
-                        setupProductList(productList);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        loadingWrapper.setVisibility(View.GONE);
-                        Toast.makeText(ProductListActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
-        Provider.with(this).addToRequestQueue(stringRequest);
 
-        String categoryRaw = intent.getStringExtra("categoryRaw");
+        Intent intent = getIntent();
+        String method = intent.getStringExtra("method");
+        if (method == null) {
+            // GET requests
+            String searchParams = parseSearchParams(intent);
+            String url = "http://jodern.store:8000/api/" + searchParams;
+            JsonObjectRequest getRequest = new JsonObjectRequest (
+                    Request.Method.GET,
+                    url,
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            handleResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            handleError(error);
+                        }
+                    }
+            );
+            Provider.with(this).addToRequestQueue(getRequest);
+        }
+        else if (method.equals("post")) {
+            // POST requests
+            String entry = intent.getStringExtra("entry");
+            String query = intent.getStringExtra("query");
+            HashMap<String, String> params = new HashMap<>();
+            params.put("query", query);
+
+            String url = "http://jodern.store:8000/api/" + entry;
+            JsonObjectRequest postRequest = new JsonObjectRequest (
+                    Request.Method.POST,
+                    url,
+                    new JSONObject(params),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            handleResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            handleError(error);
+                        }
+                    }
+            );
+            Provider.with(this).addToRequestQueue(postRequest);
+        }
+    }
+
+    private void updateTextsBaseOnIntent() {
+        Intent intent = getIntent();
         String categoryName = intent.getStringExtra("categoryName");
-        if (categoryRaw != null) {
+        if (categoryName != null) {
             currentCateWrapper.setVisibility(View.VISIBLE);
             currentCateText.setText(categoryName);
         } else
             currentCateWrapper.setVisibility(View.GONE);
+
+        String entry = intent.getStringExtra("entry");
+        if (entry.equals("search")) {
+            String method = intent.getStringExtra("method");
+            if (method == null) {
+                String query = intent.getStringExtra("query");
+                searchBarText.setText(query);
+                searchBarText.setTextColor(getColor(R.color.primary));
+            } else {
+                searchBarText.setText(getString(R.string.search_hint));
+                searchBarText.setTextColor(getColor(R.color.text_light));
+            }
+        }
     }
 
-    private ArrayList<Product> parseProductListResponse(JSONObject response) {
+    private void handleError(VolleyError error) {
+        loadingWrapper.setVisibility(View.GONE);
+        MyToast.makeText(ProductListActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+    }
+
+    private void handleResponse(JSONObject response) {
+        loadingWrapper.setVisibility(View.GONE);
+        ArrayList<Product> productList = parseProductListFromResponse(response);
+        setupProductList(productList);
+    }
+
+    private ArrayList<Product> parseProductListFromResponse(JSONObject response) {
         ArrayList<Product> productList = new ArrayList<>();
 
         try {
@@ -93,12 +149,13 @@ public class ProductListActivity extends AppCompatActivity {
                 String key = keys.getString(i);
                 JSONArray products = (JSONArray)response.get(key);
                 for (int j = 0; j < products.length(); j++) {
-                    JSONObject product = products.getJSONObject(j);
-                    Long id = product.getLong("id");
-                    String name = product.getString("title");
-                    Long price = product.getLong("price");
-                    String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
-                    productList.add(new Product(id, name, imageURL, price));
+                    productList.add(Product.parseJSON((JSONObject)products.get(j)));
+//                    JSONObject product = products.getJSONObject(j);
+//                    Long id = product.getLong("id");
+//                    String name = product.getString("title");
+//                    Long price = product.getLong("price");
+//                    String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
+//                    productList.add(new Product(id, name, imageURL, price));
                 }
             }
         } catch (JSONException e) {
@@ -113,9 +170,7 @@ public class ProductListActivity extends AppCompatActivity {
         String entry = intent.getStringExtra("entry");
 
         if (entry.equals("search")) {
-            String type = intent.getStringExtra("type");
             String query = intent.getStringExtra("query");
-            params.put("type", type);
             params.put("query", query);
         }
         else if (entry.equals("product-list")) {
@@ -138,10 +193,11 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        searchBarText = findViewById(R.id.productSearchBarText);
         currentCateText = findViewById(R.id.productCurrentCateText);
+        searchBarText = findViewById(R.id.productSearchBarText);
         currentCateWrapper = findViewById(R.id.productCurrentCateWrapper);
         loadingWrapper = findViewById(R.id.productLoadingWrapper);
+        emptyWrapper = findViewById(R.id.productEmptyWrapper);
     }
 
     private void setupCategoryLists() {
@@ -174,7 +230,12 @@ public class ProductListActivity extends AppCompatActivity {
         ProductListAdapter adapter = new ProductListAdapter(this);
         adapter.setProductList(productList);
 
-        productListView.setAdapter(adapter);
+        if (productList.size() == 0) {
+            emptyWrapper.setVisibility(View.VISIBLE);
+        } else {
+            emptyWrapper.setVisibility(View.GONE);
+            productListView.setAdapter(adapter);
+        }
     }
 
     public void onProductSearchBarClicked(View view) {

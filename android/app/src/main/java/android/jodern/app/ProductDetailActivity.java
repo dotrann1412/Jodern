@@ -1,8 +1,12 @@
 package android.jodern.app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.jodern.app.adapter.ProductListAdapter;
+import android.jodern.app.customwidget.MyToast;
 import android.jodern.app.activity.CartActivity;
 import android.jodern.app.model.Product;
 import android.jodern.app.provider.Provider;
@@ -23,7 +27,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private TextView detailName, detailPrice, detailPrice2, detailInventory, detailDescription;
@@ -35,22 +43,28 @@ public class ProductDetailActivity extends AppCompatActivity {
     private String currentSize;
     private LinearLayout loadingWrapper;
 
-    private MaterialButton detailAddToCartBtn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
         initViews();
         setEvents();
+        handleAPICalls();
+    }
 
-        // get intent data
+    private void handleAPICalls() {
+        // start loading effect
+        loadingWrapper.setVisibility(View.VISIBLE);
         Intent intent = getIntent();
+        getMainProduct(intent);
+        // TODO: other products in the same category
+//        getOtherProducts(intent);
+    }
+
+    private void getMainProduct(Intent intent) {
         String params = parseSearchParams(intent);
         // TODO: hide API KEY
         String url = "http://jodern.store:8000/api/" + params;
-        // start loading effect
-        loadingWrapper.setVisibility(View.VISIBLE);
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -58,26 +72,110 @@ public class ProductDetailActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println(response);
                         loadingWrapper.setVisibility(View.GONE);
-                        parseProductDetailResponse(response);
-                        showProductDetail();
+                        parseProductFromResponse(response);
+                        setupMainProduct();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("Error");
                         loadingWrapper.setVisibility(View.GONE);
-                        onDetailBackBtnClicked(null);
-                        Toast.makeText(ProductDetailActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        MyToast.makeText(ProductDetailActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
                     }
                 }
         );
         Provider.with(this).addToRequestQueue(stringRequest);
     }
 
-    private void showProductDetail() {
+    private void getOtherProducts(Intent intent) {
+        String categoryRaw = currentProduct.getCategory();
+        String id = String.valueOf(currentProduct.getId());
+        String params = "products-top-k?category=" + categoryRaw + "&id=" + id;
+        String url = "http://jodern.store:8000/api/" + params;
+        JsonObjectRequest stringRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        loadingWrapper.setVisibility(View.GONE);
+                        ArrayList<Product> otherProducts = parseOtherProductsFromResponse(response);
+                        setupOtherProducts(otherProducts);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loadingWrapper.setVisibility(View.GONE);
+                        MyToast.makeText(ProductDetailActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+                    }
+                }
+        );
+        Provider.with(this).addToRequestQueue(stringRequest);
+
+    }
+
+    private ArrayList<Product> parseOtherProductsFromResponse(JSONObject response) {
+        ArrayList<Product> productList = new ArrayList<>();
+
+        try {
+            JSONArray keys = response.names();
+            for (int i = 0; i < Objects.requireNonNull(keys).length(); i++) {
+                String key = keys.getString(i);
+                JSONArray products = (JSONArray)response.get(key);
+                for (int j = 0; j < products.length(); j++) {
+                    Product newProduct = Product.parseJSON(products.getJSONObject(j));
+                    productList.add(newProduct);
+//                    JSONObject product = products.getJSONObject(j);
+//                    Long id = product.getInt("id");
+//                    String name = product.getString("title");
+//                    int price = product.getInt("price");
+//                    String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
+//                    productList.add(new Product(id, name, imageURL, price));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return productList;
+    }
+
+    private void parseProductFromResponse(JSONObject response) {
+        try {
+            currentProduct = Product.parseJSON(response);
+
+//            Long id = response.getLong("id");
+//            String name = response.getString("title");
+//            String description = response.getString("description");
+//
+//            // images
+//            JSONArray imageURLs = response.getJSONArray("images");
+//            // TODO: image select feature, currently just use the first image
+//            ArrayList<String> images = new ArrayList<>();
+//            for (int i = 0; i < imageURLs.length(); i++) {
+//                images.add(imageURLs.get(i).toString());
+//            }
+//
+//            // inventory quantities
+//            Long price = response.getLong("price");
+//            JSONObject inventories = response.getJSONObject("inventory");
+//            Integer[] inventory = new Integer[5];
+//            for (int i = 0; i < sizes.length; i++) {
+//                inventory[i] = inventories.getInt(sizes[i]);
+//            }
+//
+//            String category = response.getString("category");
+//            currentProduct = new Product(id, name, images, price, description, category, inventory);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupMainProduct() {
         String priceFormatted = Utils.vndFormatPrice(currentProduct.getPrice());
 
         detailName.setText(currentProduct.getName());
@@ -88,45 +186,31 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // TODO: update after add image select
         Glide.with(this)
-                .load(currentProduct.getImageURL())
+                .load(currentProduct.getFirstImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
                 .override(detailImage.getWidth(),detailImage.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
                 .into(detailImage);
     }
 
-    private void parseProductDetailResponse(JSONObject response) {
-        try {
-            Long id = response.getLong("id");
-            String name = response.getString("title");
-            String description = response.getString("description");
-
-            // images
-            JSONArray imageURLs = response.getJSONArray("images");
-            // TODO: image select feature, currently just use the first image
-            String imageURL = imageURLs.get(0).toString();
-
-            // inventory quantities
-            Long price = response.getLong("price");
-            JSONObject inventories = response.getJSONObject("inventory");
-            Integer[] inventory = new Integer[5];
-            for (int i = 0; i < sizes.length; i++) {
-                inventory[i] = inventories.getInt(sizes[i]);
-            }
-
-            String category = response.getString("category");
-
-            // TODO: constructor with imageURLs
-            currentProduct = new Product(id, name, imageURL, price, description, category, inventory);
+    private void setupOtherProducts(ArrayList<Product> otherProducts) {
+        LinearLayout otherProductsWrapper = findViewById(R.id.detailOtherProductsWrapper);
+        if (otherProducts.size() == 0) {
+            otherProductsWrapper.setVisibility(View.GONE);
+            return;
         }
-        catch (Exception e) {
-            System.out.println("[ERROR]");
-            e.printStackTrace();
-        }
+
+        RecyclerView otherProductsView = findViewById(R.id.detailOtherProductsView);
+        LinearLayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        otherProductsView.setLayoutManager(layout);
+
+        ProductListAdapter adapter = new ProductListAdapter(this);
+        adapter.setProductList(otherProducts);
+        otherProductsView.setAdapter(adapter);
     }
 
     private String parseSearchParams(Intent intent) {
-        int id = intent.getIntExtra("productId", 0);
-        return "product/" + Integer.toString(id);
+        Long id = intent.getLongExtra("productId", 0);
+        return "product/" + id.toString();
     }
 
     private void initViews() {
@@ -186,9 +270,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void onDetailAddToCartBtnClicked(View view) {
-        Intent intent = new Intent(this, CartActivity.class);
-        intent.putExtra("productID", currentProduct.getId());
-        intent.putExtra("size", currentSize);
-        startActivity(intent);
+        // Intent intent = new Intent(this, CartActivity.class);
+        // intent.putExtra("productID", currentProduct.getId());
+        // intent.putExtra("size", currentSize);
+        // startActivity(intent);
     }
 }

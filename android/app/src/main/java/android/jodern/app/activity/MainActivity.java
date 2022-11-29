@@ -1,5 +1,6 @@
 package android.jodern.app.activity;
 
+import android.jodern.app.ProductListActivity;
 import android.jodern.app.R;
 import android.content.Intent;
 import android.jodern.app.SearchActivity;
@@ -21,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-
-
         // Init instance of Singleton class
         Provider.with(this.getApplicationContext());
 
@@ -58,6 +57,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMainCartBtnClicked(View view) {
         Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
+    }
+
+    public void onMainMaleSeeAllBtnClicked(View view) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("entry", "product-list");
+        intent.putExtra("sex", "nam");
+        intent.putExtra("categoryName", "Thời trang nam");
+        startActivity(intent);
+    }
+
+    public void onMainFemaleSeeAllBtnClicked(View view) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("entry", "product-list");
+        intent.putExtra("sex", "nu");
+        intent.putExtra("categoryName", "Thời trang nữ");
         startActivity(intent);
     }
 }

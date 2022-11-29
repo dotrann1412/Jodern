@@ -9,24 +9,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.jodern.app.customwidget.MyToast;
 import android.jodern.app.activity.MainActivity;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.SearchRecentSuggestions;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 
@@ -37,7 +32,6 @@ public class SearchActivity extends AppCompatActivity {
     private static final int MY_GALLERY_REQUEST_CODE = 101;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
 
-//    private LinearLayout searchWrapperLayout;
     private ImageButton backBtn;
     private SearchView inputField;
     private ImageButton cameraBtn;
@@ -49,18 +43,16 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initViews();
-
         setEvents();
-
-        // TODO: auto focus in search view
     }
 
     private void initViews() {
-//        searchWrapperLayout = findViewById(R.id.searchWrapperLayout);
         backBtn = findViewById(R.id.searchBackBtn);
         inputField = findViewById(R.id.searchInputField);
         cameraBtn = findViewById(R.id.searchCameraBtn);
         submitBtn = findViewById(R.id.searchSubmitBtn);
+
+        inputField.requestFocus();
     }
 
     private void setEvents() {
@@ -119,7 +111,7 @@ public class SearchActivity extends AppCompatActivity {
                         if (bitmap != null) {
                             submitImageQuery(bitmap);
                         } else {
-                            Toast.makeText(SearchActivity.this, "Đã có lỗi xảy ra, bạn vui thử lại sau nhé!", Toast.LENGTH_SHORT).show();
+                            MyToast.makeText(SearchActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
                         }
                     }
                 }
@@ -129,13 +121,12 @@ public class SearchActivity extends AppCompatActivity {
 
     private void submitTextQuery(String query) {
         if (query.length() == 0) {
-            Toast.makeText(this, "Vui lòng nhập nội dung tìm kiếm", Toast.LENGTH_SHORT).show();
+            MyToast.makeText(SearchActivity.this, "Bạn vui lòng nhập nội dung tìm kiếm nhé!", Toast.LENGTH_SHORT);
             return;
         }
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("type", "text");
         intent.putExtra("query", query);
         startActivity(intent);
     }
@@ -149,8 +140,8 @@ public class SearchActivity extends AppCompatActivity {
 
         Intent intent = new Intent(SearchActivity.this, ProductListActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("type", "image");
         intent.putExtra("query", encoded);
+        intent.putExtra("method", "post");
         startActivity(intent);
     }
 
@@ -174,13 +165,13 @@ public class SearchActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Không thể truy cập vào camera!", Toast.LENGTH_SHORT).show();
+                MyToast.makeText(this, "Không thể truy cập vào camera!", Toast.LENGTH_SHORT);
             } else {
                 runImagePicker();
             }
         } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Không thể truy cập vào thư viện!", Toast.LENGTH_SHORT).show();
+                MyToast.makeText(this, "Không thể truy cập vào thư viện!", Toast.LENGTH_SHORT);
             } else {
                 runImagePicker();
             }

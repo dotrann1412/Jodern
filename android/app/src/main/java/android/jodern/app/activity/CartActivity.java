@@ -23,7 +23,7 @@ public class CartActivity extends AppCompatActivity {
     private static final String TAG = CartActivity.class.getName();
     private RecyclerView cartRecyclerView;
     private CartController cartController;
-
+    private LinearLayout cartLoadingWrapper;
     TextView subTotalTextView, shippingTextView, totalTextView;
 
     private LinearLayout cartLayout, emptyLayout;
@@ -48,6 +48,8 @@ public class CartActivity extends AppCompatActivity {
         shippingTextView = findViewById(R.id.shippingValueCartTextView);
         totalTextView = findViewById(R.id.totalValueCartTextView);
         emptyLayout = findViewById(R.id.cartEmptyLayout);
+        // TODO: card loading effect (maybe it's very hard to implement now, because we are call API inside adapter)
+        cartLoadingWrapper = findViewById(R.id.cartLoadingWrapper);
     }
 
     private void initCartList() {
@@ -99,5 +101,9 @@ public class CartActivity extends AppCompatActivity {
         subTotalTextView.setText(StringUtils.long2money(subTotal));
         shippingTextView.setText(StringUtils.long2money(shippingCost));
         totalTextView.setText(StringUtils.long2money(total));
+    }
+
+    public void onCartBackBtnClicked(View view) {
+        onBackPressed();
     }
 }

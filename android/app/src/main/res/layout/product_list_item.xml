@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/productListItemWrapper"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="@drawable/shape_product_list_item"
@@ -11,8 +11,8 @@
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:cardCornerRadius="12dp"
         app:cardPreventCornerOverlap="false">
 
@@ -25,6 +25,7 @@
                 android:id="@+id/productListItemImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 android:src="@drawable/demo" />
