@@ -7,11 +7,19 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.jodern.app.MapMarkerInfoAdapter;
 import android.jodern.app.R;
 import android.jodern.app.model.BranchLocation;
+import android.jodern.app.provider.Provider;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -19,13 +27,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.Objects;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "Map";
@@ -36,12 +47,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    private List<BranchLocation> branchLocations;
+    private BranchLocation nearestBranch ;
+    private BranchLocation branchLocation;
+    private BranchLocation currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        nearestBranch = null;
 
         retrieveBranchLocation();
 
@@ -53,42 +68,101 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         Log.d(TAG, "onMapReady: Google Map is now ready");
         this.googleMap = googleMap;
+        this.googleMap.setInfoWindowAdapter(new MapMarkerInfoAdapter(MapActivity.this));
 
         if (locationPermissionGranted) {
-//            getDeviceLocation();
+            getDeviceLocation();
             googleMap.setMyLocationEnabled(true);
 
-            BranchLocation center = null;
-            if ((center = BranchLocation.getCenter(branchLocations)) != null) {
-                moveCamera(new LatLng(center.getLatitude(), center.getLongitude()));
+            if (nearestBranch != null) {
+                moveCamera(new LatLng(nearestBranch.getLatitude(), nearestBranch.getLongitude()));
             }
-
-            // set markers for all branches
-            setBranchMarkers();
         }
     }
 
     private void retrieveBranchLocation() {
         Log.d(TAG, "retrieveBranchLocation: retrieving the branch locations data");
-
-        // TODO must retrieve them from api
-        branchLocations = new ArrayList<>();
-        branchLocations.add(new BranchLocation(10.771880, 106.704861));
-        branchLocations.add(new BranchLocation(10.785569, 106.696590));
-        branchLocations.add(new BranchLocation(10.772973, 106.693246));
-        branchLocations.add(new BranchLocation(10.762986, 106.682835));
-        branchLocations.add(new BranchLocation(10.731494, 106.696640));
+        String url = "http://jodern.store:8000/api/stores-location";
+        JsonObjectRequest stringRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        parseLocationJSON(response);
+                        Log.d(TAG, "onResponse: successful");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MapActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+                    }
+                }
+        );
+        Provider.with(MapActivity.this).addToRequestQueue(stringRequest);
     }
 
-    private void setBranchMarkers() {
-        Log.d(TAG, "setBranchMarkers: setting markers for all branches");
-        for (BranchLocation location : branchLocations) {
-            MarkerOptions options = new MarkerOptions()
-                    .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                    .title("Jodern");
+    private void parseLocationJSON(JSONObject response) {
+        try {
+            JSONArray locations = response.getJSONArray("location");
+            for (int i = 0; i < locations.length(); ++i) {
+                JSONArray latLng = (JSONArray) locations.get(i);
+                BranchLocation location = new BranchLocation((double) latLng.get(0), (double) latLng.get(1));
+                setBranchMarker(location);
 
-            googleMap.addMarker(options);
+                if (i == 0) {
+                    Log.d(TAG, "parseLocationJSON: initialize nearest branch (" + location.getLatitude() + ", " + location.getLongitude() + ")");
+                    nearestBranch = location;
+                } else {
+                    if (calculationByDistance(BranchLocation.toLatLng(nearestBranch), BranchLocation.toLatLng(currentLocation))
+                            > calculationByDistance(BranchLocation.toLatLng(location), BranchLocation.toLatLng(currentLocation))) {
+                        Log.d(TAG, "parseLocationJSON: modify nearest branch (" + location.getLatitude() + ", " + location.getLongitude() + ")");
+                        nearestBranch = location;
+                    }
+                }
+            }
+            moveCamera(BranchLocation.toLatLng(nearestBranch));
+        } catch (Exception e) {
+            Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         }
+    }
+
+    private double calculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.parseInt(newFormat.format(valueResult));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.parseInt(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+
+        return Radius * c;
+    }
+
+    private void setBranchMarker(BranchLocation branchLocation) {
+        Log.d(TAG, "setBranchMarker: setting markers for (" + branchLocation.getLatitude() + ", " + branchLocation.getLongitude() + ")");
+        MarkerOptions options = new MarkerOptions()
+                .position(BranchLocation.toLatLng(branchLocation))
+                .title("Jodern")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_logo_icon));
+
+        Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchLocation);
     }
 
     private void getLocationPermission() {
@@ -121,7 +195,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void moveCamera(LatLng latLng) {
-        Log.d(TAG, "moveCamera: move the camera to: (lat=" + latLng.latitude + ",lng=" + latLng.longitude);
+        Log.d(TAG, "moveCamera: move the camera to: (lat=" + latLng.latitude + ",lng=" + latLng.longitude + ")");
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
     }
 
@@ -132,17 +206,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         try {
             if (locationPermissionGranted) {
                 @SuppressLint("MissingPermission") Task location = fusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                        } else {
-                            Log.d(TAG, "onComplete: current location is null");
-
-                        }
+                location.addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: found location!");
+                        currentLocation = BranchLocation.fromLocation((Location) task.getResult());
+                        moveCamera(BranchLocation.toLatLng(currentLocation));
+                    } else {
+                        Log.d(TAG, "onComplete: current location is null");
                     }
                 });
             }

@@ -1,5 +1,9 @@
 package android.jodern.app.model;
 
+import android.location.Location;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.List;
 
 public class BranchLocation {
@@ -42,5 +46,13 @@ public class BranchLocation {
         centerLocation.setLatitude(centerLocation.getLatitude() / branchLocations.size());
         centerLocation.setLongitude(centerLocation.getLongitude() / branchLocations.size());
         return centerLocation;
+    }
+
+    public static LatLng toLatLng(BranchLocation branchLocation) {
+        return new LatLng(branchLocation.getLatitude(), branchLocation.getLongitude());
+    }
+
+    public static BranchLocation fromLocation(Location location) {
+        return new BranchLocation((double) location.getLatitude(), (double) location.getLongitude());
     }
 }
