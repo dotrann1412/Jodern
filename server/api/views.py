@@ -71,9 +71,31 @@ class HandleProductsList(APIView):
 
         return Response(res, status = status.HTTP_200_OK)
     
-class HanldeOrder(APIView):
-    def get(self, request: Request, *arg, **kwargs):
-        pass
+class ProcessOrder(APIView):
+    def post(self, request: Request, *arg, **kwargs):
+        try:    
+            data = request.POST.get('cart', r'{}')
+            data = json.loads(data)
+            res = ProcessOrderData(data)
+        except Exception as err:
+            traceback.print_exc()            
+            return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
+        
+        return Response(res, status = status.HTTP_200_OK)
+
+class ValidateOrder(APIView):
+    def post(self, request: Request, *arg, **kwargs):
+        try:    
+            data = request.POST.get('cart', r'{}')
+            print('[DEBUG] ', request.POST)
+            data = json.loads(data)
+            print('[DEBUG] ', data)
+            res = ValidateOrderData(data)
+        except Exception as err:
+            print('[EXCEPTION] exception raised while validate order. Details here: ', err)
+            return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
+        
+        return Response(res, status = status.HTTP_200_OK)
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
