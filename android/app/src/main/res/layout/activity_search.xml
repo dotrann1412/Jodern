@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:id="@+id/searchWrapperLayout">
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        >
+
+        <ImageButton
+            android:id="@+id/searchBackBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:paddingLeft="0dp"
+            android:paddingRight="12dp"
+            android:src="@drawable/ic_back" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_search_bar"
+            android:layout_marginEnd="4dp">
+
+            <SearchView
+                android:id="@+id/searchInputField"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="-4dp"
+                app:theme="@style/MySearchView"
+                android:lineSpacingMultiplier="0"
+                android:iconifiedByDefault="false"
+                android:queryBackground="@null"
+                android:queryHint="Bạn tìm gì hôm nay?"
+                android:searchIcon="@null" />
+
+            <ImageButton
+                android:id="@+id/searchCameraBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="4dp"
+                android:background="@null"
+                android:paddingLeft="12dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_camera"
+                app:tint="@color/primary_dark"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/searchSubmitBtn"
+                android:layout_width="44dp"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/primary"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/ic_search"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/white"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.SearchBtn" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+    >
+    <ImageView
+        android:id="@+id/searchImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginTop="-100dp"
+        android:src="@drawable/search" />
+    <TextView
+        android:id="@+id/searchTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thỏa sức mua sắm cùng Jodern!"
+        android:textColor="@color/primary"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        />
+    </LinearLayout>
+
+</LinearLayout>
