@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.jodern.app.activity.CartActivity;
 import android.jodern.app.adapter.CategoryTagListAdapter;
 import android.jodern.app.adapter.ProductListAdapter;
 import android.jodern.app.customwidget.MyToast;
@@ -56,7 +57,7 @@ public class ProductListActivity extends AppCompatActivity {
         if (method == null) {
             // GET requests
             String searchParams = parseSearchParams(intent);
-            String url = "http://joderm.store:8000/api/" + searchParams;
+            String url = "http://jodern.store:8000/api/" + searchParams;
             JsonObjectRequest getRequest = new JsonObjectRequest (
                     Request.Method.GET,
                     url,
@@ -74,7 +75,7 @@ public class ProductListActivity extends AppCompatActivity {
                         }
                     }
             );
-            Provider.getInstance(this).addToRequestQueue(getRequest);
+            Provider.with(this).addToRequestQueue(getRequest);
         }
         else if (method.equals("post")) {
             // POST requests
@@ -83,7 +84,7 @@ public class ProductListActivity extends AppCompatActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("query", query);
 
-            String url = "http://joderm.store:8000/api/" + entry;
+            String url = "http://jodern.store:8000/api/" + entry;
             JsonObjectRequest postRequest = new JsonObjectRequest (
                     Request.Method.POST,
                     url,
@@ -101,7 +102,7 @@ public class ProductListActivity extends AppCompatActivity {
                         }
                     }
             );
-            Provider.getInstance(this).addToRequestQueue(postRequest);
+            Provider.with(this).addToRequestQueue(postRequest);
         }
     }
 
@@ -148,12 +149,13 @@ public class ProductListActivity extends AppCompatActivity {
                 String key = keys.getString(i);
                 JSONArray products = (JSONArray)response.get(key);
                 for (int j = 0; j < products.length(); j++) {
-                    JSONObject product = products.getJSONObject(j);
-                    int id = product.getInt("id");
-                    String name = product.getString("title");
-                    int price = product.getInt("price");
-                    String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
-                    productList.add(new Product(id, name, imageURL, price));
+                    productList.add(Product.parseJSON((JSONObject)products.get(j)));
+//                    JSONObject product = products.getJSONObject(j);
+//                    Long id = product.getLong("id");
+//                    String name = product.getString("title");
+//                    Long price = product.getLong("price");
+//                    String imageURL = ((JSONArray)product.get("images")).get(0).toString(); // first image
+//                    productList.add(new Product(id, name, imageURL, price));
                 }
             }
         } catch (JSONException e) {
@@ -183,9 +185,9 @@ public class ProductListActivity extends AppCompatActivity {
             }
         }
 
-        String url = entry + "?";
+        StringBuilder url = new StringBuilder(entry + "?");
         for (String key : params.keySet()) {
-            url += key + "=" + params.get(key) + "&";
+            url.append(key).append("=").append(params.get(key)).append("&");
         }
         return url.substring(0, url.length() - 1);
     }
@@ -207,14 +209,14 @@ public class ProductListActivity extends AppCompatActivity {
         LinearLayoutManager maleLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         maleView.setLayoutManager(maleLayout);
         CategoryTagListAdapter maleAdapter = new CategoryTagListAdapter(this);
-        maleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nam"));
+        maleAdapter.setCategoryList(Provider.with(this).getCategoryList("nam"));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         LinearLayoutManager femaleLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         femaleView.setLayoutManager(femaleLayout);
         CategoryTagListAdapter femaleAdapter = new CategoryTagListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.getInstance(this).getCategoryList("nu"));
+        femaleAdapter.setCategoryList(Provider.with(this).getCategoryList("nu"));
 
         femaleView.setAdapter(femaleAdapter);
     }
@@ -247,6 +249,7 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     public void onProductCartBtnClicked(View view) {
-        // TODO: Go to Cart Activity
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
     }
 }

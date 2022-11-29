@@ -7,4 +7,11 @@
     <string name="hello_world">Hello world</string>
     <string name="error_message">Đã có lỗi xảy ra. Bạn vui lòng thử lại nhé!</string>
     <string name="search_hint">Bạn tìm gì hôm nay?</string>
+    <string name="title_activity_cart">CartActivity</string>
+
+    <string name="cart_header">Giỏ hàng</string>
+    <string name="check_out">Đặt hàng</string>
+    <string name="total">Tổng thanh toán</string>
+    <string name="shipping">Vận chuyển</string>
+    <string name="sub_total">Tổng cộng</string>
 </resources>

@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.jodern.app.customwidget.MyToast;
+import android.jodern.app.activity.MainActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
