@@ -123,6 +123,15 @@ def HighlightItems(top_k = 5):
     items.sort(key = lambda item: sum([val for _, val in item['inventory'].items()]))
     return items[:top_k]
 
+def RelatedItems(id, top_k = 5):
+    if not top_k: top_k = 5
+    if type(top_k) != int: top_k = int(top_k)
+    if type(id) != str: id = str(id)
+    
+    sex, cat = str(__products1Layer[id]['sex']), __products1Layer[id]['category']
+    res = [item for item in __productsLightWeight[sex][cat] if item['id'] != int(id)]
+    return res[:min(len(res), top_k)]
+
 def ValidateOrderData(order):    
     if len(list(order.keys())) == 0:
         return {"message": "Empty cart!" , 'status': 'nOK'}
