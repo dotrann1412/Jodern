@@ -91,10 +91,54 @@ def ProcessOrderData(order):
 
     if __mailInstance:
         try:
-            mailContent = gmail.build_email_content('jodern.store@gmail.com', [order.get('info', {}).get('email', None)], subject = 'Test send mail', content = 'Haha')
+            content = ''
+
+            total_price = 0
+            for key, value in order['items'].items():
+                value_keys = list(value.keys())
+                
+                content += gmail.get_item_html_template(
+                    __products1Layer[key]['images'][0],
+                    __products1Layer[key]['title'],
+                    __products1Layer[key]['price'],
+                    value[value_keys[0]],
+                    value_keys[0]
+                ) + '<br>\n'
+                
+                total_price += __products1Layer[key]['price']
+                
+            customer_name, phone_number, location = 'Unknown', 'Unknown', 'Unknown'
+            
+            try: customer_name = order['info']['customer_name']
+            except: pass
+            
+            try: phone_number = order['info']['phone_number']
+            except: pass
+            
+            try: location = order['info']['location']
+            except: pass
+                
+            html_mail = gmail.html_mail(
+                price = total_price,
+                tax = int(total_price / 10),
+                shipping_fee = 30000,
+                html_content = content,
+                product_count = len(list(order.keys())),
+                customer_name = customer_name,
+                phone_number = phone_number,
+                location = location
+            )
+
+            mailContent = gmail.build_email_content(
+                'joderm.store@gmail.com', 
+                [order.get('info', {}).get('email', None)], 
+                subject = 'Đơn hàng của bạn đang trên đường vận chuyển!', 
+                content = {'html': html_mail}
+            )
+            
             __mailInstance.send_mail(mailContent)
-        except:
-            print('[EXCEPTION] Failed on sending email!')
+        except Exception as err:
+            print('[EXCEPTION] Failed on sending email! Details here: ', err)
 
     __commit()
 

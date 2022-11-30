@@ -23,143 +23,260 @@ def html_msg(msg, status = None, bold_all=False):
     html = f'<p lang="en" class="message {_class}">{content}</p>'
     return html
 
-def html_mail(request, content):
-    html_template = '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <style>
-            * {
-                box-sizing: border-box;
-            }
-            html {
-                font-family: 'Roboto', sans-serif;
-            }
-            
-            p, td, th, span, ul {
-                color: #333;
-                font-size: 16px;
-            }
-            .main {
-                margin: 0 auto;
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                padding: 6px 30px 30px 30px;
-                width: 700px;
-            }
-            .app__name {
-                text-align: center;
-                font-size: 24px;
-                color: #1e9d95;
-                font-weight: bold;
-            }
-            .app__greeting,
-            .app__desc {
-                text-align: center;
-            }
-            .divider {
-                border-bottom: 1px solid #ccc;
-                margin: 20px 0;
-            }
-            .request {
-                font-weight: bold;
-                word-break: break-all;
-            }
-            /* CSS for tables */
-            table {
-                /* width: 100%; */
-                margin: 0 auto;
-                border-collapse: collapse;
-                overflow: hidden;
-            }
-            table td, table th {
-                font-size: 14px;
-            }
-            table.left {
-                text-align: left;
-            }
-            table.center {
-                text-align: center;
-            }
-            td,
-            th {
-                border-top: 1px solid #c6cccde6;
-                padding: 10px 14px;
-            }
-            th {
-                background-color: #76dfd8;
-                border-left: 1px solid #c6cbcd;
-                border-right: 1px solid #c6cbcd;
-            }
-            td {
-                border-left: 1px solid #c6cbcd;
-                border-right: 1px solid #c6cbcd;
-            }
-            
-            tr.first-row {
-                text-align: center;
-            }
-            tr.last-row {
-                border-bottom: 1px solid #c6cccde6;
-            }
-            tr.odd-row td {
-                background-color: #e6f8f7;
-            }
-            /* CSS for message */
-            .message {
-                margin: 0;
-            }
-            .message.bold {
-                font-weight: bold;
-            }
-            .message.ok {
-                color: #1e9d95;
-            }
-            .message.error {
-                color: red;
-            }
-            .ascii {
-                font-family: 'Courier New', monospace;
-                font-size: 16px;
-                margin: 0;
-                margin-left: 40px;
-                white-space: pre-wrap;
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-        <div class='main'>
-            <div class="container">
-                <p class="app__name">LONG TASK RUNNER</p>
-                <div class='divider'></div>
+def get_item_html_template(image, pName, price, itemCount, size):
+    return '''<div class="item-block">
+        <img src="{image}" class="item-image" alt="image" />
+        <div class="item-info">
+            <div class="item-title"><p><a href="{image}">
+                <b>{productName}</b></a></p></div>
+            <div class="item-detail">
+                <div><p><b>Đơn giá: </b> {price}</p></div>
+                <div><p><b>Số lượng: </b> {itemCount}</p></div>
+                <div><p><b>Size: </b> {size}</p></div>
             </div>
-            <div class="container">
-                <p>This mail responses to the result of process: <span class="request" lang="en">''' + request + '''</span></p>
-            </div>
-    '''
-    
-    '''
-    <p class="app__name">Jodern Store</p>
-    <p class="app__greeting">Greeting from <span style='font-weight: bold;'>Group 8</span> - Honors Program 2020, University of Science, VNUHCM.</p>
-    <p class="app__desc">Thanks for chosing our service! Your order is being processed...</p>      
-    '''
-
-    html_template += f'''
-        <section>
-            {content}
-        </section>
         </div>
-        </body>
-    </html>
-    '''       
+    </div>
+    '''.format (
+        image = image,
+        productName = pName,
+        price = price,
+        itemCount = itemCount,
+        size = size
+    )
+
+from datetime import datetime
+import datetime
+
+def html_mail(**kwargs):
+    total = kwargs.get('price', 0) + kwargs.get('tax', 0) + kwargs.get('shipping_fee', 0)
     
+    dilivered_on = datetime.datetime.now() + datetime.timedelta(days = 5)
+    html_template = str('''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        * {{
+            box-sizing: border-box;
+        }}
+        
+        html {{
+            font-family: 'Roboto', sans-serif;
+        }}
+        
+        p, td, th, span, ul {{
+            color: #333;
+            font-size: 16px;
+        }}
+        .main {{
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 6px 30px 30px 30px;
+            width: 600px;
+        }}
+        .app__name {{
+            text-align: center;
+            font-size: 24px;
+            color: #1e9d95;
+            font-weight: bold;
+        }}
+        .app__greeting,
+        .app__desc {{
+            text-align: center;
+        }}
+        .divider {{
+            border-bottom: 1px solid #ccc;
+            margin: 20px 0;
+        }}
+        .request {{
+            font-weight: bold;
+            word-break: break-all;
+        }}
+        /* CSS for tables */
+        table {{
+            /* width: 100%; */
+            margin: 0 auto;
+            border-collapse: collapse;
+            overflow: hidden;
+        }}
+        table td, table th {{
+            font-size: 14px;
+        }}
+        table.left {{
+            text-align: left;
+        }}
+        table.center {{
+            text-align: center;
+        }}
+        td,
+        th {{
+            border-top: 1px solid #c6cccde6;
+            padding: 10px 14px;
+        }}
+        th {{
+            background-color: #76dfd8;
+            border-left: 1px solid #c6cbcd;
+            border-right: 1px solid #c6cbcd;
+        }}
+        td {{
+            border-left: 1px solid #c6cbcd;
+            border-right: 1px solid #c6cbcd;
+        }}
+        
+        tr.first-row {{
+            text-align: center;
+        }}
+        tr.last-row {{
+            border-bottom: 1px solid #c6cccde6;
+        }}
+        tr.odd-row td {{
+            background-color: #e6f8f7;
+        }}
+        /* CSS for message */
+        .message {{
+            margin: 0;
+        }}
+        .message.bold {{
+            font-weight: bold;
+        }}
+        .message.ok {{
+            color: #1e9d95;
+        }}
+        .message.error {{
+            color: red;
+        }}
+        .ascii {{
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 0;
+            margin-left: 40px;
+            white-space: pre-wrap;
+            font-weight: bold;
+        }}
+        .item-block {{
+            width: 100%;
+            min-height: 110px;
+            border-radius: 1rem;
+            border: 0.2px solid rgba(80, 80, 80, 1);
+            background-color: #f8fcfc;
+            margin: 5px;
+            padding: 5px;   
+            align-items: center;
+            display: inline-flex;
+        }}
+        
+        .item-name {{
+            font-weight: bold;
+            margin-left: 10px;
+        }}
+
+        .item-image {{
+            max-width: 200px;
+            max-height: 120px;
+            margin: auto;
+            border-radius: 1rem;
+            border: none;
+            padding: 10px;
+            margin-left: 0px;
+        }}
+            
+        .order-summary {{
+            text-align: right;
+            position: relative;
+            padding-right: 20px;
+            margin: 15px;
+        }}
+
+        .item-info {{
+            height: 90%;
+            width: 100%;
+            display: block;
+        }}
+
+        .item-title {{
+            max-width: 100%;
+            display: block;
+            margin-left: 10%;
+            text-align: left;
+            font-size: 24px;
+        }}
+
+        .item-title a:hover {{
+            text-decoration: underline;
+            text-decoration-color: #76dfd8;
+        }}
+
+        .item-title a:link {{
+            text-decoration: none;
+        }}
+
+        .item-title a {{
+            color: #1e9d95;
+        }}
+
+        .item-detail {{
+            width: 100%;
+            display: inline-flex;
+            direction: rtl;
+            margin-right: 10px;
+        }}
+
+        .item-detail div {{
+            margin-right: 15px
+        }}
+    </style>
+</head>
+<body>
+    <div class='main'>
+        <div class="container">
+            <p class="app__name">JODERN STORE</p>
+            <div class='divider'></div>
+        </div>
+
+        <div class="container">
+            <p>Jodern Store xin cảm ơn quý khách hàng <b>{customer_name}</b> vì đã mua hàng. Đơn hàng của quý khách bao gồm <b>{pcnt}</b> sản phẩm, chi tiết như sau:</p>
+        </div>
+
+        <div class="container">
+            {content}
+        </div>
+
+        <div class="container order-summary">
+            <p><b>Sản phẩm: </b>{price: .3f} (VND)</p>
+            <p><b>Thuế VAT:</b> {tax: .3f} (VND)</p>
+            <p><b>Phí vận chuyển:</b> {shipping_fee: .3f} (VND)</p>
+            <hr width="50%" style="margin-right: 0"/>
+            <p><b>Tổng:</b> {total: .3f} (VND)</p>
+        </div>
+
+        <div class="container">
+            Đơn hàng của quý khách đã được xác nhận và sẽ được giao trước ngày <b>{day}</b> đến địa chỉ <b>{address}</b> và liên lạc qua số điện thoại <b>{phone}</b>. Bất kì thắc mắc xin liên hệ với số điện thoại 113.
+        </div>
+    </div>
+    </body>
+</html>
+    ''').format(
+        total = total,
+        day = dilivered_on.strftime(r'%Y-%m-%d'),
+        price = kwargs.get('price', 0),
+        tax = kwargs.get('tax', 0),
+        shipping_fee = kwargs.get('shipping_fee', 0),
+        content = kwargs.get('html_content'),
+        pcnt = kwargs.get('product_count', 0),
+        customer_name = kwargs.get('customer_name', ''),
+        phone = kwargs['phone_number'],
+        address = kwargs['address']
+    )
+        
     return html_template
 
 def build_email_content(mail_from, mail_to, subject, content, format = 'html'):
     body = content['html']
-    data = content['data']
+    
+    if 'data' in content:
+        data = content['data']
+    else: data = None
 
     email_message = email.message.EmailMessage()
     
