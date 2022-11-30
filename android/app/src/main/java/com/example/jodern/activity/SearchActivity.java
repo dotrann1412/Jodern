@@ -173,18 +173,6 @@ public class SearchActivity extends AppCompatActivity {
         intent.putExtra("query", query);
         intent.putExtra("nextFragment", "productList");
         startActivity(intent);
-
-//        Fragment fragment = new ProductListFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("entry", "product-list");
-//        bundle.putString("query", query);
-//        fragment.setArguments(bundle);
-
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.mainFragmentContainer, fragment);
-//        fragmentTransaction.addToBackStack("productList");
-//        fragmentTransaction.commit();
     }
 
     private void submitImageQuery(Bitmap bitmap) {
@@ -200,23 +188,6 @@ public class SearchActivity extends AppCompatActivity {
         intent.putExtra("method", "post");
         intent.putExtra("nextFragment", "productList");
         startActivity(intent);
-//        Intent intent = new Intent(SearchActivity.this, MainActivity.class);
-//        intent.putExtra("entry", "search");
-//        intent.putExtra("query", query);
-//        startActivity(intent);
-
-//        Fragment fragment = new ProductListFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("entry", "product-list");
-//        bundle.putString("query", encoded);
-//        bundle.putString("method", "post");
-//        fragment.setArguments(bundle);
-//
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.mainFragmentContainer, fragment);
-//        fragmentTransaction.addToBackStack("productList");
-//        fragmentTransaction.commit();
     }
 
     private void runImagePicker() {

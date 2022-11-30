@@ -70,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            if (nextFragment.equals("cart")) {
+                Fragment fragment = new CartFragment();
+                Bundle bundle = new Bundle();
+                bundle.putLong("productId", intent.getLongExtra("productId", 0L));
+                bundle.putInt("quantity", intent.getIntExtra("quantity", 1));
+                bundle.putString("size", intent.getStringExtra("size"));
+                fragment.setArguments(bundle);
+                switchFragment(fragment, nextFragment);
+                return;
+            }
+
             // other, if any
             return;
         }

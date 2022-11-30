@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 
+import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.ProductListAdapter;
 import com.example.jodern.adapter.TrendingAdapter;
@@ -16,7 +17,9 @@ import com.example.jodern.customwidget.MyToast;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -288,10 +292,23 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void onDetailAddToCartBtnClicked(View view) {
-        // Intent intent = new Intent(this, CartActivity.class);
-        // intent.putExtra("productID", currentProduct.getId());
-        // intent.putExtra("size", currentSize);
-        // startActivity(intent);
+        Long productId = currentProduct.getId();
+        Integer quantity = currentQuantity;
+        String size = currentSize;
+        int inventory = currentProduct.getInventory(currentSize);
+        if (quantity > inventory) {
+            Toast.makeText(this, "Số lượng sản phẩm không đủ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // TODO: decrease inventory number of product
+
+        Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+        intent.putExtra("nextFragment", "cart");
+        intent.putExtra("productId", productId);
+        intent.putExtra("quantity", quantity);
+        intent.putExtra("size", size);
+        startActivity(intent);
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {

@@ -128,4 +128,13 @@ public class Product {
     public Integer getInventory(int i) {
         return inventories[i];
     }
+
+    public Integer getInventory(String size) {
+        for (int i = 0; i < sizes.length; i++) {
+            if (sizes[i].equals(size)) {
+                return inventories[i];
+            }
+        }
+        return null;
+    }
 }
