@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">Jodern</string>
-    <string name="title_activity_main">Jodern</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="back">Back</string>
-    <string name="hello_world">Hello world</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_message">Đã có lỗi xảy ra. Bạn vui lòng thử lại nhé!</string>
     <string name="search_hint">Bạn tìm gì hôm nay?</string>
     <string name="title_activity_cart">CartActivity</string>

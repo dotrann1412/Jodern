@@ -3,38 +3,33 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable-anydpi/ic_camera.xml" value="0.3275" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable-anydpi/ic_search.xml" value="0.3275" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/background.xml" value="0.329" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.229" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/product_list_image.xml" value="0.26" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/round_outline.xml" value="0.26" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shape_cate_tag.xml" value="0.329" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shape_cate_tag_selected.xml" value="0.329" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shape_overlay.xml" value="0.26" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shape_product_list_item.xml" value="0.196" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shape_search_bar.xml" value="0.329" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/shapebgsearch.xml" value="0.228" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/size_item.xml" value="0.26" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/drawable/size_item_selected.xml" value="0.26" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_cart.xml" value="0.30299145299145297" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_map.xml" value="0.30299145299145297" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_product_detail.xml" value="0.33" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_product_list.xml" value="0.33" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_search.xml" value="0.33" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/activity_splash.xml" value="0.3692708333333333" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/category_image_item.xml" value="0.30299145299145297" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/category_item.xml" value="0.284375" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/category_tag_item.xml" value="0.3021367521367521" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/product_list_item.xml" value="0.33" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/layout/size_item.xml" value="0.3021367521367521" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Joderm/android/app/src/main/res/xml/searchable.xml" value="0.3692708333333333" />
-        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/background.xml" value="0.137" />
-        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.137" />
-        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_main.xml" value="0.22780797101449277" />
-        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_splash.xml" value="0.25" />
-        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/content_main.xml" value="0.22780797101449277" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable-hdpi/shape_overlay.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/background.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/banner_background.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/cate_image_shape.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/overlay.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/search_bar_shape.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/shape_circle.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/shape_navbar.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/shape_navbar_center.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/shape_navbar_container.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/size_item.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/size_item_selected.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/drawable/trending_item_overlay.xml" value="0.235" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/activity_main.xml" value="0.35520833333333335" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/activity_product_detail.xml" value="0.35985401459854016" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/activity_search.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/category_image_item.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/category_tag_item.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_cart.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_home.xml" value="0.2" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_map.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_product_list.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_search.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/fragment_wishlist.xml" value="0.35520833333333335" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/product_list_item.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/product_list_item_2.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/MidTerm/Another Jodern/android/app/src/main/res/layout/trending_item.xml" value="0.136" />
       </map>
     </option>
   </component>
