@@ -3,7 +3,7 @@ from django.urls import path, include
 from .views import (
     Test, HandleProductsList, HandleProductsByID, 
     SearchEngineInterface, HandleCategoriesTree, StoresLocation,
-    Trending, Highlight, ValidateOrder, ProcessOrder
+    Trending, Highlight, ValidateOrder, ProcessOrder, RelatedProduct
 )
 
 urlpatterns = [ 
@@ -17,7 +17,7 @@ urlpatterns = [
     path('trending/<int:top_k>', Trending.as_view()),
     path('best-selling/<int:top_k>', Trending.as_view()),
     path('highlight/<int:top_k>', Highlight.as_view()),
-    path('related/', Test.as_view()),
+    path('related/', RelatedProduct.as_view()),
     path('validate-order/', ValidateOrder.as_view()),
-    path('process-order/', ProcessOrder.as_view())
+    path('process-order/', ProcessOrder.as_view()),
 ]
