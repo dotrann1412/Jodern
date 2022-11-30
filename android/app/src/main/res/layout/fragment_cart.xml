@@ -48,6 +48,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:visibility="visible"
             android:id="@+id/cartLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -179,7 +180,6 @@
 <!--                    app:cornerRadius="15dp" />-->
 
                 <com.google.android.material.button.MaterialButton
-                    android:onClick="cartCheckOutBtn"
                     android:id="@+id/detailAddToCartBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -199,41 +199,40 @@
                     />
             </LinearLayout>
 
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/cartEmptyWrapper"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="100dp"
-                    android:layout_marginTop="60dp"
-                    android:layout_marginRight="100dp"
-                    android:layout_marginBottom="8dp">
-
-                    <ImageView
-                        android:id="@+id/searchImageView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/empty_cart" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/searchTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Giỏ hàng của bạn đang trống.\nMua sắm với Jodern ngay nào!"
-                    android:textColor="@color/primary"
-                    android:textSize="16sp" />
-            </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/cartEmptyWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="100dp"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/searchImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/empty_cart" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/searchTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Giỏ hàng của bạn đang trống.\nMua sắm với Jodern ngay nào!"
+                android:textColor="@color/primary"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
