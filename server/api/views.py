@@ -65,9 +65,11 @@ class HandleProductsList(APIView):
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
 
-        res = GetProducts(sex, category)
-        if not res:
-            return Response({}, status = status.HTTP_400_BAD_REQUEST)
+        try:
+            res = GetProducts(sex, category)
+        except Exception as err:
+            print('[EXCEPTION] Details here: ', err)
+            return Response({'Message': "Wrong request format"}, status = status.HTTP_400_BAD_REQUEST)
 
         return Response(res, status = status.HTTP_200_OK)
     
@@ -99,7 +101,10 @@ class ValidateOrder(APIView):
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
-        return Response(GetProductDetails(kwargs['id']), status = status.HTTP_200_OK)
+        res = GetProductDetails(kwargs['id'])
+        if 'id' not in res:
+            return Response({'message': 'item not found'}, status = status.HTTP_400_BAD_REQUEST)
+        return Response(res, status = status.HTTP_200_OK)
 
 class HandleCategoriesTree(APIView):
     def get(self, request, *args, **kwargs):
@@ -118,6 +123,19 @@ class Highlight(APIView):
         try:
             res = {'data': HighlightItems(kwargs['top_k'])}
         except Exception as err:
+            print('[EXCEPTION] Processing error. Details here: ', err)
+            return Response({'message': 'Processing error'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(res, status = status.HTTP_200_OK)
+    
+    
+class RelatedProduct(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            id = request.query_params.get('id', None)
+            top_k = request.query_params.get('top_k', None)
+            res = {'data': RelatedItems(id, top_k)}
+        except Exception as err:
+            traceback.print_exc()
             print('[EXCEPTION] Processing error. Details here: ', err)
             return Response({'message': 'Processing error'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(res, status = status.HTTP_200_OK)
