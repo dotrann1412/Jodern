@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
+    public static final String TAG = "HomeFragment";
+
     private LinearLayout homeSearchBar;
     private ImageButton navbarBtn;
     private MaterialButton maleSeeAllBtn;
@@ -58,15 +60,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString("ARG_PARAM1");
-//            mParam2 = getArguments().getString("ARG_PARAM2");
-//        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Provider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 

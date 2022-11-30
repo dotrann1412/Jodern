@@ -3,6 +3,9 @@ package com.example.jodern.activity;
 import static com.example.jodern.Utils.vndFormatPrice;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,8 +15,11 @@ import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.ProductListAdapter;
 import com.example.jodern.adapter.TrendingAdapter;
+import com.example.jodern.cart.CartController;
+import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MyToast;
 //import com.example.jodern.activity.CartActivity;
+import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 
@@ -32,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +61,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private static final String[] sizes = new String[]{"S", "M", "L", "XL", "XXL"};
     private LinearLayout currentSizeWrapper;
     private String currentSize;
+
+    private MaterialButton seeAllBtn;
 
     private LinearLayout loadingWrapper;
 
@@ -104,10 +113,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void getOtherProducts(Intent intent) {
         String categoryRaw = currentProduct.getCategory();
         String id = String.valueOf(currentProduct.getId());
-//        String params = "products-top-k?category=" + categoryRaw + "&id=" + id;
-//        String url = "http://jodern.store:8000/api/" + params;
-        // demo
-        String url = "http://jodern.store:8000/api/product-list?category=ao-khoac-nam";
+        String entry = "related";
+        String params = "id=" + id + "&top_k=" + String.valueOf(5);
+        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -177,7 +185,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
 
             String category = response.getString("category");
-            currentProduct = new Product(id, name, images, price, description, category, inventory);
+            String categoryName = response.getString("category_name");
+            currentProduct = new Product(id, name, images, price, description, category, categoryName, inventory);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -228,12 +237,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         detailImage = findViewById(R.id.detailImage);
         detailName = findViewById(R.id.detailName);
         detailPrice = findViewById(R.id.detailPrice);
+        detailDescription = findViewById(R.id.detailDescription);
 
         detailInventoryQuantity = findViewById(R.id.detailInventory);
-
         buyQuantityText = findViewById(R.id.detailQuantity);
-
-        detailDescription = findViewById(R.id.detailDescription);
 
         loadingWrapper = findViewById(R.id.detailLoadingWrapper);
 
@@ -244,6 +251,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         currentSizeWrapper = detailSizes[0];
         currentSize = sizes[0];
         updateCurrentSizeView(true);
+
+        seeAllBtn = findViewById(R.id.detailSeeAllBtn);
     }
 
     private void setEvents() {
@@ -260,6 +269,18 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
             });
         }
+
+        seeAllBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                intent.putExtra("entry", "product-list");
+                intent.putExtra("categoryRaw", currentProduct.getCategory());
+                intent.putExtra("categoryName", currentProduct.getCategoryName());
+                intent.putExtra("nextFragment", ProductListFragment.TAG);
+                startActivity(intent);
+            }
+        });
     }
 
     private void updateCurrentSizeView(boolean isSelected) {
@@ -302,18 +323,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         // TODO: decrease inventory number of product
-
-        Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-        intent.putExtra("nextFragment", "cart");
-        intent.putExtra("productId", productId);
-        intent.putExtra("quantity", quantity);
-        intent.putExtra("size", size);
-        startActivity(intent);
+        Toast.makeText(this, "Sản phẩm đã được thêm vào giỏ hàng.", Toast.LENGTH_SHORT).show();
+        CartController.with(this).addToCart(new CartItem(currentProduct.getId(), 1, currentSize));
+//        Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+//        intent.putExtra("nextFragment", "cart");
+//        intent.putExtra("productId", productId);
+//        intent.putExtra("quantity", quantity);
+//        intent.putExtra("size", size);
+//        startActivity(intent);
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {
 
     }
-
-
 }

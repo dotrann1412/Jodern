@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.example.jodern.R;
+import com.example.jodern.provider.Provider;
 
 public class WishlistFragment extends Fragment {
+    public static final String TAG = "WishlistFragment";
     private String mParam1;
     private String mParam2;
     private ImageButton navbarBtn;
@@ -31,10 +33,7 @@ public class WishlistFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString("ARG_PARAM1");
-            mParam2 = getArguments().getString("ARG_PARAM2");
-        }
+        Provider.with(this.getContext()).setCurrentFragment(TAG);
     }
 
     @Override

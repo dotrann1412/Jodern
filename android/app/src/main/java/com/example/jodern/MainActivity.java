@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private MapFragment mapFragment;
     private CartFragment cartFragment;
     private WishlistFragment wishlistFragment;
-    private String currentFragment = "home";
+//    private String currentFragment = "home";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,23 +54,52 @@ public class MainActivity extends AppCompatActivity {
         String prevFragment = intent.getStringExtra("previousFragment");
         String nextFragment = intent.getStringExtra("nextFragment");
 
+        // Forward to the next fragment
         if (nextFragment != null) {
-            if (nextFragment.equals("productList")) {
+            if (nextFragment.equals(ProductListFragment.TAG)) {
+                Provider.with(this).setSearchIntent(intent);
                 // Receive data from search activity, forward it to product list fragment
                 Fragment fragment = new ProductListFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("entry", "search");
-                bundle.putString("query", intent.getStringExtra("query"));
-                String method = intent.getStringExtra("method");
-                if (method != null) {
-                    bundle.putString("method", method);
-                }
+                Bundle bundle = retrieveBundleForProductListFragment(intent);
+//                Bundle bundle = new Bundle();
+//                String entry = intent.getStringExtra("entry");
+//                if (entry == null) {
+//                    entry = "";
+//                }
+//
+//                if (entry.equals("search")) {
+//                    bundle.putString("entry", "search");
+//                    bundle.putString("query", intent.getStringExtra("query"));
+//                    String method = intent.getStringExtra("method");
+//                    if (method != null) {
+//                        bundle.putString("method", method);
+//                    }
+//                }
+//                else if (entry.equals("product-list")) {
+//                    bundle.putString("entry", "product-list");
+//                    String sex = intent.getStringExtra("sex");
+//                    String categoryName = intent.getStringExtra("categoryName");
+//                    String categoryRaw = intent.getStringExtra("categoryRaw");
+//                    bundle.putString("sex", "nam");
+//                    bundle.putString("categoryName", "Thời trang nam");
+//                    if (categoryRaw != null) {
+//                        bundle.putString("categoryRaw", categoryRaw);
+//                    }
+//                    if (categoryName != null) {
+//                        bundle.putString("categoryName", categoryName);
+//                    }
+//                    if (sex != null) {
+//                        bundle.putString("sex", sex);
+//                    }
+//                }
+
+
                 fragment.setArguments(bundle);
                 switchFragment(fragment, nextFragment);
                 return;
             }
 
-            if (nextFragment.equals("cart")) {
+            if (nextFragment.equals(CartFragment.TAG)) {
                 Fragment fragment = new CartFragment();
                 Bundle bundle = new Bundle();
                 bundle.putLong("productId", intent.getLongExtra("productId", 0L));
@@ -85,24 +114,60 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        // Back to previous fragment
         if (prevFragment == null) {
-            homeBtn.setImageResource(R.drawable.ic_home_filled);
-            switchFragment(homeFragment, "home");
-            return;
+            prevFragment = HomeFragment.TAG;
         }
-        currentFragment = prevFragment;
-        if (prevFragment.equals("home")) {
+        if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
-            switchFragment(homeFragment, "home");
-        } else if (prevFragment.equals("map")) {
+            switchFragment(homeFragment, HomeFragment.TAG);
+        }
+        else if (prevFragment.equals("map")) {
             mapBtn.setImageResource(R.drawable.ic_map_filled);
             switchFragment(mapFragment, "map");
-        } else if (prevFragment.equals("cart")) {
+        }
+        else if (prevFragment.equals(CartFragment.TAG)) {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
-            switchFragment(cartFragment, "cart");
-        } else if (prevFragment.equals("wishlist")) {
+            switchFragment(cartFragment, CartFragment.TAG);
+        }
+        else if (prevFragment.equals(WishlistFragment.TAG)) {
             wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-            switchFragment(wishlistFragment, "wishlist");
+            switchFragment(wishlistFragment, WishlistFragment.TAG);
+        }
+        else if (prevFragment.equals(ProductListFragment.TAG)) {
+            // retrieve search params
+            Intent searchIntent = Provider.with(this).getSearchIntent();
+            Fragment fragment = new ProductListFragment();
+            Bundle bundle = retrieveBundleForProductListFragment(searchIntent);
+//            Bundle bundle = new Bundle();
+//            String entry = searchIntent.getStringExtra("entry");
+//            if (entry.equals("search")) {
+//                bundle.putString("entry", "search");
+//                bundle.putString("query", searchIntent.getStringExtra("query"));
+//                String method = searchIntent.getStringExtra("method");
+//                if (method != null) {
+//                    bundle.putString("method", method);
+//                }
+//            }
+//            else if (entry.equals("product-list")) {
+//                bundle.putString("entry", "product-list");
+//                String categoryRaw = searchIntent.getStringExtra("categoryRaw");
+//                String categoryName = searchIntent.getStringExtra("categoryName");
+//                String sex = searchIntent.getStringExtra("sex");
+//                if (categoryRaw != null) {
+//                    bundle.putString("categoryRaw", categoryRaw);
+//                }
+//                if (categoryName != null) {
+//                    bundle.putString("categoryName", categoryName);
+//                }
+//                if (sex != null) {
+//                    bundle.putString("sex", sex);
+//                }
+//            }
+            fragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainFragmentContainer, fragment)
+                    .commit();
         }
     }
 
@@ -114,11 +179,43 @@ public class MainActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(onSearchBtnClicked);
     }
 
+    private Bundle retrieveBundleForProductListFragment(Intent searchIntent) {
+        Bundle bundle = new Bundle();
+        String entry = searchIntent.getStringExtra("entry");
+
+        if (entry.equals("search")) {
+            bundle.putString("entry", "search");
+            bundle.putString("query", searchIntent.getStringExtra("query"));
+            String method = searchIntent.getStringExtra("method");
+            if (method != null) {
+                bundle.putString("method", method);
+            }
+        }
+        else if (entry.equals("product-list")) {
+            bundle.putString("entry", "product-list");
+            String categoryRaw = searchIntent.getStringExtra("categoryRaw");
+            String categoryName = searchIntent.getStringExtra("categoryName");
+            String sex = searchIntent.getStringExtra("sex");
+            if (categoryRaw != null) {
+                bundle.putString("categoryRaw", categoryRaw);
+            }
+            if (categoryName != null) {
+                bundle.putString("categoryName", categoryName);
+            }
+            if (sex != null) {
+                bundle.putString("sex", sex);
+            }
+        }
+
+        return bundle;
+    }
+
     private final View.OnClickListener onSearchBtnClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            System.out.println("Search button clicked, current fragment: " + Provider.with(MainActivity.this).getCurrentFragment());
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-            intent.putExtra("previousFragment", currentFragment);
+            intent.putExtra("previousFragment", Provider.with(MainActivity.this).getCurrentFragment());
             startActivity(intent);
         }
     };
@@ -133,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
-                    switchFragment(homeFragment, "home");
+                    switchFragment(homeFragment, HomeFragment.TAG);
                     break;
                 case R.id.mainNavBarMapBtn:
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
@@ -141,11 +238,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.mainNavBarCartBtn:
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
-                    switchFragment(cartFragment, "cart");
+                    switchFragment(cartFragment, CartFragment.TAG);
                     break;
                 case R.id.mainNavBarWishlistBtn:
                     wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-                    switchFragment(wishlistFragment, "wishlist");
+                    switchFragment(wishlistFragment, WishlistFragment.TAG);
                     break;
             }
         }
@@ -159,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void switchFragment(Fragment fragmentObject, String name) {
-        currentFragment = name;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainFragmentContainer, fragmentObject)
                 .addToBackStack(name)
