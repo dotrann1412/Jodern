@@ -51,7 +51,6 @@ class SearchEngineInterface(APIView):
         try:
             query = base64.decodebytes(query.encode('utf-8'))
             query = np.frombuffer(query, dtype = np.uint8)
-            query = np.reshape(query, (256, 256, 3))
             
             return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
         except Exception as err:
