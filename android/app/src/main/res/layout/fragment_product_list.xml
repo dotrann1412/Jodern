@@ -28,7 +28,10 @@
                     android:id="@+id/productSearchBar"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_margin="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:background="@drawable/search_bar_shape"
                     android:clipChildren="true"
                     android:orientation="horizontal">

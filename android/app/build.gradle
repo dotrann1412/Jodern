@@ -6,7 +6,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "android.jodern.app"
+        applicationId "com.example.jodern"
         minSdk 29
         targetSdk 32
         versionCode 1
