@@ -6,12 +6,12 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -19,9 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.MapMarkerInfoAdapter;
+import com.example.jodern.customwidget.MyToast;
 import com.example.jodern.model.BranchLocation;
 import com.example.jodern.provider.Provider;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -54,12 +54,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private BranchLocation branchLocation;
     private BranchLocation currentLocation;
 
+    private LinearLayout loadingWrapper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: creating map activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_map);
-
         nearestBranch = null;
+
+        loadingWrapper = findViewById(R.id.mapLoadingWrapper);
+        loadingWrapper.setVisibility(View.VISIBLE);
 
         retrieveBranchLocation();
 
@@ -100,8 +105,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MapActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT).show();
+                        MyToast.makeText(MapActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT);
                         Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+                        loadingWrapper.setVisibility(View.GONE);
                     }
                 }
         );
@@ -128,8 +134,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
+            Thread.sleep(1000);
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
+        } finally {
+            loadingWrapper.setVisibility(View.GONE);
         }
     }
 

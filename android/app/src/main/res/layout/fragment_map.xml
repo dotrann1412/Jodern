@@ -20,7 +20,6 @@
         map:uiZoomGestures="true"
         android:layout_weight="1"
         />
-    <!--    This makes the map inactive:  map:liteMode="true" -->
     <TextView android:id="@+id/mapTextView"
         android:gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -33,4 +32,19 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:lineHeight="20sp"/>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/mapLoadingWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_overlay"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/primary" />
+
+    </LinearLayout>
 </LinearLayout>
