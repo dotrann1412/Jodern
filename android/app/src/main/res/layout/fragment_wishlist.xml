@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.WishlistFragment">
+    tools:context=".fragment.WishlistFragment"
+    android:id="@+id/wishlistParentView"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"

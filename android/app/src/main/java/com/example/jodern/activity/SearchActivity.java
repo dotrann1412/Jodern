@@ -18,43 +18,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.example.jodern.ImagePicker;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.model.Category;
-import com.example.jodern.provider.Provider;
-import com.google.android.material.button.MaterialButton;
-
-import java.io.ByteArrayOutputStream;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import com.example.jodern.customwidget.MyToast;
-import com.example.jodern.MainActivity;
-import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SearchView;
-import android.widget.Toast;
-
 import com.google.android.material.button.MaterialButton;
 
 import java.io.ByteArrayOutputStream;
@@ -66,6 +36,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final int MY_GALLERY_REQUEST_CODE = 101;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
 
+    private LinearLayout searchParentView;
     private String previousFragment;
     private ImageButton backBtn;
     private SearchView inputField;
@@ -92,6 +63,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        searchParentView = findViewById(R.id.searchWrapperLayout);
+
         backBtn = findViewById(R.id.searchBackBtn);
         inputField = findViewById(R.id.searchInputField);
         cameraBtn = findViewById(R.id.searchCameraBtn);
@@ -155,7 +128,7 @@ public class SearchActivity extends AppCompatActivity {
                             if (bitmap != null) {
                                 submitImageQuery(bitmap);
                             } else {
-                                MyToast.makeText(SearchActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+                                MySnackbar.inforSnackar(SearchActivity.this, searchParentView, getString(R.string.error_message)).show();
                             }
                         }
                     }
@@ -165,7 +138,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void submitTextQuery(String query) {
         if (query.length() == 0) {
-            MyToast.makeText(SearchActivity.this, "Bạn vui lòng nhập nội dung tìm kiếm nhé!", Toast.LENGTH_SHORT);
+            MySnackbar.inforSnackar(SearchActivity.this, searchParentView, "Bạn vui lòng nhập nội dung tìm kiếm nhé!").show();
             return;
         }
 
@@ -210,13 +183,13 @@ public class SearchActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MyToast.makeText(this, "Không thể truy cập vào camera!", Toast.LENGTH_SHORT);
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
             } else {
                 runImagePicker();
             }
         } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MyToast.makeText(this, "Không thể truy cập vào thư viện!", Toast.LENGTH_SHORT);
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
             } else {
                 runImagePicker();
             }

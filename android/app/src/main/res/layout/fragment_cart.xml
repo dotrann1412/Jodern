@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.CartFragment">
+    tools:context=".fragment.CartFragment"
+    android:id="@+id/cartParentView">
 
     <LinearLayout
         android:layout_width="match_parent"

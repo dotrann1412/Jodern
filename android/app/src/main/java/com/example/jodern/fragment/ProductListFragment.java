@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -26,7 +26,7 @@ import com.example.jodern.R;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.adapter.CategoryTagListAdapter;
 import com.example.jodern.adapter.ProductListAdapter;
-import com.example.jodern.customwidget.MyToast;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,6 +41,7 @@ import java.util.Objects;
 
 public class ProductListFragment extends Fragment {
     public static final String TAG = "ProductListFragment";
+    private FrameLayout parentView;
     private TextView currentCateText;
     private TextView productSearchBarText;
     private LinearLayout searchBar;
@@ -73,6 +74,7 @@ public class ProductListFragment extends Fragment {
     }
 
     private void initViews() {
+        parentView = getView().findViewById(R.id.productParentView);
         currentCateText = getView().findViewById(R.id.productCurrentCateText);
         productSearchBarText = getView().findViewById(R.id.productSearchBarText);
         searchBar = getView().findViewById(R.id.productSearchBar);
@@ -135,7 +137,6 @@ public class ProductListFragment extends Fragment {
             // GET requests
             String searchParams = parseSearchParams(args);
             String url = "http://jodern.store:8000/api/" + searchParams;
-            System.out.println("URL: " + url);
             JsonObjectRequest getRequest = new JsonObjectRequest (
                     Request.Method.GET,
                     url,
@@ -143,14 +144,12 @@ public class ProductListFragment extends Fragment {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            System.out.println("Success");
                             handleResponse(response);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            System.out.println("Error");
                             handleError(error);
                         }
                     }
@@ -158,6 +157,8 @@ public class ProductListFragment extends Fragment {
             Provider.with(this.getContext()).addToRequestQueue(getRequest);
         }
         else if (method.equals("post")) {
+            System.out.println("post image");
+
             // POST requests
             String entry = args.getString("entry");
             String query = args.getString("query");
@@ -172,14 +173,12 @@ public class ProductListFragment extends Fragment {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            System.out.println("POST success");
                             handleResponse(response);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            System.out.println("POST error");
                             handleError(error);
                         }
                     }
@@ -217,7 +216,7 @@ public class ProductListFragment extends Fragment {
 
     private void handleError(VolleyError error) {
         loadingWrapper.setVisibility(View.GONE);
-        MyToast.makeText(this.getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
+        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 
     private void handleResponse(JSONObject response) {

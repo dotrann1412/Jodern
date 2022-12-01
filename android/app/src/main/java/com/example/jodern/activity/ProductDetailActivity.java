@@ -3,9 +3,6 @@ package com.example.jodern.activity;
 import static com.example.jodern.Utils.vndFormatPrice;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,12 +10,11 @@ import android.content.Intent;
 
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
-import com.example.jodern.adapter.ProductListAdapter;
+import com.example.jodern.adapter.ProductSliderAdapter;
 import com.example.jodern.adapter.TrendingAdapter;
 import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.customwidget.MyToast;
-//import com.example.jodern.activity.CartActivity;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.fragment.WishlistFragment;
@@ -26,16 +22,13 @@ import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
-import android.view.WindowId;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -46,21 +39,26 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodern.wishlist.WishlistController;
 import com.example.jodern.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ProductDetailActivity extends AppCompatActivity {
+    private RelativeLayout parentView;
+
     private Product currentProduct;
 
+    private SliderView sliderView;
     private TextView detailName, detailPrice, detailInventoryQuantity, detailDescription;
-    private ImageView detailImage;
 
     private int currentQuantity = 1;
     private TextView buyQuantityText;
@@ -106,7 +104,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         parseProductFromResponse(response);
                         setupMainProduct();
-                        // TODO: other products in the same category
                         getOtherProducts(intent);
                     }
                 },
@@ -114,7 +111,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loadingWrapper.setVisibility(View.GONE);
-                        MyToast.makeText(ProductDetailActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
@@ -143,12 +140,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loadingWrapper.setVisibility(View.GONE);
-                        MyToast.makeText(ProductDetailActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
         Provider.with(this).addToRequestQueue(stringRequest);
-
     }
 
     private ArrayList<Product> parseOtherProductsFromResponse(JSONObject response) {
@@ -174,30 +170,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void parseProductFromResponse(JSONObject response) {
         try {
             currentProduct = Product.parseJSON(response);
-
-            Long id = response.getLong("id");
-            String name = response.getString("title");
-            String description = response.getString("description");
-
-            // images
-            // TODO: image select feature, currently just use the first image
-            JSONArray imageURLs = response.getJSONArray("images");
-            ArrayList<String> images = new ArrayList<>();
-            for (int i = 0; i < imageURLs.length(); i++) {
-                images.add(imageURLs.get(i).toString());
-            }
-
-            // inventory quantities
-            Long price = response.getLong("price");
-            JSONObject inventories = response.getJSONObject("inventory");
-            Integer[] inventory = new Integer[5];
-            for (int i = 0; i < sizes.length; i++) {
-                inventory[i] = inventories.getInt(sizes[i]);
-            }
-
-            String category = response.getString("category");
-            String categoryName = response.getString("category_name");
-            currentProduct = new Product(id, name, images, price, description, category, categoryName, inventory);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -215,12 +187,19 @@ public class ProductDetailActivity extends AppCompatActivity {
         currentQuantity = 1;
         buyQuantityText.setText("1" );
 
-        // TODO: update after add image select
-        Glide.with(this)
-                .load(currentProduct.getFirstImageURL())
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
-                .override(detailImage.getWidth(),detailImage.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
-                .into(detailImage);
+        // image slider
+        ArrayList<String> images = currentProduct.getImages();
+        for (String url: images)
+            System.out.println(url);
+        ProductSliderAdapter adapter = new ProductSliderAdapter(this);
+        adapter.setItems(images);
+        if (images.size() > 1)
+            sliderView.setSliderAdapter(adapter);
+        else
+            sliderView.setSliderAdapter(adapter, false);
+        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
+        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+        sliderView.startAutoCycle();
 
         specifyProductInWishlist();
     }
@@ -230,7 +209,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         for (WishlistItem item : wishlist) {
             if (item.getProductId().equals(currentProduct.getId())) {
                 isInWishlist = true;
-                addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+                addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
                 return;
             }
         }
@@ -260,7 +239,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        detailImage = findViewById(R.id.detailImage);
+        parentView = findViewById(R.id.detailParentView);
+
+        sliderView = findViewById(R.id.detailImageSlider);
         detailName = findViewById(R.id.detailName);
         detailPrice = findViewById(R.id.detailPrice);
         detailDescription = findViewById(R.id.detailDescription);
@@ -347,7 +328,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         // This product is access from cart or wishlist
         Intent newIntent = new Intent(this, MainActivity.class);
         if (hasRemovedFromWishlist) {
-            // reload destination (for example, this product has just been removed from wishlist,, at this activity)
+            // reload destination (for example, this product has just been removed from wishlist, at this activity)
             newIntent.putExtra("nextFragment", previousFragment);
         } else {
             // do not reload destination
@@ -362,25 +343,46 @@ public class ProductDetailActivity extends AppCompatActivity {
         String size = currentSize;
         int inventory = currentProduct.getInventory(currentSize);
         if (quantity > inventory) {
-            MyToast.makeText(this, "Số lượng sản phẩm không đủ", Toast.LENGTH_SHORT);
+            MySnackbar.inforSnackar(this, parentView, "Số lượng sản phẩm không đủ").show();
             return;
         }
 
-        MyToast.makeText(this, "Sản phẩm đã được thêm vào giỏ hàng.", Toast.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào giỏ hàng", Snackbar.LENGTH_SHORT);
+        snackbar.setAction(getString(R.string.go_to_cart), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                intent.putExtra("nextFragment", CartFragment.TAG);
+                startActivity(intent);
+            }
+        });
+        TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+        textView.setAllCaps(false);
+        snackbar.show();
+
         CartController.with(this).addToCart(new CartItem(productId, quantity, size));
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {
         if (isInWishlist) {
-            System.out.println("Remove from wishlist");
-            // Remove from wishlist
             WishlistController.with(this).deleteItem(currentProduct.getId(), new ChangeNumItemsListener() {
                 @Override
                 public void onChanged() {
                     isInWishlist = false;
                     hasRemovedFromWishlist = true;
                     addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
-                    MyToast.makeText(ProductDetailActivity.this, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Snackbar.LENGTH_SHORT);
+                    snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                            intent.putExtra("nextFragment", WishlistFragment.TAG);
+                            startActivity(intent);
+                        }
+                    });
+                    TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+                    textView.setAllCaps(false);
+                    snackbar.show();
                 }
             });
             return;
@@ -388,7 +390,18 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         WishlistController.with(this).addToWishlist(new WishlistItem(currentProduct.getId()));
         isInWishlist = true;
-        addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-        MyToast.makeText(this, "Sản phẩm đã được thêm vào danh sách yêu thích", Toast.LENGTH_SHORT);
+        addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
+        Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào danh sách yêu thích", Snackbar.LENGTH_SHORT);
+        snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                intent.putExtra("nextFragment", CartFragment.TAG);
+                startActivity(intent);
+            }
+        });
+        TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+        textView.setAllCaps(false);
+        snackbar.show();
     }
 }

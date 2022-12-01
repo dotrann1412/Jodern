@@ -46,7 +46,7 @@ public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHo
         // TODO: add placeholder for Glide
         Glide.with(mContext)
                 .load(product.getFirstImageURL())
-                // optimize Glide
+                .placeholder(R.drawable.item_placeholder)
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
                 .override(holder.image.getWidth(),holder.image.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
                 .into(holder.image);
