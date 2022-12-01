@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ProductListFragment extends Fragment {
+    public static final String TAG = "ProductListFragment";
     private TextView currentCateText;
     private TextView productSearchBarText;
     private LinearLayout searchBar;
@@ -57,6 +58,7 @@ public class ProductListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Provider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_product_list, container, false);
     }
 
@@ -85,6 +87,7 @@ public class ProductListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), SearchActivity.class);
+                intent.putExtra("previousFragment", TAG);
                 startActivity(intent);
             }
         });

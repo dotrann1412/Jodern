@@ -1,18 +1,20 @@
 package com.example.jodern.cart.cartitem;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(primaryKeys = {"product_id", "size"})
 public class CartItem {
-    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "product_id")
     private Long productId;
 
     @ColumnInfo(name = "quantity")
     private Integer quantity;
 
+    @NonNull
     @ColumnInfo(name = "size")
     private String size;
 

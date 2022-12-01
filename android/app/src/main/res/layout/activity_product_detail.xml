@@ -222,7 +222,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
-                        android:layout_width="32dp"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content">
 
                     </LinearLayout>
@@ -252,7 +252,7 @@
                             android:layout_weight="1"
                             android:text="1"
                             android:textColor="@color/text"
-                            android:textSize="24sp"
+                            android:textSize="20sp"
                             android:textAlignment="center"
                              />
 
@@ -306,18 +306,43 @@
                     android:layout_margin="16dp"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Các sản phẩm cùng danh mục:"
-                        android:textColor="@color/text"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Các sản phẩm cùng danh mục:"
+                            android:textColor="@color/text"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/detailSeeAllBtn"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/dark_gray"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="10dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="4dp"
+                            android:text="Xem tất cả"
+                            android:textAllCaps="false"
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            app:strokeColor="@color/gray" />
+                    </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/detailOtherProductsView"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="220dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginRight="8dp"
@@ -347,7 +372,7 @@
                 android:id="@+id/detailBackBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/cate_image_shape"
+                android:background="@drawable/cart_image_shape"
                 android:padding="10dp"
                 android:src="@drawable/ic_back"
                 app:tint="@color/primary_dark" />
@@ -381,11 +406,10 @@
                 android:id="@+id/detailAddToWishlistBtn"
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
-                android:background="@drawable/cate_image_shape"
+                android:background="@drawable/cart_image_shape"
                 android:padding="12dp"
                 android:src="@drawable/ic_wishlist"
-                android:scaleType="fitXY"
-                app:tint="@color/primary_dark" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 

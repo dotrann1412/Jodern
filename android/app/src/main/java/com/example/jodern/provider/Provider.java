@@ -1,7 +1,10 @@
 package com.example.jodern.provider;
 
 import android.content.Context;
+import android.content.Intent;
+
 import com.example.jodern.R;
+import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.model.Category;
 
 import com.android.volley.Request;
@@ -13,9 +16,11 @@ import java.util.HashMap;
 
 public class Provider {
     private static Provider instance = null;
+    private String currentFragment;
     private RequestQueue requestQueue;
     private static Context context;
     private HashMap<String, ArrayList<Category>> categoryListMapping;
+    private Intent searchIntent;
 
     public static Provider with(Context context) {
         // ref: https://www.digitalocean.com/community/tutorials/java-singleton-design-pattern-best-practices-examples#:~:text=safe%20singleton%20class.-,4.%20Thread%20Safe%20Singleton,-A%20simple%20way
@@ -31,6 +36,7 @@ public class Provider {
 
     private Provider(Context context) {
         Provider.context = context;
+        currentFragment = HomeFragment.TAG;
 
         if (categoryListMapping == null)
             categoryListMapping = new HashMap<>();
@@ -45,6 +51,22 @@ public class Provider {
             requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
         return requestQueue;
+    }
+
+    public void setCurrentFragment(String currentFragment) {
+        this.currentFragment = currentFragment;
+    }
+
+    public String getCurrentFragment() {
+        return currentFragment;
+    }
+
+    public void setSearchIntent(Intent searchIntent) {
+        this.searchIntent = searchIntent;
+    }
+
+    public Intent getSearchIntent() {
+        return searchIntent;
     }
 
     public <T> void addToRequestQueue(Request<T> req) {

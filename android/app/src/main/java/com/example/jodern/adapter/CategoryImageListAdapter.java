@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 //import com.example.jodern.ProductListActivity;
 import com.example.jodern.R;
+import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.model.Category;
+import com.example.jodern.provider.Provider;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -82,6 +84,13 @@ public class CategoryImageListAdapter extends RecyclerView.Adapter<CategoryImage
                     bundle.putString("categoryRaw", category.getRaw());
                     bundle.putString("categoryName", category.getName());
                     fragment.setArguments(bundle);
+
+                    // Back pressed handling
+                    Intent searchIntent = new Intent(currentFragment.getActivity(), ProductListFragment.class);
+                    searchIntent.putExtra("entry", "product-list");
+                    searchIntent.putExtra("categoryRaw", category.getRaw());
+                    searchIntent.putExtra("categoryName", category.getName());
+                    Provider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
 
                     FragmentManager fragmentManager = currentFragment.requireActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

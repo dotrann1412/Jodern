@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
+    public static final String TAG = "HomeFragment";
+
     private LinearLayout homeSearchBar;
     private ImageButton navbarBtn;
     private MaterialButton maleSeeAllBtn;
@@ -58,15 +60,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString("ARG_PARAM1");
-//            mParam2 = getArguments().getString("ARG_PARAM2");
-//        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Provider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -135,10 +134,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void getTrendingProducts() {
-        // demo API
-//        String entry = "";
-//        String url = "http://jodern.store:8000/api/" + entry;
-        String url = "http://jodern.store:8000/api/product-list?category=ao-khoac-nam";
+        String entry = "trending";
+        String params = "8";
+        String url = "http://jodern.store:8000/api/" + entry + "/" + params;
         JsonObjectRequest postRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,
@@ -146,7 +144,6 @@ public class HomeFragment extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        // do something
                         ArrayList<Product> trendingProducts = Product.parseProductListFromResponse(response);
                         setupTrendingProducts(trendingProducts);
                     }
@@ -154,13 +151,11 @@ public class HomeFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        return;
+                        MyToast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
                     }
                 }
         );
         Provider.with(this.getContext()).addToRequestQueue(postRequest);
-
-
     }
 
     private void setupTrendingProducts(ArrayList<Product> trendingProducts) {
@@ -169,8 +164,6 @@ public class HomeFragment extends Fragment {
         trendingView.setAdapter(trendingAdapter);
         trendingView.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
-
-
 
     private void setupCategoryLists() {
         // find views

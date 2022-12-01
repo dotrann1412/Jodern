@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 @Database(entities = {CartItem.class}, version = 1)
 public abstract class CartItemDB extends RoomDatabase {
-    private static final String CART_ITEM_DB = "cart_item.db";
+    private static final String CART_ITEM_DB = "cart_item_db.db";
 
     public abstract CartItemDao orderItemDao();
 

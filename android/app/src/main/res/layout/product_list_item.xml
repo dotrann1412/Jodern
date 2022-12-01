@@ -11,15 +11,14 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="240dp"
         app:cardCornerRadius="16dp"
         app:cardPreventCornerOverlap="false">
 
         <ImageView
             android:id="@+id/productListItemImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:src="@drawable/demo" />

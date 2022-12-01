@@ -23,7 +23,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import java.util.ArrayList;
 
 public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHolder> {
-    //    private ArrayList<ProductListItem> productList;
     private ArrayList<Product> productList;
 
     private final Context mContext;

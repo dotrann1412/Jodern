@@ -23,8 +23,10 @@ import android.widget.Toast;
 import com.example.jodern.ImagePicker;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
+import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.model.Category;
+import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.ByteArrayOutputStream;
@@ -84,7 +86,7 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String previousFragment = intent.getStringExtra("previousFragment");
         if (previousFragment == null) {
-            this.previousFragment = "home";
+            this.previousFragment = HomeFragment.TAG;
         } else
             this.previousFragment = previousFragment;
     }
@@ -103,8 +105,6 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
-//                startActivity(new Intent(SearchActivity.this, MainActivity.class));
-//                finish();
             }
         });
 
@@ -129,7 +129,8 @@ public class SearchActivity extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                submitTextQuery(inputField.getQuery().toString());
+                String query = inputField.getQuery().toString();
+                submitTextQuery(query);
             }
         });
 
@@ -171,7 +172,7 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent(SearchActivity.this, MainActivity.class);
         intent.putExtra("entry", "search");
         intent.putExtra("query", query);
-        intent.putExtra("nextFragment", "productList");
+        intent.putExtra("nextFragment", ProductListFragment.TAG);
         startActivity(intent);
     }
 
@@ -186,7 +187,7 @@ public class SearchActivity extends AppCompatActivity {
         intent.putExtra("entry", "search");
         intent.putExtra("query", encoded);
         intent.putExtra("method", "post");
-        intent.putExtra("nextFragment", "productList");
+        intent.putExtra("nextFragment", ProductListFragment.TAG);
         startActivity(intent);
     }
 

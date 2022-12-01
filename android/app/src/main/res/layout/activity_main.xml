@@ -72,7 +72,7 @@
             <ImageButton
                 android:id="@+id/mainNavBarCartBtn"
                 android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_height="28dp"
                 android:background="@android:color/transparent"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_cart"

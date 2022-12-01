@@ -4,13 +4,22 @@ import static com.example.jodern.Utils.vndFormatPrice;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodern.R;
+import com.example.jodern.activity.ProductDetailActivity;
+import com.example.jodern.fragment.CartFragment;
+import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.provider.Provider;
+
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,141 +43,46 @@ import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private static final String TAG = CartAdapter.class.getName();
+
     private final List<CartItem> cartItemList;
-    private final CartController cartController;
+    private final List<Product> productList;
     private final ChangeNumItemsListener changeNumItemsListener;
+
+    private final CartController cartController;
+
     private final Context context;
-    private Product product = null;
 
-    // TODO: total injection
-    private final List<Long> prices;
 
-    public CartAdapter(List<CartItem> cartItemList, Context context, ChangeNumItemsListener changeNumItemsListener) {
-        this.cartItemList = cartItemList;
-        this.cartController = CartController.with(context);
+    public CartAdapter(CartController cartController, Context context, ChangeNumItemsListener changeNumItemsListener) {
+        this.cartItemList = cartController.getCartList();
+        this.productList = cartController.getProductList();
+        this.cartController = cartController;
         this.changeNumItemsListener = changeNumItemsListener;
         this.context = context;
-
-        this.prices = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_item, parent, false);
-
         return new ViewHolder(inflater);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        try {
-            Log.d(TAG, "onBindViewHolder: binding view holder");
-            CartItem cartItem = cartItemList.get(position);
+        Product product = productList.get(position);
+        CartItem item = cartItemList.get(position);
 
-            String url = "http://jodern.store:8000/api/product/" + String.valueOf(cartItem.getProductId());
-            JsonObjectRequest stringRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        parseProductResponse(response);
-                        initCartItemView(holder, cartItem);
-                        Log.d(TAG, "onResponse: successful");
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onErrorResponse: VolleyError: " + error);
-                    }
-                }
-            );
-            Provider.with(context).addToRequestQueue(stringRequest);
-
-            holder.incItem.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onClick(View view) {
-                    cartController.increaseNumItems(cartItemList, position, new ChangeNumItemsListener() {
-                        @Override
-                        public void onChanged() {
-                            notifyDataSetChanged();
-                            changeNumItemsListener.onChanged();
-                        }
-                    });
-                }
-            });
-
-            holder.decItem.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onClick(View view) {
-                    cartController.decreaseNumItems(cartItemList, position, new ChangeNumItemsListener() {
-                        @Override
-                        public void onChanged() {
-                            notifyDataSetChanged();
-                            changeNumItemsListener.onChanged();
-                        }
-                    });
-                }
-            });
-
-            holder.removeItem.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onClick(View view) {
-                    cartController.deleteItem(cartItemList, position, new ChangeNumItemsListener() {
-                        @Override
-                        public void onChanged() {
-                            notifyDataSetChanged();
-                            changeNumItemsListener.onChanged();
-                        }
-                    });
-                }
-            });
-            Log.d(TAG, "onBindViewHolder: bind view holder successfully");
-        } catch (NullPointerException e) {
-            Log.d(TAG, "NullPointerException: " + e.getMessage());
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void initCartItemView(ViewHolder holder, CartItem cartItem) {
-        if (product == null) {
-            throw new NullPointerException("product get from API response is null");
-        }
         holder.itemName.setText(product.getName());
-        holder.itemCost.setText(vndFormatPrice(product.getPrice()));
-        holder.numItems.setText(String.valueOf(cartItem.getQuantity()));
-        holder.itemSize.setText("Size " + cartItem.getSize());
-
+        holder.itemPrice.setText(vndFormatPrice(product.getPrice()));
+        holder.itemQuantity.setText(String.valueOf(item.getQuantity()));
+        holder.itemSize.setText("Size " + item.getSize());
         Glide.with(context)
-                .load(product.getFirstImageURL())
-                .centerCrop()
+                .load(productList.get(position).getFirstImageURL())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.item_placeholder)
-                .into(holder.itemImageUri);
-
-        prices.add(product.getPrice());
-    }
-
-    private void parseProductResponse(JSONObject response) {
-        Log.d(TAG, "parseProductResponse: parsing from API call");
-        product = Product.parseJSON(response);
-    }
-
-    public Long getCartSubTotal() {
-        Long result = 0L;
-        for (Long price : prices) {
-            result += price;
-        }
-        return result;
+                .into(holder.itemImage);
     }
 
     @Override
@@ -176,20 +90,90 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return cartItemList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView itemName, itemCost, numItems, itemSize;
-        ImageView itemImageUri, incItem, decItem, removeItem;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView itemName, itemPrice, itemSize, itemQuantity;
+        ImageView itemImage, itemRemoveBtn;
+        ImageButton itemIncBtn, itemDecBtn;
+        LinearLayout itemWrapper;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-//            itemName = itemView.findViewById(R.id.cartViewHolderName);
-//            itemCost = itemView.findViewById(R.id.itemsCost);
-//            itemImageUri = itemView.findViewById(R.id.cartViewHolderImage);
-//            numItems = itemView.findViewById(R.id.cartNumItemsTextView);
-//            incItem = itemView.findViewById(R.id.cartItemIncrease);
-//            decItem = itemView.findViewById(R.id.cartItemDecrease);
-//            removeItem = itemView.findViewById(R.id.cartItemRemoveBtn);
-//            itemSize = itemView.findViewById(R.id.itemSize);
+            itemName = itemView.findViewById(R.id.cartViewHolderName);
+            itemPrice = itemView.findViewById(R.id.cartViewHolderPrice);
+            itemSize = itemView.findViewById(R.id.cartViewHolderSize);
+            itemQuantity = itemView.findViewById(R.id.cartViewHolderQuantity);
+            itemImage = itemView.findViewById(R.id.cartViewHolderImage);
+            itemRemoveBtn = itemView.findViewById(R.id.cartViewHolderRemoveBtn);
+            itemIncBtn = itemView.findViewById(R.id.cartViewHolderIncBtn);
+            itemDecBtn = itemView.findViewById(R.id.cartViewHolderDecBtn);
+            itemWrapper = itemView.findViewById(R.id.cartViewHolderWrapper);
+            setEvents();
+        }
+
+        private void setEvents() {
+            itemIncBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // update on the database
+                    cartController.increaseNumItems(getAdapterPosition(), new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
+
+                    // update UI
+                    int quantity = Integer.parseInt(itemQuantity.getText().toString());
+                    quantity++;
+                    itemQuantity.setText(String.valueOf(quantity));
+                }
+            });
+
+            itemDecBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cartController.decreaseNumItems(getAdapterPosition(), new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
+
+                    // update UI
+                    int quantity = Integer.parseInt(itemQuantity.getText().toString());
+                    if (quantity > 1) {
+                        quantity--;
+                        itemQuantity.setText(String.valueOf(quantity));
+                    }
+                }
+            });
+
+            itemRemoveBtn.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onClick(View view) {
+                    cartController.deleteItem(getAdapterPosition(), new ChangeNumItemsListener() {
+                        @Override
+                        public void onChanged() {
+                            notifyDataSetChanged();
+                            changeNumItemsListener.onChanged();
+                        }
+                    });
+                }
+            });
+
+            itemWrapper.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Product productItem = productList.get(getAdapterPosition());
+                    Intent intent = new Intent(context, ProductDetailActivity.class);
+                    intent.putExtra("productId", productItem.getId());
+                    intent.putExtra("previousFragment", CartFragment.TAG);
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

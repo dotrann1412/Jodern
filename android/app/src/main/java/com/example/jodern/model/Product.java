@@ -19,6 +19,7 @@ public class Product {
     private Long price;
     private String description;
     private String category;
+    private String categoryName;
     private Integer[] inventories;
 
     public Product() {
@@ -32,13 +33,14 @@ public class Product {
         this.price = price;
     }
 
-    public Product(Long id, String name, ArrayList<String> imageURLs, Long price, String description, String category, Integer[] inventories) {
+    public Product(Long id, String name, ArrayList<String> imageURLs, Long price, String description, String category, String categoryName, Integer[] inventories) {
         this.id = id;
         this.name = name;
         this.imageURLs = imageURLs;
         this.price = price;
         this.description = description;
         this.category = category;
+        this.categoryName = categoryName;
         this.inventories = inventories;
     }
 
@@ -64,9 +66,10 @@ public class Product {
             }
 
             String category = response.getString("category");
+            String categoryName = response.getString("category_name");
 
             Log.d(TAG, "parseJSON: parse JSON object to Product object successfully");
-            return new Product(id, name, images, price, description, category, inventory);
+            return new Product(id, name, images, price, description, category, categoryName, inventory);
         }
         catch (Exception e) {
             Log.d(TAG, "parseJSON: failed to parse JSON object to Product object");
@@ -103,6 +106,10 @@ public class Product {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public String getFirstImageURL() {

@@ -9,16 +9,22 @@ import android.util.Log;
 import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.cart.cartitem.CartItemDB;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
+import com.example.jodern.model.Product;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class CartController {
     private static final String TAG = CartController.class.getName();
 
     private List<CartItem> cartItemList;
+    private List<Product> productList = new ArrayList<>();
+
     private CartItemDB cartItemDB;
     private final Context context;
-
 
     private CartController(Context context) {
         this.context = context;
@@ -27,13 +33,10 @@ public class CartController {
             cartItemDB = CartItemDB.with(context);
             cartItemList = cartItemDB.orderItemDao().loadAll();
             Log.d(TAG, "CartController: retrieving cart successfully");
+            Log.d(TAG, "Length: " + cartItemList.size());
         } catch (Exception e) {
             Log.d(TAG, "CartController: failed to retrieve cart items data");
             e.printStackTrace();
-        }
-
-        for (int i = 0; i < cartItemList.size(); ++i) {
-            Log.d(TAG, "CartController: " + cartItemList.get(i));
         }
     }
 
@@ -43,8 +46,11 @@ public class CartController {
 
     public void addToCart(CartItem cartItem) {
         try {
+            // update on database
+            cartItemDB.orderItemDao().insert(cartItem);
             cartItemList.add(cartItem);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -53,16 +59,23 @@ public class CartController {
         return cartItemList;
     }
 
-    public int getCartListSize() {
-        try {
-            return cartItemList.size();
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-            return -1;
+    public void setProductList(List<Product> productList) {
+        this.productList.clear();
+        for (int i = 0; i < cartItemList.size(); i++) {
+            for (int j = 0; j < productList.size(); j++) {
+                if (cartItemList.get(i).getProductId() == productList.get(j).getId()) {
+                    this.productList.add(productList.get(j));
+                    break;
+                }
+            }
         }
     }
 
-    public void increaseNumItems(List<CartItem> cartItemList, int position, ChangeNumItemsListener changeNumItemsListener) {
+    public List<Product> getProductList() {
+        return productList;
+    }
+
+    public void increaseNumItems(int position, ChangeNumItemsListener changeNumItemsListener) {
         CartItem cartItem = cartItemList.get(position);
 
         // update on database
@@ -75,7 +88,7 @@ public class CartController {
         changeNumItemsListener.onChanged();
     }
 
-    public void decreaseNumItems(List<CartItem> cartItemList, int position, ChangeNumItemsListener changeNumItemsListener) {
+    public void decreaseNumItems(int position, ChangeNumItemsListener changeNumItemsListener) {
         CartItem cartItem = cartItemList.get(position);
 
         if (cartItemList.get(position).getQuantity() > 1) {
@@ -85,26 +98,22 @@ public class CartController {
             // update on code
             cartItem.setQuantity(cartItem.getQuantity() - 1);
             cartItemList.set(position, cartItem);
-        }
-        else if (cartItemList.get(position).getQuantity() == 1) {
-            // update on database
-            cartItemDB.orderItemDao().delete(cartItemList.get(position));
 
-            // update on code
-            cartItemList.remove(position);
+            changeNumItemsListener.onChanged();
         }
-        changeNumItemsListener.onChanged();
     }
 
-    public void deleteItem(List<CartItem> cartItemList, int position, ChangeNumItemsListener changeNumItemsListener) {
+    public void deleteItem(int position, ChangeNumItemsListener changeNumItemsListener) {
+        if (position == -1)
+            return;
+
         // update on database
         cartItemDB.orderItemDao().delete(cartItemList.get(position));
 
         // update on code
         cartItemList.remove(position);
+        productList.remove(position);
 
         changeNumItemsListener.onChanged();
     }
-
-
 }
