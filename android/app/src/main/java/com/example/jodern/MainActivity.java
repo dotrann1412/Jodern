@@ -1,6 +1,7 @@
 package com.example.jodern;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.widget.ImageButton;
 
 import com.example.jodern.activity.MapActivity;
 import com.example.jodern.activity.SearchActivity;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private CartFragment cartFragment;
     private WishlistFragment wishlistFragment;
+    private ConstraintLayout mainParentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,23 @@ public class MainActivity extends AppCompatActivity {
         setupInitialFragments();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        resetNavbarBtns();
+        String currentFragment = Provider.with(this).getCurrentFragment();
+        if (currentFragment.equals(HomeFragment.TAG))
+            homeBtn.setImageResource(R.drawable.ic_home_filled);
+        else if (currentFragment.equals(CartFragment.TAG))
+            cartBtn.setImageResource(R.drawable.ic_cart_filled);
+        else if (currentFragment.equals(WishlistFragment.TAG))
+            wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+    }
+
     private void initViews() {
+        mainParentView = findViewById(R.id.mainParentView);
+
         homeBtn = findViewById(R.id.mainNavBarHomeBtn);
         mapBtn = findViewById(R.id.mainNavBarMapBtn);
         cartBtn = findViewById(R.id.mainNavBarCartBtn);
@@ -171,15 +190,19 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.mainNavBarMapBtn:
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
-//                    switchFragment(mapFragment, "map");
-                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                    startActivity(intent);
+                    try {
+                        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, "Map is not available").show();
+                    }
                     break;
 
                 case R.id.mainNavBarCartBtn:
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
                     switchFragment(cartFragment, CartFragment.TAG);
                     break;
+
                 case R.id.mainNavBarWishlistBtn:
                     wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
                     switchFragment(wishlistFragment, WishlistFragment.TAG);

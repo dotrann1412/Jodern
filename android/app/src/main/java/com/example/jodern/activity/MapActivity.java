@@ -24,6 +24,7 @@ import com.example.jodern.adapter.MapMarkerInfoAdapter;
 import com.example.jodern.customwidget.MyToast;
 import com.example.jodern.model.BranchLocation;
 import com.example.jodern.provider.Provider;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,7 +61,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: creating map activity");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_map);
+        setContentView(R.layout.activity_map);
         nearestBranch = null;
 
         loadingWrapper = findViewById(R.id.mapLoadingWrapper);
@@ -134,7 +135,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
