@@ -22,7 +22,7 @@
             android:layout_height="130dp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/demo" />
+            android:background="@color/dark_gray" />
     </androidx.cardview.widget.CardView>
 
     <LinearLayout

@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -25,9 +26,12 @@ import com.example.jodern.R;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
+import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 public class SearchActivity extends AppCompatActivity {
     // Show search history? https://stackoverflow.com/questions/21585326/implementing-searchview-in-action-bar
@@ -124,9 +128,9 @@ public class SearchActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            Bitmap bitmap = ImagePicker.getImageFromResult(SearchActivity.this, data);
-                            if (bitmap != null) {
-                                submitImageQuery(bitmap);
+                            byte[] byteArray = ImagePicker.getImageFromResult(SearchActivity.this, data);
+                            if (byteArray != null) {
+                                submitImageQuery(byteArray);
                             } else {
                                 MySnackbar.inforSnackar(SearchActivity.this, searchParentView, getString(R.string.error_message)).show();
                             }
@@ -149,16 +153,10 @@ public class SearchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void submitImageQuery(Bitmap bitmap) {
-        // Bitmap to Base64 string
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
+    private void submitImageQuery(byte[] byteArray) {
+        Provider.with(this).setImageBase64(Base64.encodeToString(byteArray, Base64.DEFAULT));
         Intent intent = new Intent(SearchActivity.this, MainActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("query", encoded);
         intent.putExtra("method", "post");
         intent.putExtra("nextFragment", ProductListFragment.TAG);
         startActivity(intent);

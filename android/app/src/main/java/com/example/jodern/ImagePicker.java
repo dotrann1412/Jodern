@@ -6,14 +6,21 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcelable;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 
+import androidx.annotation.ColorInt;
 import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
@@ -22,6 +29,7 @@ import java.util.List;
 
 /**
 Ref: https://gist.github.com/Mariovc/f06e70ebe8ca52fbbbe2
+ I have modified this code to suit this application needs: Resize the bitmap, get the RGB values from bitmap, return the byte array
  */
 public class ImagePicker {
     private static final String TEMP_IMAGE_NAME = "tempImage";
@@ -62,8 +70,7 @@ public class ImagePicker {
         return list;
     }
 
-
-    public static Bitmap getImageFromResult(Context context, Intent imageReturnedIntent) {
+    public static byte[] getImageFromResult(Context context, Intent imageReturnedIntent) {
         Bitmap bm = null;
         File imageFile = getTempFile(context);
         Uri selectedImage;
@@ -77,9 +84,46 @@ public class ImagePicker {
         }
 
         bm = getImageResized(context, selectedImage);
-        int rotation = getRotation(context, selectedImage, isCamera);
-        bm = rotate(bm, rotation);
-        return bm;
+        byte[] rbgValues = getRgbValuesFromBitmap(bm);
+        return rbgValues;
+    }
+
+    private static byte[] getRgbValuesFromBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+        Bitmap targetBmp = bitmap.copy(Bitmap.Config.ARGB_8888, false);
+        ColorMatrix colorMatrix = new ColorMatrix();
+        ColorFilter colorFilter = new ColorMatrixColorFilter(
+                colorMatrix);
+        Bitmap argbBitmap = Bitmap.createBitmap(targetBmp.getWidth(), targetBmp.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(argbBitmap);
+        Paint paint = new Paint();
+
+        paint.setColorFilter(colorFilter);
+        canvas.drawBitmap(targetBmp, 0, 0, paint);
+
+        int width = targetBmp.getWidth();
+        int height = targetBmp.getHeight();
+        int componentsPerPixel = 3;
+        int totalPixels = width * height;
+        int totalBytes = totalPixels * componentsPerPixel;
+
+        byte[] rgbValues = new byte[totalBytes];
+        @ColorInt int[] argbPixels = new int[totalPixels];
+        argbBitmap.getPixels(argbPixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < totalPixels; i++) {
+            @ColorInt int argbPixel = argbPixels[i];
+            int red = Color.red(argbPixel);
+            int green = Color.green(argbPixel);
+            int blue = Color.blue(argbPixel);
+            rgbValues[i * componentsPerPixel + 0] = (byte) red;
+            rgbValues[i * componentsPerPixel + 1] = (byte) green;
+            rgbValues[i * componentsPerPixel + 2] = (byte) blue;
+        }
+
+        return rgbValues;
     }
 
 
@@ -168,7 +212,6 @@ public class ImagePicker {
         }//End of try-catch block
         return result;
     }
-
 
     private static Bitmap rotate(Bitmap bm, int rotation) {
         if (rotation != 0) {

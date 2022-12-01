@@ -44,7 +44,6 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         Product product = productList.get(position);
         holder.name.setText(product.getName());
         holder.price.setText(vndFormatPrice(product.getPrice()));
-        // TODO: add placeholder for Glide
         Glide.with(mContext)
                 .load(product.getFirstImageURL())
                 .placeholder(R.drawable.item_placeholder)

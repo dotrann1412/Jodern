@@ -43,6 +43,7 @@
             android:name=".activity.ProductDetailActivity"
             android:exported="false" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activity.SearchActivity"
             android:exported="false" />
 

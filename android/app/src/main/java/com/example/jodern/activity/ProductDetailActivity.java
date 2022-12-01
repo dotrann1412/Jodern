@@ -396,7 +396,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                intent.putExtra("nextFragment", CartFragment.TAG);
+                intent.putExtra("nextFragment", WishlistFragment.TAG);
                 startActivity(intent);
             }
         });
