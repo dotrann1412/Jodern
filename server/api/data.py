@@ -36,9 +36,6 @@ for sex, cat in __categories.items():
 
 print('[STATUS] Data loaded')
 
-def GetProductsByList(l: list):
-    return [__products1Layer[str(i)] for i in l]
-
 def GetProducts(sex, category):
     if not sex and not category:
         return None
@@ -56,6 +53,15 @@ def GetProducts(sex, category):
             res[sex] = value[category]
 
     return res
+
+def GetProductsByList(ids: list): 
+    res = []
+    for iter, id in enumerate(ids, 0):
+        if type(id) != str:
+            id = str(id)
+        res += [__products1Layer[id]]
+        res[iter]['images'] = res[iter]['images'][:1]
+    return {'data': res}
 
 def GetCategoriesTree():
     return __categories
@@ -150,7 +156,11 @@ def __rollback(order):
 def TrendingItems(top_k = 5):
     items = [{'id': key, 'count': val} for key, val in __orderedItems.items()]
     items.sort(key = lambda item: item['count'], reverse = True)
-    return items[:top_k]
+    res = []
+    for iter, item in enumerate(items[:min(len(items), top_k)], 0):
+        res += [__products1Layer[str(item['id'])]]
+        res[iter]['images'] = res[iter]['images'][:1]
+    return res
 
 def HighlightItems(top_k = 5):
     items = [
