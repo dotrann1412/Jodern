@@ -39,7 +39,7 @@ class SearchEngineInterface(APIView):
 
         try:
             ids = textRetriever.search(query)
-            return Response({'data' : GetProductsByList(ids)}, status = status.HTTP_200_OK)
+            return Response(GetProductsByList(ids), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -51,8 +51,8 @@ class SearchEngineInterface(APIView):
         try:
             query = base64.decodebytes(query.encode('utf-8'))
             query = np.frombuffer(query, dtype = np.uint8)
-            
-            return Response({'data' : GetProductsByList(imageRetriever.search(query))}, status = status.HTTP_200_OK)
+            query = np.reshape(query, (256, 256, 3))
+            return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -63,10 +63,15 @@ class HandleProductsList(APIView):
         sex, category = None, None
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
-
+    
+        res = {}
+    
         try:
-            res = GetProducts(sex, category)
-        except Exception as err:
+            if 'id' in request.query_params:
+                ids = request.query_params['id'].split(',')
+                res = GetProductsByList(ids)
+            else: res = GetProducts(sex, category)
+        except Exception as err:    
             print('[EXCEPTION] Details here: ', err)
             return Response({'Message': "Wrong request format"}, status = status.HTTP_400_BAD_REQUEST)
 
@@ -89,6 +94,7 @@ class ValidateOrder(APIView):
         try:    
             data = request.POST.get('cart', r'{}')
             print('[DEBUG] ', request.POST)
+            print('[DEBUG] ', request.query_params)
             data = json.loads(data)
             print('[DEBUG] ', data)
             res = ValidateOrderData(data)
