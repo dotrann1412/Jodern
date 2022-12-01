@@ -409,8 +409,7 @@
                 android:background="@drawable/cart_image_shape"
                 android:padding="12dp"
                 android:src="@drawable/ic_wishlist"
-                android:scaleType="fitXY"
-                app:tint="@color/primary_dark" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 

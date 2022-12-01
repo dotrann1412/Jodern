@@ -8,6 +8,8 @@ import android.content.Context;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodern.R;
 import com.example.jodern.activity.ProductDetailActivity;
+import com.example.jodern.fragment.CartFragment;
+import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.provider.Provider;
 
 import android.content.Intent;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +65,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_item, parent, false);
-
         return new ViewHolder(inflater);
     }
 
@@ -75,6 +77,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.itemName.setText(product.getName());
         holder.itemPrice.setText(vndFormatPrice(product.getPrice()));
         holder.itemQuantity.setText(String.valueOf(item.getQuantity()));
+        holder.itemSize.setText("Size " + item.getSize());
         Glide.with(context)
                 .load(productList.get(position).getFirstImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -91,6 +94,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         TextView itemName, itemPrice, itemSize, itemQuantity;
         ImageView itemImage, itemRemoveBtn;
         ImageButton itemIncBtn, itemDecBtn;
+        LinearLayout itemWrapper;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,6 +106,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             itemRemoveBtn = itemView.findViewById(R.id.cartViewHolderRemoveBtn);
             itemIncBtn = itemView.findViewById(R.id.cartViewHolderIncBtn);
             itemDecBtn = itemView.findViewById(R.id.cartViewHolderDecBtn);
+            itemWrapper = itemView.findViewById(R.id.cartViewHolderWrapper);
             setEvents();
         }
 
@@ -156,6 +161,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                             changeNumItemsListener.onChanged();
                         }
                     });
+                }
+            });
+
+            itemWrapper.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Product productItem = productList.get(getAdapterPosition());
+                    Intent intent = new Intent(context, ProductDetailActivity.class);
+                    intent.putExtra("productId", productItem.getId());
+                    intent.putExtra("previousFragment", CartFragment.TAG);
+                    context.startActivity(intent);
                 }
             });
         }

@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import com.example.jodern.R;
 
 public class MapFragment extends Fragment {
+    public static final String TAG = "MapFragment";
     private String mParam1;
     private String mParam2;
     private ImageButton navbarBtn;

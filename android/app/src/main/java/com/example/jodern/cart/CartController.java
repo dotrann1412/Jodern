@@ -22,7 +22,6 @@ public class CartController {
 
     private List<CartItem> cartItemList;
     private List<Product> productList = new ArrayList<>();
-    private AtomicLong totalPrice;
 
     private CartItemDB cartItemDB;
     private final Context context;
@@ -41,26 +40,8 @@ public class CartController {
         }
     }
 
-    private CartController(Context context, AtomicLong totalPrice) {
-        this.context = context;
-        this.totalPrice = totalPrice;
-        try {
-            Log.d(TAG, "CartController: retrieving cart items data");
-            cartItemDB = CartItemDB.with(context);
-            cartItemList = cartItemDB.orderItemDao().loadAll();
-            Log.d(TAG, "CartController: retrieving cart successfully");
-        } catch (Exception e) {
-            Log.d(TAG, "CartController: failed to retrieve cart items data");
-            e.printStackTrace();
-        }
-    }
-
     public static CartController with(Context context) {
         return new CartController(context);
-    }
-
-    public static CartController with(Context context, AtomicLong totalPrice) {
-        return new CartController(context, totalPrice);
     }
 
     public void addToCart(CartItem cartItem) {
@@ -78,16 +59,16 @@ public class CartController {
         return cartItemList;
     }
 
-    // this function is just used for demo
-    public void setCartList(List<CartItem> cartItemList) {
-        // please sort cartItemList by productId
-        this.cartItemList = cartItemList;
-        this.cartItemList.sort((o1, o2) -> (int) (o1.getProductId() - o2.getProductId()));
-    }
-
     public void setProductList(List<Product> productList) {
-        this.productList = productList;
-        this.productList.sort((o1, o2) -> (int) (o1.getId() - o2.getId()));
+        this.productList.clear();
+        for (int i = 0; i < cartItemList.size(); i++) {
+            for (int j = 0; j < productList.size(); j++) {
+                if (cartItemList.get(i).getProductId() == productList.get(j).getId()) {
+                    this.productList.add(productList.get(j));
+                    break;
+                }
+            }
+        }
     }
 
     public List<Product> getProductList() {

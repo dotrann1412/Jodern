@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
-    android:background="@drawable/cart_image_shape"
     android:elevation="3dp"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/cartViewHolderWrapper">
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
@@ -56,7 +56,6 @@
             android:textColor="@color/primary_dark"
             android:textStyle="bold" />
 
-        <!--    TODO config this later -->
         <TextView
             android:id="@+id/cartViewHolderSize"
             android:layout_width="wrap_content"

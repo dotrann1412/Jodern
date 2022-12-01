@@ -35,6 +35,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CartFragment extends Fragment {
     private final Long SHIPPING_FEE = 30000L;
@@ -44,6 +45,7 @@ public class CartFragment extends Fragment {
     private RecyclerView cartRecyclerView;
     private CartController cartController;
     private LinearLayout cartLayout, cartEmptyWrapper, cartLoadingWrapper;
+    private ImageButton cartBackBtn;
     TextView subTotalText, shippingText, totalText;
 
     public CartFragment() {
@@ -77,8 +79,17 @@ public class CartFragment extends Fragment {
         cartController = CartController.with(this.getContext());
 
         initViews();
-//        handleAddToCartSignal();
+        setEvents();
         showCartItems();
+    }
+
+    private void setEvents() {
+        cartBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
     }
 
     private void initViews() {
@@ -89,6 +100,7 @@ public class CartFragment extends Fragment {
         totalText = getView().findViewById(R.id.cartTotalText);
         cartEmptyWrapper = getView().findViewById(R.id.cartEmptyWrapper);
         cartLoadingWrapper = getView().findViewById(R.id.cartLoadingWrapper);
+        cartBackBtn = getView().findViewById(R.id.cartBackBtn);
     }
 
     private void showCartItems() {

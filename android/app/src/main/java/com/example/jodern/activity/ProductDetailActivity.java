@@ -19,7 +19,10 @@ import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MyToast;
 //import com.example.jodern.activity.CartActivity;
+import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.ProductListFragment;
+import com.example.jodern.fragment.WishlistFragment;
+import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 
@@ -27,6 +30,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.view.WindowId;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +43,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.jodern.wishlist.WishlistController;
+import com.example.jodern.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
@@ -46,6 +53,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -64,6 +72,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private MaterialButton seeAllBtn;
 
+    private boolean isInWishlist = false;
+    private boolean hasRemovedFromWishlist = false;
+    private ImageButton addWishlistBtn;
     private LinearLayout loadingWrapper;
 
     @Override
@@ -210,6 +221,21 @@ public class ProductDetailActivity extends AppCompatActivity {
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
                 .override(detailImage.getWidth(),detailImage.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
                 .into(detailImage);
+
+        specifyProductInWishlist();
+    }
+
+    private void specifyProductInWishlist() {
+        List<WishlistItem> wishlist = WishlistController.with(this).getWishlistItemList();
+        for (WishlistItem item : wishlist) {
+            if (item.getProductId().equals(currentProduct.getId())) {
+                isInWishlist = true;
+                addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+                return;
+            }
+        }
+        isInWishlist = false;
+        addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
     }
 
     private void setupOtherProducts(ArrayList<Product> otherProducts) {
@@ -253,6 +279,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         updateCurrentSizeView(true);
 
         seeAllBtn = findViewById(R.id.detailSeeAllBtn);
+        addWishlistBtn = findViewById(R.id.detailAddToWishlistBtn);
     }
 
     private void setEvents() {
@@ -308,8 +335,25 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void onDetailBackBtnClicked(View view) {
-        onBackPressed();
-        finish();
+        Intent intent = getIntent();
+        String previousFragment = intent.getStringExtra("previousFragment");
+
+        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG) && !previousFragment.equals(WishlistFragment.TAG))) {
+            onBackPressed();
+            finish();
+            return;
+        }
+
+        // This product is access from cart or wishlist
+        Intent newIntent = new Intent(this, MainActivity.class);
+        if (hasRemovedFromWishlist) {
+            // reload destination (for example, this product has just been removed from wishlist,, at this activity)
+            newIntent.putExtra("nextFragment", previousFragment);
+        } else {
+            // do not reload destination
+            newIntent.putExtra("previousFragment", previousFragment);
+        }
+        startActivity(newIntent);
     }
 
     public void onDetailAddToCartBtnClicked(View view) {
@@ -318,22 +362,33 @@ public class ProductDetailActivity extends AppCompatActivity {
         String size = currentSize;
         int inventory = currentProduct.getInventory(currentSize);
         if (quantity > inventory) {
-            Toast.makeText(this, "Số lượng sản phẩm không đủ", Toast.LENGTH_SHORT).show();
+            MyToast.makeText(this, "Số lượng sản phẩm không đủ", Toast.LENGTH_SHORT);
             return;
         }
 
-        // TODO: decrease inventory number of product
-        Toast.makeText(this, "Sản phẩm đã được thêm vào giỏ hàng.", Toast.LENGTH_SHORT).show();
-        CartController.with(this).addToCart(new CartItem(currentProduct.getId(), 1, currentSize));
-//        Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-//        intent.putExtra("nextFragment", "cart");
-//        intent.putExtra("productId", productId);
-//        intent.putExtra("quantity", quantity);
-//        intent.putExtra("size", size);
-//        startActivity(intent);
+        MyToast.makeText(this, "Sản phẩm đã được thêm vào giỏ hàng.", Toast.LENGTH_SHORT);
+        CartController.with(this).addToCart(new CartItem(productId, quantity, size));
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {
+        if (isInWishlist) {
+            System.out.println("Remove from wishlist");
+            // Remove from wishlist
+            WishlistController.with(this).deleteItem(currentProduct.getId(), new ChangeNumItemsListener() {
+                @Override
+                public void onChanged() {
+                    isInWishlist = false;
+                    hasRemovedFromWishlist = true;
+                    addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
+                    MyToast.makeText(ProductDetailActivity.this, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT);
+                }
+            });
+            return;
+        }
 
+        WishlistController.with(this).addToWishlist(new WishlistItem(currentProduct.getId()));
+        isInWishlist = true;
+        addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+        MyToast.makeText(this, "Sản phẩm đã được thêm vào danh sách yêu thích", Toast.LENGTH_SHORT);
     }
 }

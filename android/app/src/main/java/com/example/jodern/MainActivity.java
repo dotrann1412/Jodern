@@ -61,52 +61,25 @@ public class MainActivity extends AppCompatActivity {
                 // Receive data from search activity, forward it to product list fragment
                 Fragment fragment = new ProductListFragment();
                 Bundle bundle = retrieveBundleForProductListFragment(intent);
-//                Bundle bundle = new Bundle();
-//                String entry = intent.getStringExtra("entry");
-//                if (entry == null) {
-//                    entry = "";
-//                }
-//
-//                if (entry.equals("search")) {
-//                    bundle.putString("entry", "search");
-//                    bundle.putString("query", intent.getStringExtra("query"));
-//                    String method = intent.getStringExtra("method");
-//                    if (method != null) {
-//                        bundle.putString("method", method);
-//                    }
-//                }
-//                else if (entry.equals("product-list")) {
-//                    bundle.putString("entry", "product-list");
-//                    String sex = intent.getStringExtra("sex");
-//                    String categoryName = intent.getStringExtra("categoryName");
-//                    String categoryRaw = intent.getStringExtra("categoryRaw");
-//                    bundle.putString("sex", "nam");
-//                    bundle.putString("categoryName", "Thời trang nam");
-//                    if (categoryRaw != null) {
-//                        bundle.putString("categoryRaw", categoryRaw);
-//                    }
-//                    if (categoryName != null) {
-//                        bundle.putString("categoryName", categoryName);
-//                    }
-//                    if (sex != null) {
-//                        bundle.putString("sex", sex);
-//                    }
-//                }
-
-
                 fragment.setArguments(bundle);
                 switchFragment(fragment, nextFragment);
                 return;
             }
 
             if (nextFragment.equals(CartFragment.TAG)) {
-                Fragment fragment = new CartFragment();
-                Bundle bundle = new Bundle();
-                bundle.putLong("productId", intent.getLongExtra("productId", 0L));
-                bundle.putInt("quantity", intent.getIntExtra("quantity", 1));
-                bundle.putString("size", intent.getStringExtra("size"));
-                fragment.setArguments(bundle);
-                switchFragment(fragment, nextFragment);
+                Fragment fragmentObj = new CartFragment();
+//                Bundle bundle = new Bundle();
+//                bundle.putLong("productId", intent.getLongExtra("productId", 0L));
+//                bundle.putInt("quantity", intent.getIntExtra("quantity", 1));
+//                bundle.putString("size", intent.getStringExtra("size"));
+//                fragment.setArguments(bundle);
+                switchFragment(fragmentObj, nextFragment);
+                return;
+            }
+
+            if (nextFragment.equals(WishlistFragment.TAG)) {
+                Fragment fragmentObj = new WishlistFragment();
+                switchFragment(fragmentObj, nextFragment);
                 return;
             }
 
@@ -118,57 +91,37 @@ public class MainActivity extends AppCompatActivity {
         if (prevFragment == null) {
             prevFragment = HomeFragment.TAG;
         }
+        Fragment fragment = null;
         if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
-            switchFragment(homeFragment, HomeFragment.TAG);
+            fragment = homeFragment;
+//            switchFragment(homeFragment, HomeFragment.TAG);
         }
         else if (prevFragment.equals("map")) {
             mapBtn.setImageResource(R.drawable.ic_map_filled);
-            switchFragment(mapFragment, "map");
+            fragment = mapFragment;
+//            switchFragment(mapFragment, "map");
         }
         else if (prevFragment.equals(CartFragment.TAG)) {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
-            switchFragment(cartFragment, CartFragment.TAG);
+            fragment = cartFragment;
+//            switchFragment(cartFragment, CartFragment.TAG);
         }
         else if (prevFragment.equals(WishlistFragment.TAG)) {
             wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-            switchFragment(wishlistFragment, WishlistFragment.TAG);
+            fragment = wishlistFragment;
+//            switchFragment(wishlistFragment, WishlistFragment.TAG);
         }
         else if (prevFragment.equals(ProductListFragment.TAG)) {
             // retrieve search params
             Intent searchIntent = Provider.with(this).getSearchIntent();
-            Fragment fragment = new ProductListFragment();
+            fragment = new ProductListFragment();
             Bundle bundle = retrieveBundleForProductListFragment(searchIntent);
-//            Bundle bundle = new Bundle();
-//            String entry = searchIntent.getStringExtra("entry");
-//            if (entry.equals("search")) {
-//                bundle.putString("entry", "search");
-//                bundle.putString("query", searchIntent.getStringExtra("query"));
-//                String method = searchIntent.getStringExtra("method");
-//                if (method != null) {
-//                    bundle.putString("method", method);
-//                }
-//            }
-//            else if (entry.equals("product-list")) {
-//                bundle.putString("entry", "product-list");
-//                String categoryRaw = searchIntent.getStringExtra("categoryRaw");
-//                String categoryName = searchIntent.getStringExtra("categoryName");
-//                String sex = searchIntent.getStringExtra("sex");
-//                if (categoryRaw != null) {
-//                    bundle.putString("categoryRaw", categoryRaw);
-//                }
-//                if (categoryName != null) {
-//                    bundle.putString("categoryName", categoryName);
-//                }
-//                if (sex != null) {
-//                    bundle.putString("sex", sex);
-//                }
-//            }
             fragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.mainFragmentContainer, fragment)
-                    .commit();
         }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.mainFragmentContainer, fragment)
+                .commit();
     }
 
     private void setEvents() {
