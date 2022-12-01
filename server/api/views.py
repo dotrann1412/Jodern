@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -35,8 +34,6 @@ import traceback
 class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
-        
-
         try:
             ids = textRetriever.search(query)
             return Response(GetProductsByList(ids), status = status.HTTP_200_OK)
@@ -47,9 +44,10 @@ class SearchEngineInterface(APIView):
         return Response({"message": "Hjhj"}, status = status.HTTP_400_BAD_REQUEST)
     
     def post(self, request: Request, *args, **kwargs):
-        query = request.POST.get('query', '').lower()
         try:
-            query = base64.decodebytes(query.encode('utf-8'))
+            jsdata = request.data
+            print('DEBUG - ', jsdata)
+            query = base64.decodebytes(jsdata['query'].encode())
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
             return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
@@ -80,9 +78,7 @@ class HandleProductsList(APIView):
 class ProcessOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
         try:    
-            data = request.POST.get('cart', r'{}')
-            data = json.loads(data)
-            res = ProcessOrderData(data)
+            res = ProcessOrderData(request.data)
         except Exception as err:
             traceback.print_exc()            
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
@@ -91,13 +87,8 @@ class ProcessOrder(APIView):
 
 class ValidateOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
-        try:    
-            data = request.POST.get('cart', r'{}')
-            print('[DEBUG] ', request.POST)
-            print('[DEBUG] ', request.query_params)
-            data = json.loads(data)
-            print('[DEBUG] ', data)
-            res = ValidateOrderData(data)
+        try:
+            res = ValidateOrderData(request.data)
         except Exception as err:
             print('[EXCEPTION] exception raised while validate order. Details here: ', err)
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
