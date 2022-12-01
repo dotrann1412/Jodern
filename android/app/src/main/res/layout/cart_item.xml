@@ -120,6 +120,6 @@
             android:layout_height="24dp"
             android:layout_marginRight="8dp"
             android:src="@drawable/ic_remove"
-            android:tint="#f00" />
+            app:tint="#f00" />
     </LinearLayout>
 </LinearLayout>

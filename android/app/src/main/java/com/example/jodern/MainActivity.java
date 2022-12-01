@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.example.jodern.activity.MapActivity;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.HomeFragment;
-import com.example.jodern.fragment.MapFragment;
 import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.provider.Provider;
@@ -21,10 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton homeBtn, mapBtn, cartBtn, wishlistBtn;
     private MaterialButton searchBtn;
     private HomeFragment homeFragment;
-    private MapFragment mapFragment;
     private CartFragment cartFragment;
     private WishlistFragment wishlistFragment;
-//    private String currentFragment = "home";
+    private String currentFragment = "home";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         searchBtn = findViewById(R.id.mainNavBarSearchBtn);
 
         homeFragment = new HomeFragment(homeBtn);
-        mapFragment = new MapFragment(mapBtn);
         cartFragment = new CartFragment(cartBtn);
         wishlistFragment = new WishlistFragment(wishlistBtn);
     }
@@ -99,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (prevFragment.equals("map")) {
             mapBtn.setImageResource(R.drawable.ic_map_filled);
-            fragment = mapFragment;
 //            switchFragment(mapFragment, "map");
         }
         else if (prevFragment.equals(CartFragment.TAG)) {
@@ -187,8 +184,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.mainNavBarMapBtn:
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
-                    switchFragment(mapFragment, "map");
+//                    switchFragment(mapFragment, "map");
+                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                    startActivity(intent);
                     break;
+
                 case R.id.mainNavBarCartBtn:
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
                     switchFragment(cartFragment, CartFragment.TAG);
