@@ -2,6 +2,7 @@ package com.example.jodern.fragment;
 
 import static com.example.jodern.Utils.vndFormatPrice;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodern.R;
+import com.example.jodern.activity.OrderActivity;
 import com.example.jodern.adapter.CartAdapter;
 import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
@@ -30,6 +33,7 @@ import com.example.jodern.customwidget.MyToast;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
 
@@ -46,6 +50,7 @@ public class CartFragment extends Fragment {
     private CartController cartController;
     private LinearLayout cartLayout, cartEmptyWrapper, cartLoadingWrapper;
     private ImageButton cartBackBtn;
+    private MaterialButton detailAddToCartBtn;
     TextView subTotalText, shippingText, totalText;
 
     public CartFragment() {
@@ -90,6 +95,14 @@ public class CartFragment extends Fragment {
                 requireActivity().onBackPressed();
             }
         });
+
+        detailAddToCartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initViews() {
@@ -101,6 +114,7 @@ public class CartFragment extends Fragment {
         cartEmptyWrapper = getView().findViewById(R.id.cartEmptyWrapper);
         cartLoadingWrapper = getView().findViewById(R.id.cartLoadingWrapper);
         cartBackBtn = getView().findViewById(R.id.cartBackBtn);
+        detailAddToCartBtn = getView().findViewById(R.id.detailAddToCartBtn);
     }
 
     private void showCartItems() {

@@ -151,7 +151,7 @@ public class HomeFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        MyToast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
+//                        MyToast.makeText(requireContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
                     }
                 }
         );
