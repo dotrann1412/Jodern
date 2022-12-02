@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/logo"
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        />
+        app:cardCornerRadius="32dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@mipmap/ic_logo"
+            />
+    </androidx.cardview.widget.CardView>
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,6 +25,6 @@
         android:textSize="18sp"
         android:fontFamily="@font/quicksand_bold"
         android:textColor="@color/primary"
-        android:layout_margin="8dp"
+        android:layout_margin="10dp"
         />
 </LinearLayout>
