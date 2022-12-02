@@ -23,19 +23,16 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/banner_background">
+                android:background="@drawable/banner_background"
+                android:gravity="center"
+                >
 
-                <TextView
-                    android:id="@+id/homeStoreName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="Jodern"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:src="@drawable/home_title"
+                    android:layout_width="wrap_content"
+                    android:padding="15dp"
+                    android:layout_height="75dp"
+                    />
             </RelativeLayout>
 
 
