@@ -12,5 +12,5 @@
     <string name="sub_total">Tổng cộng</string>
     <string name="go_to_cart">Xem giỏ hàng</string>
     <string name="go_to_wishlist">Xem danh sách</string>
-    <string name="skip_snackbar">Bỏ qua</string>
+    <string name="skip_snackbar">Ẩn</string>
 </resources>

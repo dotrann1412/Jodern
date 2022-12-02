@@ -87,7 +87,18 @@ public class CartFragment extends Fragment {
 
         initViews();
         setEvents();
+        showInitialMessage();
         showCartItems();
+    }
+
+    private void showInitialMessage() {
+        Bundle bundle = getArguments();
+        if (bundle == null)
+            return;
+        String message = bundle.getString("message");
+        if (message == null)
+            return;
+        MySnackbar.inforSnackar(getContext(), parentView, message).show();
     }
 
     private void setEvents() {
