@@ -73,32 +73,34 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String prevFragment = intent.getStringExtra("previousFragment");
         String nextFragment = intent.getStringExtra("nextFragment");
+        String message = intent.getStringExtra("message");
 
         // Forward to the next fragment
         if (nextFragment != null) {
+            Fragment fragment = null;
+            Bundle bundle = null;
             if (nextFragment.equals(ProductListFragment.TAG)) {
                 Provider.with(this).setSearchIntent(intent);
                 // Receive data from search activity, forward it to product list fragment
-                Fragment fragment = new ProductListFragment();
-                Bundle bundle = retrieveBundleForProductListFragment(intent);
-                fragment.setArguments(bundle);
-                switchFragmentWithoutPushingToBackStack(fragment);
-                return;
+                fragment = new ProductListFragment();
+                bundle = retrieveBundleForProductListFragment(intent);
+            }
+            else if (nextFragment.equals(CartFragment.TAG)) {
+                fragment = new CartFragment();
+            }
+            else if (nextFragment.equals(WishlistFragment.TAG)) {
+                fragment = new WishlistFragment();
             }
 
-            if (nextFragment.equals(CartFragment.TAG)) {
-                Fragment fragmentObj = new CartFragment();
-                switchFragmentWithoutPushingToBackStack(fragmentObj);
+            if (fragment == null)
                 return;
+            if (message != null) {
+                if (bundle == null)
+                    bundle = new Bundle();
+                bundle.putString("message", message);
             }
-
-            if (nextFragment.equals(WishlistFragment.TAG)) {
-                Fragment fragmentObj = new WishlistFragment();
-                switchFragmentWithoutPushingToBackStack(fragmentObj);
-                return;
-            }
-
-            // other, if any
+            fragment.setArguments(bundle);
+            switchFragmentWithoutPushingToBackStack(fragment);
             return;
         }
 
@@ -110,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
         if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
             fragment = homeFragment;
-        }
-        else if (prevFragment.equals("map")) {
-//            switchFragment(mapFragment, "map");
         }
         else if (prevFragment.equals(CartFragment.TAG)) {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
