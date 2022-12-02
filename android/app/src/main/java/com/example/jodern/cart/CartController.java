@@ -49,7 +49,7 @@ public class CartController {
             // if cartItem already exists, update quantity
             // else, insert new cartItem
             for (CartItem item : cartItemList) {
-                if (item.getProductId() == cartItem.getProductId()) {
+                if (item.getProductId() == cartItem.getProductId() && item.getSize().equals(cartItem.getSize())) {
                     item.setQuantity(item.getQuantity() + cartItem.getQuantity());
                     cartItemDB.orderItemDao().update(item);
                     return;
