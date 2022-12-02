@@ -14,22 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jodern.MainActivity;
 import com.example.jodern.R;
-import com.example.jodern.activity.ProductDetailActivity;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.adapter.CategoryImageListAdapter;
-import com.example.jodern.adapter.ProductListAdapter;
 import com.example.jodern.adapter.TrendingAdapter;
-import com.example.jodern.customwidget.MyToast;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
@@ -42,6 +39,7 @@ import java.util.Objects;
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
 
+    private FrameLayout parentView;
     private LinearLayout homeSearchBar;
     private ImageButton navbarBtn;
     private MaterialButton maleSeeAllBtn;
@@ -81,6 +79,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void initViews() {
+        parentView = getView().findViewById(R.id.homeParentView);
         homeSearchBar = getView().findViewById(R.id.homeSearchBar);
         maleSeeAllBtn = getView().findViewById(R.id.homeMaleSeeAllBtn);
         femaleSeeAllBtn = getView().findViewById(R.id.homeFemaleSeeAllBtn);
@@ -151,7 +150,7 @@ public class HomeFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-//                        MyToast.makeText(requireContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         );

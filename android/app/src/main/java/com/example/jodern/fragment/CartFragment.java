@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,10 +16,10 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -29,7 +30,7 @@ import com.example.jodern.activity.OrderActivity;
 import com.example.jodern.adapter.CartAdapter;
 import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.customwidget.MyToast;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
@@ -39,12 +40,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CartFragment extends Fragment {
     private final Long SHIPPING_FEE = 30000L;
 
     public static final String TAG = "CartFragment";
+    private FrameLayout parentView;
+
     private ImageButton navbarBtn;
     private RecyclerView cartRecyclerView;
     private CartController cartController;
@@ -106,6 +108,7 @@ public class CartFragment extends Fragment {
     }
 
     private void initViews() {
+        parentView = getView().findViewById(R.id.cartParentView);
         cartRecyclerView = getView().findViewById(R.id.cartRecyclerView);
         cartLayout = getView().findViewById(R.id.cartLayout);
         subTotalText = getView().findViewById(R.id.cartSubTotalText);
@@ -154,7 +157,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         cartLoadingWrapper.setVisibility(View.GONE);
-                        MyToast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         );

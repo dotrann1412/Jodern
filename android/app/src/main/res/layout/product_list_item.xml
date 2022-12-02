@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:src="@drawable/demo" />
+            android:background="@color/dark_gray" />
 
     </com.google.android.material.card.MaterialCardView>
 

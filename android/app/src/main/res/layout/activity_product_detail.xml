@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/background"
-    tools:context=".activity.ProductDetailActivity">
+    tools:context=".activity.ProductDetailActivity"
+    android:id="@+id/detailParentView">
 
 
     <LinearLayout
@@ -25,25 +26,23 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <RelativeLayout
+                <com.smarteist.autoimageslider.SliderView
+                    android:id="@+id/detailImageSlider"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/detailImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/demo" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/product_detail_overlay" />
-
-                </RelativeLayout>
+                    android:layout_height="500dp"
+                    app:sliderAnimationDuration="600"
+                    app:sliderAutoCycleDirection="back_and_forth"
+                    app:sliderAutoCycleEnabled="true"
+                    app:sliderIndicatorAnimationDuration="600"
+                    app:sliderIndicatorGravity="center_horizontal|bottom"
+                    app:sliderIndicatorMargin="15dp"
+                    app:sliderIndicatorOrientation="horizontal"
+                    app:sliderIndicatorPadding="3dp"
+                    app:sliderIndicatorRadius="2dp"
+                    app:sliderIndicatorSelectedColor="#5A5A5A"
+                    app:sliderIndicatorUnselectedColor="#FFF"
+                    app:sliderScrollTimeInSec="3"
+                    app:sliderStartAutoCycle="true" />
 
                 <!-- Product name, price, size -->
                 <LinearLayout
@@ -56,7 +55,7 @@
                         android:id="@+id/detailName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Áo thun nữ cool ngầu"
+                        android:text="Tên sản phẩm"
                         android:textColor="@color/text"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -238,12 +237,13 @@
                         <ImageButton
                             android:onClick="onDetailDecBtnClicked"
                             android:id="@+id/detailDecBtn"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_minus"
                             android:background="@null"
-                            android:padding="4dp" />
+                            android:padding="4dp"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -259,12 +259,13 @@
                         <ImageButton
                             android:onClick="onDetailIncBtnClicked"
                             android:id="@+id/detailIncBtn"
-                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_add"
                             android:background="@null"
-                            android:padding="4dp" />
+                            android:padding="4dp"
+                            app:tint="@color/primary" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -293,7 +294,7 @@
                             android:id="@+id/detailDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Áo thun nữ cool ngầu. Mua đi mua đi."
+                            android:text="Đoạn mô tả của sản phẩm"
                             android:textColor="@color/text" />
                     </LinearLayout>
                 </LinearLayout>

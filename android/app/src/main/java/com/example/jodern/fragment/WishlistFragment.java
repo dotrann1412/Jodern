@@ -11,10 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,7 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodern.R;
 import com.example.jodern.adapter.WishlistAdapter;
-import com.example.jodern.customwidget.MyToast;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
@@ -37,13 +36,11 @@ import java.util.List;
 public class WishlistFragment extends Fragment {
     public static final String TAG = "WishlistFragment";
 
+    private FrameLayout parentView;
     private ImageButton navbarBtn;
-
     private RecyclerView wishlistRecyclerView;
     private WishlistController wishlistController;
     private LinearLayout wishlistLayout, wishlistEmptyWrapper, wishlistLoadingWrapper;
-//    private LinearLayout wishlistBackBtn;
-//private LinearLayout wishlistBackBtn;
     private ImageButton wishlistBackBtn;
 
     public WishlistFragment() {
@@ -84,6 +81,7 @@ public class WishlistFragment extends Fragment {
     }
 
     private void initViews() {
+        parentView = requireView().findViewById(R.id.wishlistParentView);
         wishlistLayout = requireView().findViewById(R.id.wishlistLayout);
         wishlistEmptyWrapper = requireView().findViewById(R.id.wishlistEmptyWrapper);
         wishlistLoadingWrapper = requireView().findViewById(R.id.wishlistLoadingWrapper);
@@ -95,7 +93,6 @@ public class WishlistFragment extends Fragment {
         wishlistBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("wishlistBackBtn clicked");
                 getActivity().onBackPressed();
             }
         });
@@ -138,7 +135,7 @@ public class WishlistFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         wishlistLoadingWrapper.setVisibility(View.GONE);
-                        MyToast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         );

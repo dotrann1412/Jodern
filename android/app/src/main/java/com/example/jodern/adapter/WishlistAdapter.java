@@ -25,6 +25,7 @@ import com.example.jodern.wishlist.WishlistController;
 import com.example.jodern.wishlist.wishlistitem.WishlistItem;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -73,7 +74,9 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemName, itemPrice;
-        ImageView itemImage, itemRemoveBtn;
+        ImageView itemImage;
+//        TextView itemRemoveBtn;
+        MaterialButton itemRemoveBtn;
         LinearLayout itemWrapper;
 
         public ViewHolder(@NonNull View itemView) {
