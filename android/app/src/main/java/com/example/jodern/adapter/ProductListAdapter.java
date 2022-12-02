@@ -47,8 +47,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         Glide.with(mContext)
                 .load(product.getFirstImageURL())
                 .placeholder(R.drawable.item_placeholder)
+                .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // It will cache your image after loaded for first time
-                .override(holder.image.getWidth(),holder.image.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
+//                .override(holder.image.getWidth(),holder.image.getHeight()) // Overrides size of downloaded image and converts it's bitmaps to your desired image size;
                 .into(holder.image);
     }
 

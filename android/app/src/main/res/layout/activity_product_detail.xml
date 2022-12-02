@@ -55,7 +55,7 @@
                         android:id="@+id/detailName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Áo thun nữ cool ngầu"
+                        android:text="Tên sản phẩm"
                         android:textColor="@color/text"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -237,12 +237,13 @@
                         <ImageButton
                             android:onClick="onDetailDecBtnClicked"
                             android:id="@+id/detailDecBtn"
-                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_minus"
                             android:background="@null"
-                            android:padding="4dp" />
+                            android:padding="4dp"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -258,12 +259,13 @@
                         <ImageButton
                             android:onClick="onDetailIncBtnClicked"
                             android:id="@+id/detailIncBtn"
-                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_add"
                             android:background="@null"
-                            android:padding="4dp" />
+                            android:padding="4dp"
+                            app:tint="@color/primary" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -292,7 +294,7 @@
                             android:id="@+id/detailDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Áo thun nữ cool ngầu. Mua đi mua đi."
+                            android:text="Đoạn mô tả của sản phẩm"
                             android:textColor="@color/text" />
                     </LinearLayout>
                 </LinearLayout>

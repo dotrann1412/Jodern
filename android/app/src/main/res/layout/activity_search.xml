@@ -54,7 +54,7 @@
 
             <LinearLayout
                 android:id="@+id/searchCameraBtn"
-                android:padding="6dp"
+                android:padding="4dp"
                 android:layout_width="44dp"
                 android:layout_height="match_parent">
                 <ImageView
@@ -96,7 +96,7 @@
             android:id="@+id/searchImageView"
             android:layout_width="wrap_content"
             android:layout_height="180dp"
-            android:layout_marginTop="-100dp"
+            android:layout_marginTop="-130dp"
             android:src="@drawable/search" />
 
         <TextView

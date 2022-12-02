@@ -66,7 +66,6 @@ public class ProductListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        System.out.println("ProductListFragment.onViewCreated");
         initViews();
         setEvents();
         setupCategoryLists();
@@ -158,8 +157,6 @@ public class ProductListFragment extends Fragment {
             Provider.with(this.getContext()).addToRequestQueue(getRequest);
         }
         else if (method.equals("post")) {
-            System.out.println("post image");
-
             // POST requests
             String entry = args.getString("entry");
 //            String query = args.getString("query");
@@ -167,21 +164,18 @@ public class ProductListFragment extends Fragment {
             params.put("query", Provider.with(getContext()).getImageBase64());
 
             String url = "http://jodern.store:8000/api/" + entry + "/";
-            System.out.println(url);
             JsonObjectRequest postRequest = new JsonObjectRequest (
                     url,
                     new JSONObject(params),
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            System.out.println("post response");
                             handleResponse(response);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            System.out.println("post error");
                             handleError(error);
                         }
                     }

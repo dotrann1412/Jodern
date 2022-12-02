@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import com.example.jodern.MainActivity;
@@ -22,6 +23,7 @@ import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -75,9 +77,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ImageButton addWishlistBtn;
     private LinearLayout loadingWrapper;
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_product_detail);
         initViews();
         setEvents();
@@ -131,7 +135,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        ArrayList<Product> otherProducts = parseOtherProductsFromResponse(response);
+                        ArrayList<Product> otherProducts = Product.parseProductListFromResponse(response);
                         setupOtherProducts(otherProducts);
                         loadingWrapper.setVisibility(View.GONE);
                     }
@@ -145,26 +149,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
         );
         Provider.with(this).addToRequestQueue(stringRequest);
-    }
-
-    private ArrayList<Product> parseOtherProductsFromResponse(JSONObject response) {
-        ArrayList<Product> productList = new ArrayList<>();
-
-        try {
-            JSONArray keys = response.names();
-            for (int i = 0; i < Objects.requireNonNull(keys).length(); i++) {
-                String key = keys.getString(i);
-                JSONArray products = (JSONArray)response.get(key);
-                for (int j = 0; j < products.length(); j++) {
-                    Product newProduct = Product.parseJSON(products.getJSONObject(j));
-                    productList.add(newProduct);
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return productList;
     }
 
     private void parseProductFromResponse(JSONObject response) {
@@ -182,15 +166,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         detailName.setText(currentProduct.getName());
         detailPrice.setText(priceFormatted);
         detailDescription.setText(currentProduct.getDescription());
-        detailInventoryQuantity.setText(String.valueOf(currentProduct.getInventory(0)));
 
         currentQuantity = 1;
         buyQuantityText.setText("1" );
 
         // image slider
         ArrayList<String> images = currentProduct.getImages();
-        for (String url: images)
-            System.out.println(url);
         ProductSliderAdapter adapter = new ProductSliderAdapter(this);
         adapter.setItems(images);
         if (images.size() > 1)
@@ -201,7 +182,32 @@ public class ProductDetailActivity extends AppCompatActivity {
         sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
         sliderView.startAutoCycle();
 
+        // inventory
+        Integer[] inventories = currentProduct.getInventories();
+        boolean flag = false;
+        for (int i = 0; i < inventories.length; i++) {
+            if (inventories[i] == 0) {
+                setSizeStatus(detailSizes[i], false);
+            } else {
+                setSizeStatus(detailSizes[i], true);
+                if (!flag) {
+                    currentSizeWrapper = detailSizes[0];
+                    currentSize = sizes[0];
+                    updateCurrentSizeView(true);
+                    detailInventoryQuantity.setText(String.valueOf(currentProduct.getInventory(i)));
+                    flag = true;
+                }
+            }
+        }
+
         specifyProductInWishlist();
+    }
+
+    private void setSizeStatus(LinearLayout detailSize, boolean isEnabled) {
+        if (!isEnabled)
+            detailSize.setAlpha(0.25f);
+        else
+            detailSize.setAlpha(1f);
     }
 
     private void specifyProductInWishlist() {
@@ -269,6 +275,11 @@ public class ProductDetailActivity extends AppCompatActivity {
             detailSizes[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int quantity = currentProduct.getInventory(finalI);
+                    if (quantity == 0) {
+                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, "Sản phẩm này hiện đã hết size " + sizes[finalI] + ". Mong bạn thông cảm nhé").show();
+                        return;
+                    }
                     updateCurrentSizeView(false);
                     currentSizeWrapper = detailSizes[finalI];
                     currentSize = sizes[finalI];

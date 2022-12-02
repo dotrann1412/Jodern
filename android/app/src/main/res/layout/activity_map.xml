@@ -32,9 +32,10 @@
         android:gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:text="Jodern luôn ở cạnh bạn ở mọi nơi! 🗺️"
+        android:text="Jodern luôn ở cạnh bạn ở mọi nơi!  🗺️"
         android:textSize="16sp"
         android:textColor="@color/primary"
+        android:textStyle="bold"
         android:lineHeight="20sp"/>
     </LinearLayout>
 
