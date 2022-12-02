@@ -80,9 +80,9 @@ class ProcessOrder(APIView):
         try:    
             res = ProcessOrderData(request.data['cart'])
         except Exception as err:
-            traceback.print_exc()            
+            traceback.print_exc()
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
-        
+        print('[STATUS] process order completed') 
         return Response(res, status = status.HTTP_200_OK)
 
 class ValidateOrder(APIView):
