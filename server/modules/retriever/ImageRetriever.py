@@ -23,7 +23,7 @@ class MySwinT2(torch.nn.Module):
     
 model = MySwinT2()
 images_idx = np.load('data/res/features/images/image_indices.npy')
-
+print('[STATUS] Image retrieval model loaded')
 
 def image_preprocess(data):
     if isinstance(data, np.ndarray):
@@ -39,7 +39,7 @@ def image_preprocess(data):
 
 
 class ImageRetriever():
-    def __init__(self, features_folder='data/res/features/images/values', top_k=12, cut_off=1.0):
+    def __init__(self, features_folder='data/res/features/images/values', top_k=12, cut_off=1.5):
         '''
             Args:
                 features_folder: path to folder containing image features

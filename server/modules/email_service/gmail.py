@@ -30,7 +30,7 @@ def get_item_html_template(image, pName, price, itemCount, size):
             <div class="item-title"><p><a href="{image}">
                 <b>{productName}</b></a></p></div>
             <div class="item-detail">
-                <div><p><b>Đơn giá: </b> {price}</p></div>
+                <div><p><b>Đơn giá: </b> {price:,.3f}</p></div>
                 <div><p><b>Số lượng: </b> {itemCount}</p></div>
                 <div><p><b>Size: </b> {size}</p></div>
             </div>
@@ -48,9 +48,14 @@ from datetime import datetime
 import datetime
 
 def html_mail(**kwargs):
-    total = kwargs.get('price', 0) + kwargs.get('tax', 0) + kwargs.get('shipping_fee', 0)
+    total = kwargs.get('price', 0) + kwargs.get('shipping_fee', 0)
     
-    dilivered_on = datetime.datetime.now() + datetime.timedelta(days = 5)
+    preoder_required = kwargs['preorder_required']
+
+    delivered_on = datetime.datetime.now() + datetime.timedelta(days = 5)
+    # if preoder_required:
+    #     delivered_on += datetime.timedelta(days = 2)
+
     html_template = str('''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,7 +78,7 @@ def html_mail(**kwargs):
             border: 1px solid #ccc;
             border-radius: 10px;
             padding: 6px 30px 30px 30px;
-            width: 600px;
+            width: 700px;
         }}
         .app__name {{
             text-align: center;
@@ -235,7 +240,7 @@ def html_mail(**kwargs):
         </div>
 
         <div class="container">
-            <p>Jodern Store xin cảm ơn quý khách hàng <b>{customer_name}</b> vì đã mua hàng. Đơn hàng của quý khách bao gồm <b>{pcnt}</b> sản phẩm, chi tiết như sau:</p>
+            <p>Jodern Store xin cảm ơn quý khách hàng <b>{customer_name}</b> vì đã tin tưởng và sử dụng dịch vụ của chúng tôi. Đơn hàng của quý khách bao gồm <b>{pcnt}</b> sản phẩm, chi tiết như sau:</p>
         </div>
 
         <div class="container">
@@ -243,22 +248,22 @@ def html_mail(**kwargs):
         </div>
 
         <div class="container order-summary">
-            <p><b>Sản phẩm: </b>{price: .3f} (VND)</p>
-            <p><b>Thuế VAT:</b> {tax: .3f} (VND)</p>
-            <p><b>Phí vận chuyển:</b> {shipping_fee: .3f} (VND)</p>
+            <p><b>Sản phẩm: </b>{price:,.3f} (VND)</p>
+            <p><b>Phí vận chuyển:</b> {shipping_fee:,.3f} (VND)</p>
             <hr width="50%" style="margin-right: 0"/>
-            <p><b>Tổng:</b> {total: .3f} (VND)</p>
+            <p><b>Tổng:</b> {total:,.3f} (VND)</p>
         </div>
 
         <div class="container">
-            Đơn hàng của quý khách đã được xác nhận và sẽ được giao trước ngày <b>{day}</b> đến địa chỉ <b>{address}</b> và liên lạc qua số điện thoại <b>{phone}</b>. Bất kì thắc mắc xin liên hệ với số điện thoại 113.
+            <p>Đơn hàng của quý khách đã được xác nhận và sẽ được giao trước ngày <b>{day}</b> đến địa chỉ <b>{address}</b> và liên lạc qua số điện thoại <b>{phone}</b>.</p>
+            {more}
         </div>
     </div>
     </body>
 </html>
     ''').format(
         total = total,
-        day = dilivered_on.strftime(r'%Y-%m-%d'),
+        day = delivered_on.strftime(r'%Y-%m-%d'),
         price = kwargs.get('price', 0),
         tax = kwargs.get('tax', 0),
         shipping_fee = kwargs.get('shipping_fee', 0),
@@ -266,7 +271,8 @@ def html_mail(**kwargs):
         pcnt = kwargs.get('product_count', 0),
         customer_name = kwargs.get('customer_name', ''),
         phone = kwargs['phone_number'],
-        address = kwargs['address']
+        address = kwargs['location'],
+        more = '<p><i>(Một hoặc vài sản phẩm trong đơn hàng của quý khách cần thời gian preoder, thời gian giao có thể chậm hơn 1 hoặc 2 ngày. Quý khách hàng thông cảm cho Jodern nhé!)</i></p>' if preoder_required else ''
     )
         
     return html_template

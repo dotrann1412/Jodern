@@ -32,7 +32,7 @@
                     "M": 112,
                     "L": 15,
                     "XL": 0,
-                    "XXL": 71
+                    "XXL": 69
                 },
                 "description": "Áo phao nữ 3S plus YODY vừa siêu ấm vừa gọn nhẹ để chị em thoải mái di chuyển, vận động hằng ngày, tính năng trượt nước bảo vệ nàng trong thời tiết gió lạnh.",
                 "images": [
@@ -50,7 +50,7 @@
                 "title": "Áo Khoác Gió Thông Minh Nữ Trượt Nước",
                 "price": 599000,
                 "inventory": {
-                    "S": 48,
+                    "S": 51,
                     "M": 61,
                     "L": 8,
                     "XL": 0,
@@ -76,7 +76,7 @@
                     "M": 129,
                     "L": 18,
                     "XL": 0,
-                    "XXL": 83
+                    "XXL": 82
                 },
                 "description": "Chiếc áo khoác gió nữ thể thao phối lưng trẻ trung cùng chất liệu bền bỉ dễ mặc, dễ phối sẽ mang đến sự cá tính, năng động của sức trẻ. Sở hữu ngay!",
                 "images": [
@@ -94,7 +94,7 @@
                 "title": "Áo Phao Nữ Dáng Dài Siêu Nhẹ",
                 "price": 899000,
                 "inventory": {
-                    "S": 90,
+                    "S": 87,
                     "M": 116,
                     "L": 16,
                     "XL": 0,
@@ -117,7 +117,7 @@
                 "price": 689000,
                 "inventory": {
                     "S": 142,
-                    "M": 182,
+                    "M": 186,
                     "L": 25,
                     "XL": 0,
                     "XXL": 117
@@ -142,7 +142,7 @@
                     "M": 163,
                     "L": 22,
                     "XL": 0,
-                    "XXL": 104
+                    "XXL": 106
                 },
                 "description": "Thiết kế tối giản, màu sắc trang nhã, PHN4000 vô cùng tiện lợi và dễ mặc cho các chị em trong màu đông năm nay.",
                 "images": [
@@ -160,7 +160,7 @@
                 "title": "Áo Phao Nữ Dáng Dài Thời Trang Siêu Ấm",
                 "price": 999000,
                 "inventory": {
-                    "S": 49,
+                    "S": 46,
                     "M": 63,
                     "L": 8,
                     "XL": 0,
@@ -178,7 +178,7 @@
                 "category_name": "Áo khoác nữ"
             }
         ],
-        "ao-thun-ao-phong-nu": [
+        "ao-thun-nu": [
             {
                 "id": 8,
                 "title": "Áo Thu Đông Nữ Dáng Ôm Phối Cúc Tay",
@@ -707,7 +707,7 @@
                 "category_name": "Quần jean nữ"
             }
         ],
-        "quan-au-nu": [
+        "quan-tay-nu": [
             {
                 "id": 32,
                 "title": "Quần Âu Nữ Ống Suông 2 Ly",
@@ -892,7 +892,7 @@
                     "M": 53,
                     "L": 119,
                     "XL": 63,
-                    "XXL": 39
+                    "XXL": 41
                 },
                 "description": "Quần giả váy là trang phục đang rất được các nàng yêu thích, item có thể mặc hằng ngày, đi chơi cuối tuần, cafe với bạn bè... Mua ngay!",
                 "images": [
@@ -910,7 +910,7 @@
                 "title": "Quần Short Kaki Nữ Túi Nắp",
                 "price": 349000,
                 "inventory": {
-                    "S": 168,
+                    "S": 170,
                     "M": 56,
                     "L": 126,
                     "XL": 66,
@@ -935,7 +935,7 @@
                     "S": 64,
                     "M": 21,
                     "L": 48,
-                    "XL": 25,
+                    "XL": 22,
                     "XXL": 16
                 },
                 "description": "Quần short jean nữ cho mùa hè của bạn thêm cá tính, năng động và đầy tự tin. Sở hữu ngay sản phẩm mới nhất này nhé!",
@@ -955,7 +955,7 @@
                 "price": 299000,
                 "inventory": {
                     "S": 81,
-                    "M": 27,
+                    "M": 25,
                     "L": 61,
                     "XL": 32,
                     "XXL": 20
@@ -978,7 +978,7 @@
                 "inventory": {
                     "S": 96,
                     "M": 32,
-                    "L": 72,
+                    "L": 73,
                     "XL": 38,
                     "XXL": 24
                 },
@@ -998,7 +998,7 @@
                 "title": "Quần Jean Lửng Nữ Lưng Cao Ống Rộng",
                 "price": 349000,
                 "inventory": {
-                    "S": 93,
+                    "S": 90,
                     "M": 31,
                     "L": 70,
                     "XL": 36,
@@ -1017,7 +1017,7 @@
                 "title": "Quần Short Jeans Nữ Bó Cạp Cao",
                 "price": 244300,
                 "inventory": {
-                    "S": 141,
+                    "S": 140,
                     "M": 47,
                     "L": 106,
                     "XL": 56,
@@ -1039,7 +1039,7 @@
                     "S": 60,
                     "M": 20,
                     "L": 45,
-                    "XL": 23,
+                    "XL": 20,
                     "XXL": 15
                 },
                 "description": "Tin vui cho những ai đam mê quần short jean cá tính, Yody đã chính thức trình làng mã sản phẩm SJN4008. Đây là 1 trong những HOT item mùa này.",
@@ -1064,7 +1064,7 @@
                     "M": 105,
                     "L": 83,
                     "XL": 90,
-                    "XXL": 52
+                    "XXL": 53
                 },
                 "description": "Chân Váy Ngắn Kaki Túi Hộp",
                 "images": [
@@ -1084,7 +1084,7 @@
                 "inventory": {
                     "S": 96,
                     "M": 77,
-                    "L": 61,
+                    "L": 58,
                     "XL": 66,
                     "XXL": 38
                 },
@@ -1129,7 +1129,7 @@
                     "S": 72,
                     "M": 58,
                     "L": 45,
-                    "XL": 49,
+                    "XL": 46,
                     "XXL": 29
                 },
                 "description": "Chân Váy Nữ Dập Ly làm từ chất liệu voan mềm mại, bay bổng và độ rủ tự nhiên. Váy không bị nhăn hay bám dính và vô cùng thoáng mát khi mặc.",
@@ -1148,7 +1148,7 @@
                 "title": "Chân váy dạ Tweed dáng A ngắn",
                 "price": 429000,
                 "inventory": {
-                    "S": 42,
+                    "S": 41,
                     "M": 34,
                     "L": 26,
                     "XL": 29,
@@ -1174,7 +1174,7 @@
                     "M": 94,
                     "L": 74,
                     "XL": 81,
-                    "XXL": 47
+                    "XXL": 44
                 },
                 "description": "Chân Váy Dạ Tweed Chữ A Ngắn",
                 "images": [
@@ -1196,7 +1196,7 @@
                     "M": 41,
                     "L": 33,
                     "XL": 35,
-                    "XXL": 20
+                    "XXL": 24
                 },
                 "description": "Chân váy nhung súp xoè sử dụng chất liệu vải nhung có độ dày trung bình mang lại cảm giác ấm áp, chân váy nhung xếp xòe, trẻ trung, mix với sơ mi, len.",
                 "images": [
@@ -1218,7 +1218,7 @@
                     "M": 65,
                     "L": 51,
                     "XL": 56,
-                    "XXL": 32
+                    "XXL": 34
                 },
                 "description": "Chân váy bút chì kiểu dáng dài thiết kế ôm sát với phần eo cao, bo chân giúp tôn lên đường cong cơ thể quyến rũ của chị em, váy xẻ tà tinh tế.",
                 "images": [
@@ -1584,7 +1584,7 @@
                 "category_name": "Áo khoác nam"
             }
         ],
-        "ao-thun-ao-phong-nam": [
+        "ao-thun-nam": [
             {
                 "id": 72,
                 "title": "Áo thun / T-shirt thể thao nam",
@@ -2197,7 +2197,7 @@
                 "category_name": "Quần jean nam"
             }
         ],
-        "quan-tay-quan-au-nam": [
+        "quan-tay-nam": [
             {
                 "id": 100,
                 "title": "Quần Âu Nam Slim Lé Sườn",
@@ -2363,7 +2363,7 @@
                     "M": 170,
                     "L": 20,
                     "XL": 40,
-                    "XXL": 89
+                    "XXL": 92
                 },
                 "description": "Quần kaki nam thoải mái, form dáng regular cho nam giới phối đồ đi làm, đi chơi. Thích hợp mặc quanh năm, mix áo polo, t-shirt, áo sơ mi... Sở hữu ngay!",
                 "images": [
@@ -2382,7 +2382,7 @@
                 "price": 499000,
                 "inventory": {
                     "S": 76,
-                    "M": 141,
+                    "M": 144,
                     "L": 16,
                     "XL": 33,
                     "XXL": 74
@@ -2404,7 +2404,7 @@
                 "price": 499000,
                 "inventory": {
                     "S": 82,
-                    "M": 154,
+                    "M": 157,
                     "L": 18,
                     "XL": 36,
                     "XXL": 81
@@ -2449,7 +2449,7 @@
                 "inventory": {
                     "S": 49,
                     "M": 91,
-                    "L": 10,
+                    "L": 14,
                     "XL": 21,
                     "XXL": 48
                 },
@@ -2469,7 +2469,7 @@
                 "title": "Quần Kaki Nữ Dáng Boy Trẻ Trung",
                 "price": 469000,
                 "inventory": {
-                    "S": 76,
+                    "S": 79,
                     "M": 142,
                     "L": 16,
                     "XL": 33,
@@ -2494,7 +2494,7 @@
                     "S": 47,
                     "M": 89,
                     "L": 10,
-                    "XL": 21,
+                    "XL": 24,
                     "XXL": 46
                 },
                 "description": "Quần kaki nam Slim Thiết kế cơ bản túi chéo canh sườn và túi hậu có cái cúc, cạp quần to chắc chắn có đỉa để đeo thắt lưng. Mua ngay!",
@@ -2517,7 +2517,7 @@
                     "M": 136,
                     "L": 16,
                     "XL": 32,
-                    "XXL": 71
+                    "XXL": 70
                 },
                 "description": "Quần thiết kế dáng lưng cao ống ôm đang được giới trẻ ưa chuộng. Dáng quần này tạo sự trẻ trung, năng động cùng với đó là khả năng co giãn nhẹ nhàng thoải mái.",
                 "images": [
