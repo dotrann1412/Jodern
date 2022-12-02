@@ -23,16 +23,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/banner_background"
-                android:gravity="center"
-                >
+                android:gravity="center">
 
                 <ImageView
-                    android:src="@drawable/home_title"
                     android:layout_width="wrap_content"
-                    android:padding="15dp"
                     android:layout_height="75dp"
-                    />
+                    android:padding="15dp"
+                    android:src="@drawable/home_title" />
             </RelativeLayout>
 
 
