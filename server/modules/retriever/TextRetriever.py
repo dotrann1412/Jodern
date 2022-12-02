@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer
 from modules.retriever.Retriever import Retriever
 
 text_model = SentenceTransformer('keepitreal/vietnamese-sbert')
+print('[STATUS] Text retrieval model loaded')
 
 class TextRetriever():
     def __init__(self, features_folder='data/res/features/texts', top_k=12, cut_off=1.2):
