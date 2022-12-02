@@ -77,29 +77,38 @@ def GetProductDetails(id):
 
 from modules.email_service import gmail
 
-__mailInstance = gmail.MailService()
+__mailInstance = None
 
-try: __mailInstance.login('joderm.store@gmail.com', 'isowkkrraoqqihqk')
-except: __mailInstance = None
-
-import time
+import time, traceback
 
 def ProcessOrderData(order):
+    global __mailInstance
     response = {}
 
     while __commit.lock:
         time.sleep(0.1)
     
+    preorder_required = False
+    total_price = 0
     for id, val in order['items'].items():
         for size, num in val.items():
+            if __products1Layer[id]['inventory'][size] < num:
+                preorder_required = True
             __drop(id, size, num)
             __orderedItems[id] += num
+            total_price += num * __products1Layer[id]['price']
+            
+    if __mailInstance is None:
+        try: 
+            __mailInstance = gmail.MailService()
+            __mailInstance.login('joderm.store@gmail.com', 'isowkkrraoqqihqk')
+        except: __mailInstance = None
 
     if __mailInstance:
         try:
             content = ''
 
-            total_price = 0
+            
             for key, value in order['items'].items():
                 value_keys = list(value.keys())
                 
@@ -111,28 +120,31 @@ def ProcessOrderData(order):
                     value_keys[0]
                 ) + '<br>\n'
                 
-                total_price += __products1Layer[key]['price']
-                
             customer_name, phone_number, location = 'Unknown', 'Unknown', 'Unknown'
             
             try: customer_name = order['info']['customer_name']
-            except: pass
+            except: customer_name = ''
             
             try: phone_number = order['info']['phone_number']
             except: pass
             
             try: location = order['info']['location']
             except: pass
+            
+            cost = total_price
+            tax = total_price * 0.06
+            shipping_fee = 30000
                 
             html_mail = gmail.html_mail(
-                price = total_price,
-                tax = int(total_price / 10),
-                shipping_fee = 30000,
+                price = cost,
+                tax = tax,
+                shipping_fee = shipping_fee,
                 html_content = content,
-                product_count = len(list(order.keys())),
+                product_count = len(list(order['items'].keys())),
                 customer_name = customer_name,
                 phone_number = phone_number,
-                location = location
+                location = location,
+                preorder_required = preorder_required
             )
 
             mailContent = gmail.build_email_content(
@@ -144,11 +156,14 @@ def ProcessOrderData(order):
             
             __mailInstance.send_mail(mailContent)
         except Exception as err:
-            print('[EXCEPTION] Failed on sending email! Details here: ', err)
+            print('[EXCEPTION] Failed on sending email! Details here: ')
+            traceback.print_exc()
+            __mailInstance = None
+            return {"message": "Something went wrong while processing your order. Please tell to us if you need any support!"}
 
     __commit()
 
-    return True
+    return {"message": "Done!"}
 
 def __rollback(order):
     pass
