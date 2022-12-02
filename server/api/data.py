@@ -1,4 +1,5 @@
 import os, json, requests
+import copy
 import threading
 
 __productDataPath = 'data/appdata/products.json'
@@ -24,9 +25,8 @@ for sex, subcategories in __products.items():
     __categories[sex] = list(subcategories.keys())
     for key, value in subcategories.items():
         for item in value:
-            __products1Layer[str(item["id"])] = item
+            __products1Layer[str(item["id"])] = copy.deepcopy(item)
             
-import copy
 __productsLightWeight = copy.deepcopy(__products)
 
 for sex, cat in __categories.items():
@@ -59,7 +59,7 @@ def GetProductsByList(ids: list):
     for iter, id in enumerate(ids, 0):
         if type(id) != str:
             id = str(id)
-        res += [__products1Layer[id]]
+        res += [copy.deepcopy(__products1Layer[id])]
         res[iter]['images'] = res[iter]['images'][:1]
     return {'data': res}
 
@@ -173,7 +173,7 @@ def TrendingItems(top_k = 5):
     items.sort(key = lambda item: item['count'], reverse = True)
     res = []
     for iter, item in enumerate(items[:min(len(items), top_k)], 0):
-        res += [__products1Layer[str(item['id'])]]
+        res += [copy.deepcopy(__products1Layer[str(item['id'])])]
         res[iter]['images'] = res[iter]['images'][:1]
     return res
 
@@ -301,7 +301,6 @@ def __cloneUser():
             __drop(item['id'], size, -num)
         
         time.sleep(60)
-        
 
 threading.Thread(target = __sync, args = (), daemon = True).start()
 print('[STATUS] sync thread start')
