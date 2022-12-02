@@ -150,7 +150,7 @@ public class HomeFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackar(getActivity().getApplicationContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
