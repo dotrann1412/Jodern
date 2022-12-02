@@ -45,9 +45,9 @@ class SearchEngineInterface(APIView):
     
     def post(self, request: Request, *args, **kwargs):
         try:
-            jsdata = request.data
-            print('DEBUG - ', jsdata)
-            query = base64.decodebytes(jsdata['query'].encode())
+            l = len(str(request.data))
+            print('DEBUG - ', str(request.data)[:min(50, l)])
+            query = base64.decodebytes(request.data['query'].encode())
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
             return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
@@ -78,7 +78,7 @@ class HandleProductsList(APIView):
 class ProcessOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
         try:    
-            res = ProcessOrderData(request.data)
+            res = ProcessOrderData(request.data['cart'])
         except Exception as err:
             traceback.print_exc()            
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
@@ -88,7 +88,7 @@ class ProcessOrder(APIView):
 class ValidateOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
         try:
-            res = ValidateOrderData(request.data)
+            res = ValidateOrderData(request.data['cart'])
         except Exception as err:
             print('[EXCEPTION] exception raised while validate order. Details here: ', err)
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
