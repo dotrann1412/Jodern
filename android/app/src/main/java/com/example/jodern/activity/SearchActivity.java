@@ -40,7 +40,7 @@ public class SearchActivity extends AppCompatActivity {
     // It can be done later... :D
     private static final int MY_CAMERA_REQUEST_CODE = 100;
     private static final int MY_GALLERY_REQUEST_CODE = 101;
-    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
+    private static final int MY_WRITE_EXTERNAL_REQUEST_CODE = 102;
 
     private LinearLayout searchParentView;
     private String previousFragment;
@@ -176,6 +176,10 @@ public class SearchActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_GALLERY_REQUEST_CODE);
             return;
         }
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_WRITE_EXTERNAL_REQUEST_CODE);
+            return;
+        }
         Intent chooseImageIntent = ImagePicker.getPickImageIntent(this);
         cameraActivityResultLauncher.launch(chooseImageIntent);
     }
@@ -192,6 +196,12 @@ public class SearchActivity extends AppCompatActivity {
         } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
+            } else {
+                runImagePicker();
+            }
+        } else if (requestCode == MY_WRITE_EXTERNAL_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể ghi vào bộ nhớ tạm của thiết bị!").show();
             } else {
                 runImagePicker();
             }

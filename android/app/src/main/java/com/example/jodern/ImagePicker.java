@@ -29,7 +29,8 @@ import java.util.List;
 
 /**
 Ref: https://gist.github.com/Mariovc/f06e70ebe8ca52fbbbe2
- I have modified this code to suit this application needs: Resize the bitmap, get the RGB values from bitmap, return the byte array
+ I have modified many part this code to suit this application needs: Resize the bitmap, using static variables,
+ get the RGB values from bitmap, return the byte array
  */
 public class ImagePicker {
     private static final String TEMP_IMAGE_NAME = "tempImage";

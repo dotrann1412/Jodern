@@ -256,7 +256,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
                     locationPermissionGranted = true;
-
                     initMap();
                 }
             }
