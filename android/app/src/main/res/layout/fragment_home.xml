@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.HomeFragment">
+    tools:context=".fragment.HomeFragment"
+    android:id="@+id/homeParentView"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,19 +23,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/banner_background">
+                android:gravity="center">
 
-                <TextView
-                    android:id="@+id/homeStoreName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="Jodern"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="75dp"
+                    android:padding="15dp"
+                    android:src="@drawable/home_title" />
             </RelativeLayout>
 
 
@@ -107,6 +103,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="12dp">
 
                 <ImageView
@@ -120,6 +117,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical">
@@ -152,6 +150,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="12dp"
                     android:orientation="vertical">
 

@@ -9,11 +9,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodern.R;
 import com.example.jodern.activity.ProductDetailActivity;
 import com.example.jodern.fragment.CartFragment;
-import com.example.jodern.fragment.WishlistFragment;
-import com.example.jodern.provider.Provider;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,24 +18,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {

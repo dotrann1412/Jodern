@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.CartFragment">
+    tools:context=".fragment.CartFragment"
+    android:id="@+id/cartParentView">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -217,7 +218,8 @@
                 android:layout_gravity="center"
                 android:text="Giỏ hàng của bạn đang trống.\nMua sắm với Jodern ngay nào!"
                 android:textColor="@color/primary"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 

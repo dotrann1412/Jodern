@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -21,9 +20,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.example.jodern.R;
 import com.example.jodern.adapter.MapMarkerInfoAdapter;
-import com.example.jodern.customwidget.MyToast;
+import com.example.jodern.customwidget.MySnackbar;
+
 import com.example.jodern.model.BranchLocation;
 import com.example.jodern.provider.Provider;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,15 +55,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private BranchLocation branchLocation;
     private BranchLocation currentLocation;
 
+    private LinearLayout mapParentView;
     private LinearLayout loadingWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: creating map activity");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_map);
+        setContentView(R.layout.activity_map);
         nearestBranch = null;
 
+        mapParentView = findViewById(R.id.mapParentView);
         loadingWrapper = findViewById(R.id.mapLoadingWrapper);
         loadingWrapper.setVisibility(View.VISIBLE);
 
@@ -105,7 +108,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        MyToast.makeText(MapActivity.this, "Đã có lỗi xảy ra. Bạn vui lòng thử lại sau nhé", Toast.LENGTH_SHORT);
+                        MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
                         Log.d(TAG, "onErrorResponse: VolleyError: " + error);
                         loadingWrapper.setVisibility(View.GONE);
                     }
@@ -134,7 +137,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
@@ -253,7 +256,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
                     locationPermissionGranted = true;
-
                     initMap();
                 }
             }

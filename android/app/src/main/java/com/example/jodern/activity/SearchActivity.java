@@ -8,64 +8,41 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.example.jodern.ImagePicker;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.model.Category;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import com.example.jodern.customwidget.MyToast;
-import com.example.jodern.MainActivity;
-import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SearchView;
-import android.widget.Toast;
-
-import com.google.android.material.button.MaterialButton;
-
-import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 public class SearchActivity extends AppCompatActivity {
     // Show search history? https://stackoverflow.com/questions/21585326/implementing-searchview-in-action-bar
     // It can be done later... :D
     private static final int MY_CAMERA_REQUEST_CODE = 100;
     private static final int MY_GALLERY_REQUEST_CODE = 101;
-    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
+    private static final int MY_WRITE_EXTERNAL_REQUEST_CODE = 102;
 
+    private LinearLayout searchParentView;
     private String previousFragment;
     private ImageButton backBtn;
     private SearchView inputField;
@@ -73,9 +50,11 @@ public class SearchActivity extends AppCompatActivity {
     private MaterialButton submitBtn;
     private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_search);
         specifyPreviousFragment();
         initViews();
@@ -92,6 +71,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        searchParentView = findViewById(R.id.searchWrapperLayout);
+
         backBtn = findViewById(R.id.searchBackBtn);
         inputField = findViewById(R.id.searchInputField);
         cameraBtn = findViewById(R.id.searchCameraBtn);
@@ -151,11 +132,11 @@ public class SearchActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            Bitmap bitmap = ImagePicker.getImageFromResult(SearchActivity.this, data);
-                            if (bitmap != null) {
-                                submitImageQuery(bitmap);
+                            byte[] byteArray = ImagePicker.getImageFromResult(SearchActivity.this, data);
+                            if (byteArray != null) {
+                                submitImageQuery(byteArray);
                             } else {
-                                MyToast.makeText(SearchActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT);
+                                MySnackbar.inforSnackar(SearchActivity.this, searchParentView, getString(R.string.error_message)).show();
                             }
                         }
                     }
@@ -165,7 +146,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void submitTextQuery(String query) {
         if (query.length() == 0) {
-            MyToast.makeText(SearchActivity.this, "Bạn vui lòng nhập nội dung tìm kiếm nhé!", Toast.LENGTH_SHORT);
+            MySnackbar.inforSnackar(SearchActivity.this, searchParentView, "Bạn vui lòng nhập nội dung tìm kiếm nhé!").show();
             return;
         }
 
@@ -176,16 +157,10 @@ public class SearchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void submitImageQuery(Bitmap bitmap) {
-        // Bitmap to Base64 string
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
+    private void submitImageQuery(byte[] byteArray) {
+        Provider.with(this).setImageBase64(Base64.encodeToString(byteArray, Base64.DEFAULT));
         Intent intent = new Intent(SearchActivity.this, MainActivity.class);
         intent.putExtra("entry", "search");
-        intent.putExtra("query", encoded);
         intent.putExtra("method", "post");
         intent.putExtra("nextFragment", ProductListFragment.TAG);
         startActivity(intent);
@@ -201,6 +176,10 @@ public class SearchActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_GALLERY_REQUEST_CODE);
             return;
         }
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_WRITE_EXTERNAL_REQUEST_CODE);
+            return;
+        }
         Intent chooseImageIntent = ImagePicker.getPickImageIntent(this);
         cameraActivityResultLauncher.launch(chooseImageIntent);
     }
@@ -210,13 +189,19 @@ public class SearchActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_CAMERA_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MyToast.makeText(this, "Không thể truy cập vào camera!", Toast.LENGTH_SHORT);
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
             } else {
                 runImagePicker();
             }
         } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MyToast.makeText(this, "Không thể truy cập vào thư viện!", Toast.LENGTH_SHORT);
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
+            } else {
+                runImagePicker();
+            }
+        } else if (requestCode == MY_WRITE_EXTERNAL_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                MySnackbar.inforSnackar(this, searchParentView, "Không thể ghi vào bộ nhớ tạm của thiết bị!").show();
             } else {
                 runImagePicker();
             }

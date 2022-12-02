@@ -18,4 +18,6 @@
     <color name="dark">#181817</color>
     <color name="dark_gray">#222222</color>
     <color name="gray">#AAACAE</color>
+
+    <color name="light_red">#F13333</color>
 </resources>

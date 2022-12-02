@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.WishlistFragment">
+    tools:context=".fragment.WishlistFragment"
+    android:id="@+id/wishlistParentView"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +56,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="4dp"
             android:orientation="vertical">
@@ -96,9 +98,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Danh sách sản phẩm yêu thích của bạn đang trống"
+                android:text="Danh sách sản phẩm yêu thích của bạn đang trống.\nKhám phá Jodern ngay!"
+                android:textAlignment="center"
                 android:textColor="@color/primary"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 

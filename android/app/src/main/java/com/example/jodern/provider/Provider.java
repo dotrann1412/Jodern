@@ -21,9 +21,10 @@ public class Provider {
     private static Context context;
     private HashMap<String, ArrayList<Category>> categoryListMapping;
     private Intent searchIntent;
+//    private byte[] imageBytes = null;
+    private String imageBase64 = null;
 
     public static Provider with(Context context) {
-        // ref: https://www.digitalocean.com/community/tutorials/java-singleton-design-pattern-best-practices-examples#:~:text=safe%20singleton%20class.-,4.%20Thread%20Safe%20Singleton,-A%20simple%20way
         if (instance == null) {
             synchronized (Provider.class) {
                 if (instance == null) {
@@ -67,6 +68,22 @@ public class Provider {
 
     public Intent getSearchIntent() {
         return searchIntent;
+    }
+
+//    public void setImageBytes(byte[] imageBytes) {
+//        this.imageBytes = imageBytes;
+//    }
+//
+//    public byte[] getImageBytes() {
+//        return imageBytes;
+//    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
+    }
+
+    public String getImageBase64() {
+        return imageBase64;
     }
 
     public <T> void addToRequestQueue(Request<T> req) {

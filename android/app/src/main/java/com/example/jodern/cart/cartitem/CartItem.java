@@ -1,5 +1,8 @@
 package com.example.jodern.cart.cartitem;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

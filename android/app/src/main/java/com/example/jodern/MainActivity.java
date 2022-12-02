@@ -1,15 +1,19 @@
 package com.example.jodern;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
 import com.example.jodern.activity.MapActivity;
 import com.example.jodern.activity.SearchActivity;
+import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
@@ -23,11 +27,13 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private CartFragment cartFragment;
     private WishlistFragment wishlistFragment;
-    private String currentFragment = "home";
+    private ConstraintLayout mainParentView;
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         Provider.with(this.getApplicationContext());
         initViews();
@@ -35,7 +41,23 @@ public class MainActivity extends AppCompatActivity {
         setupInitialFragments();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        resetNavbarBtns();
+        String currentFragment = Provider.with(this).getCurrentFragment();
+        if (currentFragment.equals(HomeFragment.TAG))
+            homeBtn.setImageResource(R.drawable.ic_home_filled);
+        else if (currentFragment.equals(CartFragment.TAG))
+            cartBtn.setImageResource(R.drawable.ic_cart_filled);
+        else if (currentFragment.equals(WishlistFragment.TAG))
+            wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+    }
+
     private void initViews() {
+        mainParentView = findViewById(R.id.mainParentView);
+
         homeBtn = findViewById(R.id.mainNavBarHomeBtn);
         mapBtn = findViewById(R.id.mainNavBarMapBtn);
         cartBtn = findViewById(R.id.mainNavBarCartBtn);
@@ -51,37 +73,34 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String prevFragment = intent.getStringExtra("previousFragment");
         String nextFragment = intent.getStringExtra("nextFragment");
+        String message = intent.getStringExtra("message");
 
         // Forward to the next fragment
         if (nextFragment != null) {
+            Fragment fragment = null;
+            Bundle bundle = null;
             if (nextFragment.equals(ProductListFragment.TAG)) {
                 Provider.with(this).setSearchIntent(intent);
                 // Receive data from search activity, forward it to product list fragment
-                Fragment fragment = new ProductListFragment();
-                Bundle bundle = retrieveBundleForProductListFragment(intent);
-                fragment.setArguments(bundle);
-                switchFragment(fragment, nextFragment);
-                return;
+                fragment = new ProductListFragment();
+                bundle = retrieveBundleForProductListFragment(intent);
+            }
+            else if (nextFragment.equals(CartFragment.TAG)) {
+                fragment = new CartFragment();
+            }
+            else if (nextFragment.equals(WishlistFragment.TAG)) {
+                fragment = new WishlistFragment();
             }
 
-            if (nextFragment.equals(CartFragment.TAG)) {
-                Fragment fragmentObj = new CartFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putLong("productId", intent.getLongExtra("productId", 0L));
-//                bundle.putInt("quantity", intent.getIntExtra("quantity", 1));
-//                bundle.putString("size", intent.getStringExtra("size"));
-//                fragment.setArguments(bundle);
-                switchFragment(fragmentObj, nextFragment);
+            if (fragment == null)
                 return;
+            if (message != null) {
+                if (bundle == null)
+                    bundle = new Bundle();
+                bundle.putString("message", message);
             }
-
-            if (nextFragment.equals(WishlistFragment.TAG)) {
-                Fragment fragmentObj = new WishlistFragment();
-                switchFragment(fragmentObj, nextFragment);
-                return;
-            }
-
-            // other, if any
+            fragment.setArguments(bundle);
+            switchFragmentWithoutPushingToBackStack(fragment);
             return;
         }
 
@@ -93,21 +112,14 @@ public class MainActivity extends AppCompatActivity {
         if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
             fragment = homeFragment;
-//            switchFragment(homeFragment, HomeFragment.TAG);
-        }
-        else if (prevFragment.equals("map")) {
-            mapBtn.setImageResource(R.drawable.ic_map_filled);
-//            switchFragment(mapFragment, "map");
         }
         else if (prevFragment.equals(CartFragment.TAG)) {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
             fragment = cartFragment;
-//            switchFragment(cartFragment, CartFragment.TAG);
         }
         else if (prevFragment.equals(WishlistFragment.TAG)) {
             wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
             fragment = wishlistFragment;
-//            switchFragment(wishlistFragment, WishlistFragment.TAG);
         }
         else if (prevFragment.equals(ProductListFragment.TAG)) {
             // retrieve search params
@@ -116,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = retrieveBundleForProductListFragment(searchIntent);
             fragment.setArguments(bundle);
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainFragmentContainer, fragment)
-                .commit();
+        switchFragmentWithoutPushingToBackStack(fragment);
     }
 
     private void setEvents() {
@@ -163,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
     private final View.OnClickListener onSearchBtnClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            System.out.println("Search button clicked, current fragment: " + Provider.with(MainActivity.this).getCurrentFragment());
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
             intent.putExtra("previousFragment", Provider.with(MainActivity.this).getCurrentFragment());
             startActivity(intent);
@@ -184,15 +193,19 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.mainNavBarMapBtn:
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
-//                    switchFragment(mapFragment, "map");
-                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                    startActivity(intent);
+                    try {
+                        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, "Map is not available").show();
+                    }
                     break;
 
                 case R.id.mainNavBarCartBtn:
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
                     switchFragment(cartFragment, CartFragment.TAG);
                     break;
+
                 case R.id.mainNavBarWishlistBtn:
                     wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
                     switchFragment(wishlistFragment, WishlistFragment.TAG);
@@ -212,6 +225,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainFragmentContainer, fragmentObject)
                 .addToBackStack(name)
+                .commit();
+    }
+
+    private void switchFragmentWithoutPushingToBackStack(Fragment fragmentObject) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.mainFragmentContainer, fragmentObject)
                 .commit();
     }
 }
