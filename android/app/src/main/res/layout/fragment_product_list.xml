@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".fragment.ProductListFragment"
+    android:id="@+id/productParentView"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/productBaseWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context=".ProductListActivity">
+
+                <!-- Search and cart -->
+                <LinearLayout
+                    android:id="@+id/productSearchBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/search_bar_shape"
+                    android:clipChildren="true"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:padding="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:paddingLeft="2dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:src="@drawable/ic_search"
+                            android:adjustViewBounds="true"
+                            app:tint="@color/text" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/productSearchBarText"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|left"
+                        android:text="Bạn tìm gì hôm nay?"
+                        android:textColor="@color/text_light"/>
+
+                    <LinearLayout
+                        android:padding="6dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:paddingRight="6dp"
+                            android:src="@drawable/ic_camera"
+                            android:adjustViewBounds="true"
+                            app:tint="@color/primary_dark" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--  Categories -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Thời trang nam"
+                            android:textColor="@color/text"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/productMaleCategoryTagList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="4dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Thời trang nữ"
+                            android:textColor="@color/text"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/productFemaleCategoryTagList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="4dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/productCurrentCateWrapper"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Danh mục hiện tại: "
+                            android:textColor="@color/text"
+                            />
+
+                        <TextView
+                            android:id="@+id/productCurrentCateText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Áo khoác nam"
+                            android:textColor="@color/primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Product List  -->
+
+                <LinearLayout
+                    android:id="@+id/productEmptyWrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="80dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginRight="80dp"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/searchImageView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/empty_search" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/searchTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Không tìm thấy kết quả phù hợp"
+                        android:textColor="@color/primary"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/productListWrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="8dp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <LinearLayout
+            android:id="@+id/productLoadingWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_overlay"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/primary" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/productFloatBtn"
+        android:backgroundTint="@color/primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_up"
+        android:scaleType="center"
+        app:maxImageSize="48dp"
+        app:tint="@color/dark"
+        android:layout_margin="16dp" />
+</FrameLayout>

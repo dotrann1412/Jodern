@@ -1,9 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MapActivity">
+    android:orientation="vertical"
+    android:id="@+id/mapParentView"
+    >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <fragment xmlns:tools="http://schemas.android.com/tools"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        tools:context=".activity.MapActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        map:mapType="normal"
+        map:uiCompass="true"
+        map:cameraZoom="15"
+        map:uiRotateGestures="true"
+        map:uiTiltGestures="true"
+        map:uiZoomGestures="true"
+        android:layout_weight="1"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_gray"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+    >
+    <TextView android:id="@+id/mapTextView"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Jodern luôn ở cạnh bạn ở mọi nơi!  🗺️"
+        android:textSize="16sp"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        android:lineHeight="20sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/mapLoadingWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_overlay"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/primary" />
+
+    </LinearLayout>
+</LinearLayout>

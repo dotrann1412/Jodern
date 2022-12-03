@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">Jodern</string>
-    <string name="title_activity_main">Jodern</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="back">Back</string>
-    <string name="hello_world">Hello world</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_message">Đã có lỗi xảy ra. Bạn vui lòng thử lại nhé!</string>
     <string name="search_hint">Bạn tìm gì hôm nay?</string>
     <string name="title_activity_cart">CartActivity</string>
@@ -14,4 +10,7 @@
     <string name="total">Tổng thanh toán</string>
     <string name="shipping">Vận chuyển</string>
     <string name="sub_total">Tổng cộng</string>
+    <string name="go_to_cart">Xem giỏ hàng</string>
+    <string name="go_to_wishlist">Xem danh sách</string>
+    <string name="skip_snackbar">Ẩn</string>
 </resources>

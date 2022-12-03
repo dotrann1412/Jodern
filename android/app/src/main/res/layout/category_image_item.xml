@@ -12,7 +12,12 @@
         android:id="@+id/categoryImageView"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/ic_search" />
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/cart_image_shape"
+        android:src="@drawable/ao_thun_nam" />
 
     <TextView
         android:id="@+id/categoryImageName"

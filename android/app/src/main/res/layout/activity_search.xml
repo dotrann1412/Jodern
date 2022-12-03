@@ -2,65 +2,76 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/searchWrapperLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context=".activity.MainActivity"
-    android:id="@+id/searchWrapperLayout">
-    >
+    tools:context=".activity.SearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="16dp"
-        >
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/searchBackBtn"
+        <LinearLayout
+            android:layout_marginRight="8dp"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:paddingLeft="0dp"
-            android:paddingRight="12dp"
-            android:src="@drawable/ic_back" />
+            android:layout_height="match_parent">
+            <ImageButton
+                android:id="@+id/searchBackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/cart_image_shape"
+                android:paddingLeft="6dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/primary_dark" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_search_bar"
-            android:layout_marginEnd="4dp">
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/search_bar_shape">
 
             <SearchView
                 android:id="@+id/searchInputField"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_weight="1"
                 android:layout_marginStart="-4dp"
-                app:theme="@style/MySearchView"
-                android:lineSpacingMultiplier="0"
+                android:layout_weight="1"
                 android:iconifiedByDefault="false"
+                android:lineSpacingMultiplier="0"
                 android:queryBackground="@null"
                 android:queryHint="Bạn tìm gì hôm nay?"
-                android:searchIcon="@null" />
+                android:searchIcon="@null"
+                app:theme="@style/MySearchView" />
 
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/searchCameraBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginRight="4dp"
-                android:background="@null"
-                android:paddingLeft="12dp"
-                android:paddingRight="8dp"
-                android:src="@drawable/ic_camera"
-                app:tint="@color/primary_dark"
-                />
+                android:padding="4dp"
+                android:layout_width="44dp"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="6dp"
+                    android:src="@drawable/ic_camera"
+                    android:adjustViewBounds="true"
+                    app:tint="@color/primary_dark" />
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/searchSubmitBtn"
                 android:layout_width="44dp"
                 android:layout_height="match_parent"
-                android:backgroundTint="@color/primary"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
@@ -68,35 +79,36 @@
                 app:icon="@drawable/ic_search"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconTint="@color/white"
+                app:iconSize="18dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.SearchBtn" />
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:gravity="center"
-    >
-    <ImageView
-        android:id="@+id/searchImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_marginTop="-100dp"
-        android:src="@drawable/search" />
-    <TextView
-        android:id="@+id/searchTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thỏa sức mua sắm cùng Jodern!"
-        android:textColor="@color/primary"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        />
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/searchImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="180dp"
+            android:layout_marginTop="-130dp"
+            android:src="@drawable/search" />
+
+        <TextView
+            android:paddingTop="8dp"
+            android:id="@+id/searchTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Thỏa sức mua sắm cùng Jodern!"
+            android:textColor="@color/primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>
