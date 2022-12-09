@@ -51,8 +51,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    private BranchLocation nearestBranch ;
-    private BranchLocation branchLocation;
+    private BranchLocation nearestBranch;
     private BranchLocation currentLocation;
 
     private LinearLayout mapParentView;
@@ -69,7 +68,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         loadingWrapper = findViewById(R.id.mapLoadingWrapper);
         loadingWrapper.setVisibility(View.VISIBLE);
 
-        retrieveBranchLocation();
 
         getLocationPermission();
     }
@@ -89,6 +87,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 moveCamera(new LatLng(nearestBranch.getLatitude(), nearestBranch.getLongitude()));
             }
         }
+
+
     }
 
     private void retrieveBranchLocation() {
@@ -123,6 +123,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             for (int i = 0; i < locations.length(); ++i) {
                 JSONArray latLng = (JSONArray) locations.get(i);
                 BranchLocation location = new BranchLocation((double) latLng.get(0), (double) latLng.get(1));
+
                 setBranchMarker(location);
 
                 if (i == 0) {
@@ -137,7 +138,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
-            Thread.sleep(500);
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
@@ -189,6 +189,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (ActivityCompat.checkSelfPermission(this.getApplicationContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
                 initMap();
+
             }
             else {
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
@@ -203,8 +204,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         try {
             Log.d(TAG, "initMap: initializing map");
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            if (mapFragment != null)
+            if (mapFragment != null) {
                 mapFragment.getMapAsync(this);
+            }
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
@@ -227,6 +229,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         Log.d(TAG, "onComplete: found location!");
                         currentLocation = BranchLocation.fromLocation((Location) task.getResult());
                         moveCamera(BranchLocation.toLatLng(currentLocation));
+                        retrieveBranchLocation();
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
                     }

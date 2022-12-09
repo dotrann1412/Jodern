@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.exifinterface.media.ExifInterface;
@@ -34,6 +35,7 @@ Ref: https://gist.github.com/Mariovc/f06e70ebe8ca52fbbbe2
  */
 public class ImagePicker {
     private static final String TEMP_IMAGE_NAME = "tempImage";
+    private static final String TAG = "Image Picker";
 
     public static Intent getPickImageIntent(Context context) {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -46,8 +48,6 @@ public class ImagePicker {
         Intent pickIntent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePhotoIntent.putExtra("return-data", true);
-        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempFile(context)));
 
         // choose intent
         intentList = addIntentsToList(context, intentList, pickIntent);
@@ -73,18 +73,20 @@ public class ImagePicker {
 
     public static byte[] getImageFromResult(Context context, Intent imageReturnedIntent) {
         Bitmap bm = null;
-        File imageFile = getTempFile(context);
         Uri selectedImage;
-        boolean isCamera = (imageReturnedIntent == null ||
-                imageReturnedIntent.getData() == null  ||
-                imageReturnedIntent.getData().toString().contains(imageFile.toString()));
+        boolean isCamera = (imageReturnedIntent == null || imageReturnedIntent.getData() == null);
+
         if (isCamera) {     /** CAMERA **/
-            selectedImage = Uri.fromFile(imageFile);
+            bm = (Bitmap) imageReturnedIntent.getExtras().get("data");
+            String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bm, "Image123", null);
+            selectedImage = Uri.parse(path);
         } else {            /** ALBUM **/
             selectedImage = imageReturnedIntent.getData();
         }
 
         bm = getImageResized(context, selectedImage);
+        int rotation = getRotation(context, selectedImage, isCamera);
+        bm = rotate(bm, rotation);
         byte[] rbgValues = getRgbValuesFromBitmap(bm);
         return rbgValues;
     }
@@ -127,12 +129,6 @@ public class ImagePicker {
         return rgbValues;
     }
 
-
-    private static File getTempFile(Context context) {
-        File imageFile = new File(context.getExternalCacheDir(), TEMP_IMAGE_NAME);
-        imageFile.getParentFile().mkdirs();
-        return imageFile;
-    }
     /**
      * Resize to avoid using too much memory loading big images (e.g.: 2560*1920)
      **/
