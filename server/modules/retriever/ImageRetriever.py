@@ -8,7 +8,7 @@ from io import BytesIO
 from modules.retriever.Retriever import Retriever
 
 class MySwinT2(torch.nn.Module):
-    def __init__(self, name="ViT-B/16", device="cpu"):
+    def __init__(self):
         super().__init__()
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("microsoft/swinv2-tiny-patch4-window8-256")
         self.model = Swinv2Model.from_pretrained("microsoft/swinv2-tiny-patch4-window8-256")
@@ -22,7 +22,7 @@ class MySwinT2(torch.nn.Module):
         return outputs.pooler_output[0].numpy()
     
 model = MySwinT2()
-images_idx = np.load('data/res/features/images/image_indices.npy')
+image_indices = np.load('data/res/features/images/image_indices.npy')
 print('[STATUS] Image retrieval model loaded')
 
 def image_preprocess(data):
@@ -39,16 +39,16 @@ def image_preprocess(data):
 
 
 class ImageRetriever():
-    def __init__(self, features_folder='data/res/features/images/values', top_k=12, cut_off=1.5):
+    def __init__(self, features_folder='data/res/features/images/values', top_k=16, cut_off=0.5):
         '''
             Args:
                 features_folder: path to folder containing image features
-                top_k: maximum number of images to return
                 cut_off: cut off distance
+                top_k: maximum number of returned products
         '''
         self.__retriever = Retriever(features_folder, vector_dim=768, multiple_features=True)
-        self.top_k = top_k
         self.cut_off = cut_off
+        self.top_k = top_k
     
     def search(self, query):
         '''
@@ -64,7 +64,7 @@ class ImageRetriever():
         indices = self.__retriever.search(features, top_k=self.top_k, cut_off=self.cut_off)
         res = []
         for i in indices:
-            if images_idx[i] in res:
+            if image_indices[i] in res:
                 continue
-            res.append(images_idx[i])
+            res.append(image_indices[i])
         return res

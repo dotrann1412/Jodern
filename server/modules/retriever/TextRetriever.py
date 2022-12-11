@@ -1,20 +1,23 @@
 from sentence_transformers import SentenceTransformer
+import numpy as np
+
 from modules.retriever.Retriever import Retriever
 
 text_model = SentenceTransformer('keepitreal/vietnamese-sbert')
+text_indices = np.load('data/res/features/texts/text_indices.npy')
 print('[STATUS] Text retrieval model loaded')
 
 class TextRetriever():
-    def __init__(self, features_folder='data/res/features/texts', top_k=12, cut_off=1.2):
+    def __init__(self, features_folder='data/res/features/texts/values', top_k=16, cut_off=0.4):
         '''
             Args:
                 features_folder: path to folder containing text features
-                top_k: maximum number of images to return
-                cut_off: cut off distance
+                cut_off: cut off distance (cosine similarity)
+                top_k: maximum number of returned products
         '''
-        self.__retriever = Retriever(features_folder, vector_dim=768, multiple_features=False)
-        self.top_k = top_k
+        self.__retriever = Retriever(features_folder, vector_dim=768, multiple_features=True)
         self.cut_off = cut_off
+        self.top_k = top_k
     
     def search(self, query):
         '''
@@ -26,4 +29,9 @@ class TextRetriever():
         '''
         query_embedded = text_model.encode([query])
         indices = self.__retriever.search(query_embedded, top_k=self.top_k, cut_off=self.cut_off)
-        return indices
+        res = []
+        for i in indices:
+            if text_indices[i] in res:
+                continue
+            res.append(text_indices[i])
+        return res
