@@ -82,6 +82,8 @@ public class ProductListFragment extends Fragment {
         loadingWrapper = getView().findViewById(R.id.productLoadingWrapper);
         emptyWrapper = getView().findViewById(R.id.productEmptyWrapper);
         floatBtn = getView().findViewById(R.id.productFloatBtn);
+
+        floatBtn.hide();
     }
 
     private void setEvents() {
@@ -102,6 +104,19 @@ public class ProductListFragment extends Fragment {
                 layout.smoothScrollTo(0, 0);
             }
         });
+
+        NestedScrollView productBaseWrapper = getView().findViewById(R.id.productBaseWrapper);
+        productBaseWrapper.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    floatBtn.show();
+                } else {
+                    floatBtn.hide();
+                }
+            }
+        });
+
     }
 
 

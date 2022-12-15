@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     tools:context=".fragment.ProductListFragment"
-    android:id="@+id/productParentView"
-    >
+    android:id="@+id/productParentView">
 
 
     <RelativeLayout
@@ -209,7 +208,7 @@
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="12dp"
                     android:nestedScrollingEnabled="false"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="70dp" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
@@ -242,7 +241,10 @@
         android:layout_gravity="bottom|end"
         android:src="@drawable/ic_up"
         android:scaleType="center"
-        app:maxImageSize="48dp"
+        app:backgroundTint="@color/dark_gray"
+        app:borderWidth="4dp"
+        app:maxImageSize="40dp"
+        app:fabCustomSize="60dp"
         app:tint="@color/dark"
-        android:layout_margin="16dp" />
+        android:layout_margin="18dp" />
 </FrameLayout>

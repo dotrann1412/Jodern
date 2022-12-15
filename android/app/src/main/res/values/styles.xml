@@ -12,6 +12,17 @@
         <!-- Customize your theme here. -->
 
         <item name="android:windowDisablePreview">true</item>
+
+        <item name="android:listViewStyle">@style/Widget.MyTheme.ListView</item>
+        <item name="android:scrollViewStyle">@style/Widget.MyTheme.ScrollView</item>
+    </style>
+
+    <style name="Widget.MyTheme.ListView" parent="android:Widget.ListView">
+        <item name="android:overScrollMode">never</item>
+    </style>
+
+    <style name="Widget.MyTheme.ScrollView" parent="android:Widget.ScrollView">
+        <item name="android:overScrollMode">never</item>
     </style>
 
     <style name="Theme.Jodern.NoActionBar">
