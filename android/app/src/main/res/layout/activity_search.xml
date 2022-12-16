@@ -53,16 +53,30 @@
                 app:theme="@style/MySearchView" />
 
             <LinearLayout
-                android:id="@+id/searchCameraBtn"
                 android:padding="4dp"
-                android:layout_width="44dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent">
                 <ImageView
+                    android:id="@+id/searchMicroBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:paddingLeft="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:src="@drawable/ic_micro"
+                    android:adjustViewBounds="true"
+                    app:tint="@color/primary_dark" />
+                <ImageView
+                    android:id="@+id/searchCameraBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:paddingLeft="6dp"
                     android:paddingRight="6dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
                     android:src="@drawable/ic_camera"
                     android:adjustViewBounds="true"
                     app:tint="@color/primary_dark" />

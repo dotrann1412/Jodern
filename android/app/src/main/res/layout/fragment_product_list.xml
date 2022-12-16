@@ -68,6 +68,16 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:background="@null"
+                            android:paddingRight="12dp"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
+                            android:src="@drawable/ic_micro"
+                            app:tint="@color/primary_dark" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
                             android:background="@null"
                             android:paddingRight="6dp"
                             android:src="@drawable/ic_camera"
