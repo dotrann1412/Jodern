@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import com.example.jodern.BuildConfig;
 import com.example.jodern.R;
 import com.example.jodern.adapter.MapMarkerInfoAdapter;
 import com.example.jodern.customwidget.MySnackbar;
@@ -87,13 +88,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 moveCamera(new LatLng(nearestBranch.getLatitude(), nearestBranch.getLongitude()));
             }
         }
-
-
     }
 
     private void retrieveBranchLocation() {
         Log.d(TAG, "retrieveBranchLocation: retrieving the branch locations data");
-        String url = "http://jodern.store:8000/api/stores-location";
+        String url = BuildConfig.SERVER_URL + "stores-location";
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,

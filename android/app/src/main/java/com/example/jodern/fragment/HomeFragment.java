@@ -22,6 +22,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.R;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.adapter.CategoryImageListAdapter;
@@ -135,7 +136,7 @@ public class HomeFragment extends Fragment {
     private void getTrendingProducts() {
         String entry = "trending";
         String params = "8";
-        String url = "http://jodern.store:8000/api/" + entry + "/" + params;
+        String url = BuildConfig.SERVER_URL + entry + "/" + params;
         JsonObjectRequest postRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,

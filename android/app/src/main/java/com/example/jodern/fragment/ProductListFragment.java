@@ -22,6 +22,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.R;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.adapter.CategoryTagListAdapter;
@@ -151,7 +152,7 @@ public class ProductListFragment extends Fragment {
         if (method == null) {
             // GET requests
             String searchParams = parseSearchParams(args);
-            String url = "http://jodern.store:8000/api/" + searchParams;
+            String url = BuildConfig.SERVER_URL + searchParams;
             JsonObjectRequest getRequest = new JsonObjectRequest (
                     Request.Method.GET,
                     url,
@@ -178,7 +179,7 @@ public class ProductListFragment extends Fragment {
             HashMap<String, String> params = new HashMap<>();
             params.put("query", Provider.with(getContext()).getImageBase64());
 
-            String url = "http://jodern.store:8000/api/" + entry + "/";
+            String url = BuildConfig.SERVER_URL + entry + "/";
             JsonObjectRequest postRequest = new JsonObjectRequest (
                     url,
                     new JSONObject(params),
