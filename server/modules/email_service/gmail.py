@@ -305,11 +305,9 @@ class MailService:
         self.smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT)
 
     def login(self, username, password):        
-        try:
-            self.imap_server.login(username, password)
-            self.smtp_server.login(username, password)
-        except: return False
-        return True
+        self.imap_server.login(username, password)
+        self.smtp_server.login(username, password)
+        
 
     def logout(self):
         self.imap_server.logout()
@@ -362,8 +360,4 @@ class MailService:
         return mail_list
 
     def send_mail(self, mail):
-        try: self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
-        except Exception as e:
-            print(str(e))
-            return False
-        return True
+        self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
