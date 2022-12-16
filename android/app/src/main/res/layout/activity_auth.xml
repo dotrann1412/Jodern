@@ -12,13 +12,19 @@
 
 
     <Button
-        android:id="@+id/authLoginBtn"
+        android:id="@+id/fbAuthLoginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login with FB" />
 
+    <Button
+        android:id="@+id/gAuthLoginBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login with Google" />
+
     <TextView
-        android:text="name"
+        android:text="userId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/authUserId" />
