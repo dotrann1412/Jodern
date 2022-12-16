@@ -4,7 +4,7 @@ import os
 
 class Retriever():
     def __init__(self, features_folder, vector_dim=512, multiple_features=False):
-        self.index = faiss.IndexFlatL2(vector_dim)
+        self.index = faiss.IndexFlatIP(vector_dim)
         self.multiple_features = multiple_features
         self.__load_features(features_folder)
 
@@ -22,10 +22,10 @@ class Retriever():
         faiss.normalize_L2(all_features)
         self.index.add(all_features)
 
-    def search(self, X, top_k=12, cut_off=1.0):
+    def search(self, X, top_k=12, cut_off=0.7):
         faiss.normalize_L2(X)
         distances, indices = self.index.search(X.astype(np.float32), top_k)
         for i in range(len(distances[0])):
-            if distances[0][i] >= cut_off:
+            if distances[0][i] < cut_off:
                 return indices[0][:i]
         return indices[0]

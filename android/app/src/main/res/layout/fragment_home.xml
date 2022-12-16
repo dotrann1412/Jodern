@@ -2,17 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeParentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.HomeFragment"
-    android:id="@+id/homeParentView"
-    >
+    tools:context=".fragment.HomeFragment">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".activity.MainActivity">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,6 +91,17 @@
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
                             android:background="@null"
+                            android:paddingTop="3dp"
+                            android:paddingRight="12dp"
+                            android:paddingBottom="3dp"
+                            android:src="@drawable/ic_micro"
+                            app:tint="@color/primary_dark" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:background="@null"
                             android:paddingRight="8dp"
                             android:src="@drawable/ic_camera"
                             app:tint="@color/primary_dark" />
@@ -117,8 +126,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical">
 
@@ -136,7 +145,8 @@
                     android:id="@+id/homeTrendingWrapper"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="4dp" />
+                    android:layout_marginTop="4dp"
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
 
             <!-- Categories -->
@@ -196,14 +206,14 @@
                             android:textColor="@color/primary"
                             android:textSize="13sp"
                             app:strokeColor="@color/gray" />
-                        />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/mainMaleCategoryImageList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="12dp"
+                        android:nestedScrollingEnabled="false" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -250,14 +260,20 @@
                         android:id="@+id/mainFemaleCategoryImageList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="12dp"
+                        android:nestedScrollingEnabled="false" />
 
                 </LinearLayout>
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="96dp" />
+
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 
 </FrameLayout>

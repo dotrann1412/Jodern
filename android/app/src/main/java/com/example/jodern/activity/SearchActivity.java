@@ -16,9 +16,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
@@ -41,14 +43,16 @@ public class SearchActivity extends AppCompatActivity {
     private static final int MY_CAMERA_REQUEST_CODE = 100;
     private static final int MY_GALLERY_REQUEST_CODE = 101;
     private static final int MY_WRITE_EXTERNAL_REQUEST_CODE = 102;
+    private static final int MY_MICRO_REQUEST_CODE = 103;
 
     private LinearLayout searchParentView;
     private String previousFragment;
     private ImageButton backBtn;
     private SearchView inputField;
-    private LinearLayout cameraBtn;
+    private ImageView cameraBtn, microBtn;
     private MaterialButton submitBtn;
     private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
+    private ActivityResultLauncher<Intent> microActivityResultLauncher;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -76,6 +80,7 @@ public class SearchActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.searchBackBtn);
         inputField = findViewById(R.id.searchInputField);
         cameraBtn = findViewById(R.id.searchCameraBtn);
+        microBtn = findViewById(R.id.searchMicroBtn);
         submitBtn = findViewById(R.id.searchSubmitBtn);
 
         inputField.requestFocus();
@@ -94,8 +99,10 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() == 0) {
                     cameraBtn.setVisibility(View.VISIBLE);
+                    microBtn.setVisibility(View.VISIBLE);
                 } else {
                     cameraBtn.setVisibility(View.GONE);
+                    microBtn.setVisibility(View.GONE);
                 }
                 return true;
             }
@@ -122,6 +129,43 @@ public class SearchActivity extends AppCompatActivity {
                 runImagePicker();
             }
         });
+
+        setupMicro();
+        microBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                runMicro();
+            }
+        });
+    }
+
+    private void setupMicro() {
+        microActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String query = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                        submitTextQuery(query);
+                    }
+                }
+            }
+        });
+    }
+
+    private void runMicro() {
+        // check permission
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, MY_MICRO_REQUEST_CODE);
+            return;
+        }
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hãy nói gì đó...");
+        microActivityResultLauncher.launch(intent);
     }
 
     private void setupCamera() {
@@ -187,25 +231,57 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_REQUEST_CODE) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
-            } else {
-                runImagePicker();
-            }
-        } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
-            } else {
-                runImagePicker();
-            }
-        } else if (requestCode == MY_WRITE_EXTERNAL_REQUEST_CODE) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                MySnackbar.inforSnackar(this, searchParentView, "Không thể ghi vào bộ nhớ tạm của thiết bị!").show();
-            } else {
-                runImagePicker();
-            }
+        switch (requestCode) {
+            case MY_CAMERA_REQUEST_CODE:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
+                } else {
+                    runImagePicker();
+                }
+                break;
+            case MY_GALLERY_REQUEST_CODE:
+            case MY_WRITE_EXTERNAL_REQUEST_CODE:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện ảnh!").show();
+                } else {
+                    runImagePicker();
+                }
+                break;
+            case MY_MICRO_REQUEST_CODE:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào microphone!").show();
+                } else {
+                    runMicro();
+                }
+                break;
+            default:
+                break;
         }
+//        if (requestCode == MY_CAMERA_REQUEST_CODE) {
+//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
+//            } else {
+//                runImagePicker();
+//            }
+//        } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
+//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
+//            } else {
+//                runImagePicker();
+//            }
+//        } else if (requestCode == MY_WRITE_EXTERNAL_REQUEST_CODE) {
+//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+//                MySnackbar.inforSnackar(this, searchParentView, "Không thể ghi vào bộ nhớ tạm của thiết bị!").show();
+//            } else {
+//                runImagePicker();
+//            }
+//        } else if (requestCode == MY_MICRO_REQUEST_CODE) {
+//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào microphone!").show();
+//            } else {
+//                runMicro();
+//            }
+//        }
     }
 
     @Override

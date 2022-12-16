@@ -117,4 +117,15 @@ public class Provider {
     public ArrayList<Category> getCategoryList(String gender) {
         return categoryListMapping.get(gender);
     }
+
+    public ArrayList<Category> getCategoryList(String gender, boolean addShowAll) {
+        ArrayList<Category> cates = categoryListMapping.get(gender);
+        if (!addShowAll)
+            return cates;
+
+        ArrayList<Category> tags = new ArrayList<>();
+        tags.add(new Category("Tất cả", 0, gender, true));
+        tags.addAll(cates);
+        return tags;
+    }
 }

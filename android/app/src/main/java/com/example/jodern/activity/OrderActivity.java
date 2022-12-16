@@ -2,14 +2,17 @@ package com.example.jodern.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -70,6 +73,14 @@ public class OrderActivity extends AppCompatActivity {
         orderCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Hide the keyboard
+                View focusView = OrderActivity.this.getCurrentFocus();
+                if (focusView != null) {
+                    InputMethodManager inputManager = (InputMethodManager) OrderActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+
+                // Call API
                 String entry = "process-order";
 
                 try {
@@ -119,31 +130,37 @@ public class OrderActivity extends AppCompatActivity {
                     JSONObject params = new JSONObject();
                     params.put("cart", cartParams);
 
-                    orderLoadingWrapper.setVisibility(View.VISIBLE);
-                    String url = BuildConfig.SERVER_URL + entry + "/";
-                    JsonObjectRequest postRequest = new JsonObjectRequest(
-                            url,
-                            params,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    orderLoadingWrapper.setVisibility(View.GONE);
-                                    handleSuccess(response);
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    orderLoadingWrapper.setVisibility(View.GONE);
-                                    handleError(error);
-                                }
-                            }
-                    );
-                    Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
+//                    orderLoadingWrapper.setVisibility(View.VISIBLE);
+//                    String url = "http://jodern.store:8000/api/" + entry + "/";
+//                    JsonObjectRequest postRequest = new JsonObjectRequest(
+//                            url,
+//                            params,
+//                            new Response.Listener<JSONObject>() {
+//                                @Override
+//                                public void onResponse(JSONObject response) {
+//                                    orderLoadingWrapper.setVisibility(View.GONE);
+//                                    handleSuccess(response);
+//                                }
+//                            },
+//                            new Response.ErrorListener() {
+//                                @Override
+//                                public void onErrorResponse(VolleyError error) {
+//                                    System.out.println(error.toString());
+//                                    orderLoadingWrapper.setVisibility(View.GONE);
+//                                    handleError(error);
+//                                }
+//                            }
+//                    );
+//                    // increase timeout
+////                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
+////                            3000,
+////                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+////                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//                    Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
+                    handleSuccess(null);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());
                 }
-
             }
         });
 
@@ -161,22 +178,30 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void handleSuccess(JSONObject response) {
-        try {
-            if (response.getString("message").equals("Done!")) {
-                for (CartItem item : cartInfo)
-                    CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
+        for (CartItem item : cartInfo)
+        CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
 
-                // Move to cart activity (with empty cart) and show success message
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("nextFragment", CartFragment.TAG);
-                intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
-                startActivity(intent);
-            } else {
-                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
-            }
-        } catch (JSONException jsonException) {
-            jsonException.printStackTrace();
-        }
+        // Move to cart activity (with empty cart) and show success message
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("nextFragment", CartFragment.TAG);
+        intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
+        startActivity(intent);
+//        try {
+//            if (response.getString("message").equals("Done!")) {
+//                for (CartItem item : cartInfo)
+//                    CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
+//
+//                // Move to cart activity (with empty cart) and show success message
+//                Intent intent = new Intent(this, MainActivity.class);
+//                intent.putExtra("nextFragment", CartFragment.TAG);
+//                intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
+//                startActivity(intent);
+//            } else {
+//                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+//            }
+//        } catch (JSONException jsonException) {
+//            jsonException.printStackTrace();
+//        }
     }
 
     private int formValidator(String name, String email, String phone, String address) {

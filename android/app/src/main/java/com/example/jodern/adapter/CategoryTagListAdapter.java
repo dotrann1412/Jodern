@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagListAdapter.ViewHolder> {
     private ArrayList<Category> categoryList;
     private Fragment currentFragment;
-
+    
     public CategoryTagListAdapter(Fragment fragment) {
         currentFragment = fragment;
     }
@@ -70,15 +70,28 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
                     Category category = categoryList.get(getAdapterPosition());
                     Fragment fragment = new ProductListFragment();
                     Bundle bundle = new Bundle();
+
+                    String rawKey = "categoryRaw";
+                    if (category.isAll())
+                        rawKey = "sex";
+
+                    String name = category.getName();
+                    if (category.isAll()) {
+                        if (category.getRaw().equals("nam"))
+                            name = "Thời trang nam";
+                        else if (category.getRaw().equals("nu"))
+                            name = "Thời trang nữ";
+                    }
+
                     bundle.putString("entry", "product-list");
-                    bundle.putString("categoryRaw", category.getRaw());
-                    bundle.putString("categoryName", category.getName());
+                    bundle.putString(rawKey, category.getRaw());
+                    bundle.putString("categoryName",name);
                     fragment.setArguments(bundle);
 
                     Intent searchIntent = new Intent(currentFragment.getActivity(), ProductListFragment.class);
                     searchIntent.putExtra("entry", "product-list");
-                    searchIntent.putExtra("categoryRaw", category.getRaw());
-                    searchIntent.putExtra("categoryName", category.getName());
+                    searchIntent.putExtra(rawKey, category.getRaw());
+                    searchIntent.putExtra("categoryName", name);
                     Provider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
 
                     FragmentManager fragmentManager = currentFragment.requireActivity().getSupportFragmentManager();
