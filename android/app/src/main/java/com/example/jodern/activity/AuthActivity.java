@@ -105,7 +105,11 @@ public class AuthActivity extends AppCompatActivity {
         logoutBtn.setVisibility(View.VISIBLE);
         fbLoginBtn.setVisibility(View.GONE);
         gLoginBtn.setVisibility(View.GONE);
-        String url = user.getPhotoUrl() + "?access_token=" + AccessToken.getCurrentAccessToken().getToken() + "&type=large";
+        String url = "";
+        if (AccessToken.getCurrentAccessToken() != null) {
+            url = user.getPhotoUrl() + "?access_token=" + AccessToken.getCurrentAccessToken().getToken() + "&type=large";
+        } else
+            url = user.getPhotoUrl() + "?type=large";
         name.setText(user.getDisplayName());
         id.setText(user.getUid());
         Glide.with(this).load(url).into(avatar);
