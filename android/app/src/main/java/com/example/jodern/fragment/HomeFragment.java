@@ -31,6 +31,8 @@ import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONObject;
 
@@ -46,6 +48,8 @@ public class HomeFragment extends Fragment {
     private MaterialButton maleSeeAllBtn;
     private MaterialButton femaleSeeAllBtn;
     private RecyclerView trendingView;
+
+    private FirebaseAuth mAuth;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -71,12 +75,26 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         if (navbarBtn != null)
             navbarBtn.setImageResource(R.drawable.ic_home_filled);
         initViews();
         setEvents();
         setupCategoryLists();
         getTrendingProducts();
+        welcomeUser();
+    }
+
+    private void welcomeUser() {
+        mAuth = FirebaseAuth.getInstance();
+        // TODO: do something with current user (if necessary)
+        // just demo
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.getBoolean("hasJustLoggedIn", false)) {
+            System.out.println(bundle.getBoolean("hasJustLoggedIn", false));
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            MySnackbar.inforSnackar(getContext(), parentView, "Jodern xin chào " + currentUser.getDisplayName() + "!").setAnchorView(R.id.mainNavBarSearchBtn).show();
+        }
     }
 
     private void initViews() {

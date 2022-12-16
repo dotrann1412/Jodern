@@ -34,10 +34,10 @@
         >
 
         <ProgressBar
-            android:indeterminateTint="@color/dark_gray"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:indeterminateTint="#35393f" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

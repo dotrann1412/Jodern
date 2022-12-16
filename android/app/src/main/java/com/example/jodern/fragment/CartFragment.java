@@ -11,6 +11,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +39,7 @@ import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
+import com.example.jodern.model.Category;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
@@ -58,7 +62,7 @@ public class CartFragment extends Fragment {
     private ImageButton cartBackBtn;
     private TextView subTotalText;
     private String subTotalStr, shippingStr, totalStr;
-    private MaterialButton cartOrderBtn, cartAppointBtn;
+    private MaterialButton cartOrderBtn, cartAppointBtn, cartGoToShop;
 
     public CartFragment() {
         // Required empty public constructor
@@ -116,6 +120,7 @@ public class CartFragment extends Fragment {
         cartBackBtn = getView().findViewById(R.id.cartBackBtn);
         cartOrderBtn = getView().findViewById(R.id.cartOrderBtn);
         cartAppointBtn = getView().findViewById(R.id.cartAppointBtn);
+        cartGoToShop = getView().findViewById(R.id.cartGoToShop);
     }
 
 
@@ -138,6 +143,32 @@ public class CartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showAppointDialog();
+            }
+        });
+
+        cartGoToShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new ProductListFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("entry", "product-list");
+                bundle.putString("sex", "nam");
+                bundle.putString("categoryName", "Thời trang nam");
+                fragment.setArguments(bundle);
+
+                // Back pressed handling
+                FragmentActivity activity = getActivity();
+                Intent searchIntent = new Intent(activity, ProductListFragment.class);
+                searchIntent.putExtra("entry", "product-list");
+                bundle.putString("sex", "nam");
+                bundle.putString("categoryName", "Thời trang nam");
+                Provider.with(activity).setSearchIntent(searchIntent);
+
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.mainFragmentContainer, fragment);
+                fragmentTransaction.addToBackStack("productList");
+                fragmentTransaction.commit();
             }
         });
 
@@ -263,7 +294,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         cartLoadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
                     }
                 }
         );

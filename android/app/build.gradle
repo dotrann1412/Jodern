@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
@@ -38,6 +39,13 @@ android {
 
 dependencies {
     implementation 'com.github.smarteist:autoimageslider:1.4.0'
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-auth'
+
+    // Facebook SDK
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1089456245598",
+    "project_id": "jodern-627a4",
+    "storage_bucket": "jodern-627a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089456245598:android:3ae5bfc796ec64bcf3ddcf",
+        "android_client_info": {
+          "package_name": "com.example.jodern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089456245598-rrok4eck57114gtpev8n8629v3nll16d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jodern",
+            "certificate_hash": "107e9a9c4727b025081cac56be703565408ac3fe"
+          }
+        },
+        {
+          "client_id": "1089456245598-msiial3mt69vkspbk9h307v6i2o7mnvd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXcQZ-9-pc4Xl7M61QwApcuVt6PlTP-Ew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089456245598-msiial3mt69vkspbk9h307v6i2o7mnvd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

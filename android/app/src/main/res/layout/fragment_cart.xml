@@ -186,7 +186,7 @@
                 android:id="@+id/cartGoToShop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/primary_dark"
+                android:backgroundTint="@color/primary"
                 android:layout_marginTop="4dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"

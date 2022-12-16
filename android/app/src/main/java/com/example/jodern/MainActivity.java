@@ -128,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
         if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
             fragment = homeFragment;
+            if (intent.getBooleanExtra("hasJustLoggedIn", false)) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("hasJustLoggedIn", true);
+                fragment.setArguments(bundle);
+            }
         }
         else if (prevFragment.equals(CartFragment.TAG)) {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
@@ -205,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
+                    homeFragment = new HomeFragment(homeBtn);
                     switchFragment(homeFragment, HomeFragment.TAG);
                     break;
                 case R.id.mainNavBarMapBtn:
