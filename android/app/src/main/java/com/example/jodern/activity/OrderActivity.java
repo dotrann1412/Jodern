@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.cart.CartController;
@@ -119,7 +120,7 @@ public class OrderActivity extends AppCompatActivity {
                     params.put("cart", cartParams);
 
                     orderLoadingWrapper.setVisibility(View.VISIBLE);
-                    String url = "http://jodern.store:8000/api/" + entry + "/";
+                    String url = BuildConfig.SERVER_URL + entry + "/";
                     JsonObjectRequest postRequest = new JsonObjectRequest(
                             url,
                             params,

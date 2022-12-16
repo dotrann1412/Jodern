@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.R;
 import com.example.jodern.adapter.WishlistAdapter;
 import com.example.jodern.customwidget.MySnackbar;
@@ -120,7 +121,7 @@ public class WishlistFragment extends Fragment {
             if (i != productIds.size() - 1)
                 params += ",";
         }
-        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
+        String url = BuildConfig.SERVER_URL + entry + "?" + params;
         JsonObjectRequest getRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,

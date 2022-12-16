@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import com.example.jodern.BuildConfig;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.ProductSliderAdapter;
@@ -97,8 +98,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void getMainProduct(Intent intent) {
         String params = parseSearchParams(intent);
-        // TODO: hide API KEY
-        String url = "http://jodern.store:8000/api/" + params;
+        String url = BuildConfig.SERVER_URL + params;
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -127,7 +127,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         String id = String.valueOf(currentProduct.getId());
         String entry = "related";
         String params = "id=" + id + "&top_k=" + String.valueOf(5);
-        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
+        String url = BuildConfig.SERVER_URL + entry + "?" + params;
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
