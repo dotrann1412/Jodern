@@ -1,0 +1,9 @@
+{
+    "app_host": "0.0.0.0",
+    "app_port": "7000",
+    "sql-server-host": "localhost",
+    "sql-server-username": "sa",
+    "sql-server-password": "123456?a",
+    "sql-server-port": "1433",
+    "dbname": "jodernstore"
+}

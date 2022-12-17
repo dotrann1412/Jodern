@@ -36,7 +36,7 @@ class SearchEngineInterface(APIView):
         query = request.query_params.get('query', '').lower()
         try:
             ids = textRetriever.search(query)
-            return Response(GetProductsByList(ids), status = status.HTTP_200_OK)
+            return Response(GetProductsByList([id + 1 for id in ids]), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -45,12 +45,10 @@ class SearchEngineInterface(APIView):
     
     def post(self, request: Request, *args, **kwargs):
         try:
-            l = len(str(request.data))
-            print('DEBUG - ', str(request.data)[:min(50, l)])
             query = base64.decodebytes(request.data['query'].encode())
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
-            return Response(GetProductsByList(imageRetriever.search(query)), status = status.HTTP_200_OK)
+            return Response(GetProductsByList([id + 1 for id in imageRetriever.search(query)]), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -71,6 +69,7 @@ class HandleProductsList(APIView):
             else: res = GetProducts(sex, category)
         except Exception as err:    
             print('[EXCEPTION] Details here: ', err)
+            traceback.print_exc()
             return Response({'Message': "Wrong request format"}, status = status.HTTP_400_BAD_REQUEST)
 
         return Response(res, status = status.HTTP_200_OK)
@@ -97,14 +96,25 @@ class ValidateOrder(APIView):
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
-        res = GetProductDetails(kwargs['id'])
+        try:
+            res = GetProductDetails(kwargs['id'])
+        except Exception as err:
+            traceback.print_exc()
+            
         if 'id' not in res:
             return Response({'message': 'item not found'}, status = status.HTTP_400_BAD_REQUEST)
+        
         return Response(res, status = status.HTTP_200_OK)
 
 class HandleCategoriesTree(APIView):
     def get(self, request, *args, **kwargs):
-        return Response(GetCategoriesTree(), status = status.HTTP_200_OK)
+        try:
+            tree = GetCategoriesTree()
+        except:
+            traceback.print_exc()
+            return Response(tree, status = status.HTTP_200_OK)
+            
+        return Response(tree, status = status.HTTP_200_OK)
 
 class StoresLocation(APIView):
     def get(self, request, *args, **kwargs):
@@ -112,16 +122,13 @@ class StoresLocation(APIView):
 
 class Trending(APIView):
     def get(self, request, *args, **kwargs):
-        return Response({'data': TrendingItems(kwargs['top_k'])}, status = status.HTTP_200_OK)
+        try: res = TrendingItems(kwargs['top_k'])
+        except: traceback.print_exc()
+        return Response(TrendingItems(kwargs['top_k']), status = status.HTTP_200_OK)
 
 class Highlight(APIView):
     def get(self, request, *args, **kwargs):
-        try:
-            res = {'data': HighlightItems(kwargs['top_k'])}
-        except Exception as err:
-            print('[EXCEPTION] Processing error. Details here: ', err)
-            return Response({'message': 'Processing error'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(res, status = status.HTTP_200_OK)
+        return Response(HighlightItems(kwargs['top_k']), status = status.HTTP_200_OK)
     
     
 class RelatedProduct(APIView):
@@ -129,7 +136,7 @@ class RelatedProduct(APIView):
         try:
             id = request.query_params.get('id', None)
             top_k = request.query_params.get('top_k', None)
-            res = {'data': RelatedItems(id, top_k)}
+            res = RelatedItems(id, top_k)
         except Exception as err:
             traceback.print_exc()
             print('[EXCEPTION] Processing error. Details here: ', err)
