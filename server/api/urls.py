@@ -3,7 +3,8 @@ from django.urls import path, include
 from .views import (
     Test, HandleProductsList, HandleProductsByID, 
     SearchEngineInterface, HandleCategoriesTree, StoresLocation,
-    Trending, Highlight, ValidateOrder, ProcessOrder, RelatedProduct
+    Trending, Highlight, ValidateOrder, ProcessOrder, RelatedProduct,
+    Login
 )
 
 urlpatterns = [ 
@@ -20,4 +21,7 @@ urlpatterns = [
     path('related/', RelatedProduct.as_view()),
     path('validate-order/', ValidateOrder.as_view()),
     path('process-order/', ProcessOrder.as_view()),
+    path('login/', Login.as_view()),
+    path('profile/', Test.as_view()),
+    path('wishlist/', Test.as_view())
 ]

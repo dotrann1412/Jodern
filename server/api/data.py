@@ -305,3 +305,25 @@ def StoresLocationJson():
         rows = Connector.establishConnection().cursor().execute(query).fetchall()
         __storeList = {'location': [[row[0], row[1]] for row in rows]}
     return __storeList
+
+def Profile(userid):
+    query = "select * from users where id = ?"
+    cursor = Connector.establishConnection().cursor()
+    cursor.execute(query, (userid,))
+    
+    row = cursor.fetchone()
+    
+    return {
+        
+    } if row is not None else {
+        
+    }
+    
+def GetWishList(userid):
+    query = 'select productid from wishlist where userid = ?'
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid,)).fetchall()
+    
+    return {
+        
+    }
