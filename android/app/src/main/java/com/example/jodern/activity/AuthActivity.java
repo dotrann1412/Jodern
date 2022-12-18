@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.jodern.MainActivity;
+import com.example.jodern.adapter.ProductPreviewSliderAdapter;
+import com.example.jodern.adapter.ProductSliderAdapter;
 import com.example.jodern.customwidget.MySnackbar;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -36,10 +38,14 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.example.jodern.R;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 
 public class AuthActivity extends AppCompatActivity {
     private static final String TAG = "AuthActivity";
@@ -53,6 +59,7 @@ public class AuthActivity extends AppCompatActivity {
     private TextView name, id;
     private ImageView avatar;
     private Button gLoginBtn, fbLoginBtn, logoutBtn;
+    private SliderView previewSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,21 @@ public class AuthActivity extends AppCompatActivity {
         setupFbAuth();
         setupGoogleAuth();
         setEvents();
+
+        ArrayList<String> images = new ArrayList<>(Arrays.asList(
+                "https://bizweb.sapocdn.net/100/438/408/products/cvn5072-nab-2-4.jpg?v=1666411625000",
+                "https://bizweb.sapocdn.net/100/438/408/products/vay-dam-nu-van6146-vag-1-yodyvn.jpg?v=1670042146000",
+                "https://bizweb.sapocdn.net/100/438/408/products/quan-jeans-nu-baggy-cap-chun-mem-mai-qjn5096-den-yodyvn-2.jpg?v=1670655253000",
+                "https://bizweb.sapocdn.net/100/438/408/products/apm5393-xhd-3.jpg?v=1662358179000",
+                "https://bizweb.sapocdn.net/100/438/408/products/scm3030-xgi-qam3128-den-2.jpg?v=1642234995000",
+                "https://bizweb.sapocdn.net/100/438/408/products/qjm5005-xdm-15.jpg?v=1666834758000"
+                ));
+        ProductPreviewSliderAdapter adapter = new ProductPreviewSliderAdapter(this);
+        adapter.setItems(images);
+        previewSlider.setSliderAdapter(adapter, false);
+        previewSlider.setIndicatorAnimation(IndicatorAnimationType.WORM);
+        previewSlider.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+        previewSlider.startAutoCycle();
     }
 
     private void initViews() {
@@ -75,6 +97,7 @@ public class AuthActivity extends AppCompatActivity {
         fbLoginBtn = findViewById(R.id.fbAuthLoginBtn);
         gLoginBtn = findViewById(R.id.gAuthLoginBtn);
         logoutBtn = findViewById(R.id.authLogoutBtn);
+        previewSlider = findViewById(R.id.productPreviewImageSlider);
     }
 
     @Override

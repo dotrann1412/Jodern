@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.jodern.R;
@@ -13,11 +12,12 @@ import com.smarteist.autoimageslider.SliderViewAdapter;
 
 import java.util.ArrayList;
 
-public class ProductSliderAdapter extends SliderViewAdapter<ProductSliderAdapter.SliderAdapterViewHolder> {
+public class ProductPreviewSliderAdapter extends SliderViewAdapter<ProductPreviewSliderAdapter.ProductPreviewSliderAdapterViewHolder> {
+
     private final Context context;
     private ArrayList<String> itemUrls;
 
-    public ProductSliderAdapter(Context context) {
+    public ProductPreviewSliderAdapter(Context context) {
         this.context = context;
     }
 
@@ -26,24 +26,14 @@ public class ProductSliderAdapter extends SliderViewAdapter<ProductSliderAdapter
         notifyDataSetChanged();
     }
 
-    public void deleteItem(int position) {
-        this.itemUrls.remove(position);
-        notifyDataSetChanged();
-    }
-
-    public void addItem(String url) {
-        this.itemUrls.add(url);
-        notifyDataSetChanged();
+    @Override
+    public ProductPreviewSliderAdapter.ProductPreviewSliderAdapterViewHolder onCreateViewHolder(ViewGroup parent) {
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_preview_view_holder, null);
+        return new ProductPreviewSliderAdapter.ProductPreviewSliderAdapterViewHolder(inflate);
     }
 
     @Override
-    public SliderAdapterViewHolder onCreateViewHolder(ViewGroup parent) {
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_detail_image_item, null);
-        return new SliderAdapterViewHolder(inflate);
-    }
-
-    @Override
-    public void onBindViewHolder(SliderAdapterViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(ProductPreviewSliderAdapter.ProductPreviewSliderAdapterViewHolder viewHolder, final int position) {
         String url =  itemUrls.get(position);
         Glide.with(context)
                 .load(url)
@@ -58,15 +48,14 @@ public class ProductSliderAdapter extends SliderViewAdapter<ProductSliderAdapter
         return itemUrls.size();
     }
 
-    static class SliderAdapterViewHolder extends SliderViewAdapter.ViewHolder {
+    static class ProductPreviewSliderAdapterViewHolder extends SliderViewAdapter.ViewHolder {
         View itemView;
         ImageView imageView;
 
-        public SliderAdapterViewHolder(View itemView) {
+        public ProductPreviewSliderAdapterViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.detailImage);
+            imageView = itemView.findViewById(R.id.productPreviewViewHolderImage);
             this.itemView = itemView;
         }
     }
-
 }
