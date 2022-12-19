@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from PIL import Image
 import io
+from modules.authentication.authenticator import FacebookAuthenticator, Verifier
 
 import base64
 import numpy as np
@@ -142,3 +143,52 @@ class RelatedProduct(APIView):
             print('[EXCEPTION] Processing error. Details here: ', err)
             return Response({'message': 'Processing error'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(res, status = status.HTTP_200_OK)
+
+class Login(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        res = {}
+        try:
+            t = request.data.get('type', '')
+            if t == 'facebook' or t == 'google':
+                res = FacebookAuthenticator.Login(**request.data)
+            else:
+                res = {'error': "Hehe cái này chưa có implement"}
+
+        except Exception as err:
+            traceback.print_exc() 
+            res = {'error': "Error occured while processing request"}
+            
+        return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
+
+class UserProfile(APIView):
+    def get(self, request: Request, *args, **kwargs):
+        res = {}
+        try:
+            res = FacebookAuthenticator.GetUser(request.query_params.get('token', ''))
+        except Exception as err:
+            traceback.print_exc() 
+            res = {'error': "Error occured while processing request"}
+            
+        return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
+    
+    def post(self, request: Request, *args, **kwargs):
+        res = {}
+        try:
+            res = FacebookAuthenticator.UpdateUser(request.data)
+        except Exception as err:
+            traceback.print_exc() 
+            res = {'error': "Error occured while processing request"}
+            
+        return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
+    
+class WishList(APIView):
+    def get(self, request: Request, *args, **kwargs):
+        res = {}
+        try:
+            res = GetWishList(request.query_params.get('', ''))
+        except Exception as err:
+            traceback.print_exc() 
+            res = {'error': "Error occured while processing request"}
+            
+        return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
+    
