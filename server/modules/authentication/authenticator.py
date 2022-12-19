@@ -1,6 +1,12 @@
 from modules.data_acess.driver import Connector
 from modules.helpers.config import Config
-import pyjwt
+import platform
+
+try:
+    import pyjwt
+except:
+    import jwt as pyjwt
+
 import datetime
 
 class Verifier:
