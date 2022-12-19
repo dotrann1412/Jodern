@@ -30,7 +30,7 @@ def GetProducts(sex, category):
         return {}
     
     if sex and category:
-        query = 'select id, title, descriptions, price, imageurl from product where sex = ? and category = ?'
+        query = 'select id, title, descriptions, price, imageurl from product where sexid = ? and categoryid = ?'
         rows = Connector.establishConnection().cursor().execute(query, (sex, category)).fetchall()
         return [{
             'id': row[0],
