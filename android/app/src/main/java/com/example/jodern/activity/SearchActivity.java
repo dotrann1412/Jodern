@@ -257,31 +257,6 @@ public class SearchActivity extends AppCompatActivity {
             default:
                 break;
         }
-//        if (requestCode == MY_CAMERA_REQUEST_CODE) {
-//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
-//            } else {
-//                runImagePicker();
-//            }
-//        } else if (requestCode == MY_GALLERY_REQUEST_CODE) {
-//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện!").show();
-//            } else {
-//                runImagePicker();
-//            }
-//        } else if (requestCode == MY_WRITE_EXTERNAL_REQUEST_CODE) {
-//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                MySnackbar.inforSnackar(this, searchParentView, "Không thể ghi vào bộ nhớ tạm của thiết bị!").show();
-//            } else {
-//                runImagePicker();
-//            }
-//        } else if (requestCode == MY_MICRO_REQUEST_CODE) {
-//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào microphone!").show();
-//            } else {
-//                runMicro();
-//            }
-//        }
     }
 
     @Override

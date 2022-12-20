@@ -70,7 +70,7 @@ public class CartFragment extends Fragment {
     }
 
     public CartFragment(ImageButton navbarBtn) {
-        super(R.layout.fragment_home);
+        super(R.layout.fragment_cart);
         this.navbarBtn = navbarBtn;
     }
 

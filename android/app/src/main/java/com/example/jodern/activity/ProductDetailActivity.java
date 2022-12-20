@@ -19,7 +19,6 @@ import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
@@ -330,7 +329,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String previousFragment = intent.getStringExtra("previousFragment");
 
-        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG) && !previousFragment.equals(WishlistFragment.TAG))) {
+        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG))) {
             onBackPressed();
             finish();
             return;
@@ -385,8 +384,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                            intent.putExtra("nextFragment", WishlistFragment.TAG);
+                            Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
                             startActivity(intent);
                         }
                     });
@@ -405,8 +403,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                intent.putExtra("nextFragment", WishlistFragment.TAG);
+                Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
                 startActivity(intent);
             }
         });

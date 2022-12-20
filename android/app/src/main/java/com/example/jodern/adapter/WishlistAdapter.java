@@ -20,7 +20,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodern.R;
 import com.example.jodern.activity.ProductDetailActivity;
-import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.wishlist.WishlistController;
 import com.example.jodern.wishlist.wishlistitem.WishlistItem;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
@@ -110,7 +109,6 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
                     Product productItem = productList.get(getAdapterPosition());
                     Intent intent = new Intent(context, ProductDetailActivity.class);
                     intent.putExtra("productId", productItem.getId());
-                    intent.putExtra("previousFragment", WishlistFragment.TAG);
                     context.startActivity(intent);
                 }
             });

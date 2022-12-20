@@ -6,17 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.jodern.MainActivity;
 import com.example.jodern.adapter.ProductPreviewSliderAdapter;
-import com.example.jodern.adapter.ProductSliderAdapter;
 import com.example.jodern.customwidget.MySnackbar;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -55,11 +53,10 @@ public class AuthActivity extends AppCompatActivity {
     private CallbackManager mFbCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
 
-    // just for demo
-    private TextView name, id;
-    private ImageView avatar;
-    private Button gLoginBtn, fbLoginBtn, logoutBtn;
+    private LinearLayout authParentView;
     private SliderView previewSlider;
+    private Button gLoginBtn, fbLoginBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +88,9 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        name = findViewById(R.id.authUserName);
-        id = findViewById(R.id.authUserId);
-        avatar = findViewById(R.id.authUserImage);
+        authParentView = findViewById(R.id.authParentView);
         fbLoginBtn = findViewById(R.id.fbAuthLoginBtn);
         gLoginBtn = findViewById(R.id.gAuthLoginBtn);
-        logoutBtn = findViewById(R.id.authLogoutBtn);
         previewSlider = findViewById(R.id.productPreviewImageSlider);
     }
 
@@ -104,46 +98,19 @@ public class AuthActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        handleLoginInfo(currentUser);
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        handleLoginSucessfully(currentUser);
     }
 
-    private void handleLoginInfo(FirebaseUser user) {
+    private void handleLoginSucessfully(FirebaseUser user) {
         if (user == null) {
-            // TODO: process UI if user is null
-            // just demo
-            name.setVisibility(View.GONE);
-            id.setVisibility(View.GONE);
-            avatar.setVisibility(View.GONE);
-            fbLoginBtn.setVisibility(View.VISIBLE);
-            gLoginBtn.setVisibility(View.VISIBLE);
-            logoutBtn.setVisibility(View.GONE);
+            MySnackbar.inforSnackar(this, authParentView, "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé!").show();
             return;
         }
 
-        // just demo
-        name.setVisibility(View.VISIBLE);
-        id.setVisibility(View.VISIBLE);
-        avatar.setVisibility(View.VISIBLE);
-        logoutBtn.setVisibility(View.VISIBLE);
-        fbLoginBtn.setVisibility(View.GONE);
-        gLoginBtn.setVisibility(View.GONE);
-        String url = "";
-        if (AccessToken.getCurrentAccessToken() != null) {
-            url = user.getPhotoUrl() + "?access_token=" + AccessToken.getCurrentAccessToken().getToken() + "&type=large";
-        } else
-            url = user.getPhotoUrl() + "?type=large";
-        name.setText(user.getDisplayName());
-        id.setText(user.getUid());
-        Glide.with(this).load(url).into(avatar);
-
-        // TODO: process something (if necessary) before go to main activity
-        new Handler().postDelayed((Runnable) () -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("hasJustLoggedIn", true);
-            startActivity(intent);
-            finish();
-        }, 2000);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void setupGoogleAuth() {
@@ -186,11 +153,11 @@ public class AuthActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            handleLoginInfo(user);
+                            handleLoginSucessfully(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            handleLoginInfo(null);
+                            handleLoginSucessfully(null);
                         }
                     }
                 });
@@ -208,12 +175,12 @@ public class AuthActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            handleLoginInfo(user);
+                            handleLoginSucessfully(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             MySnackbar.inforSnackar(AuthActivity.this, findViewById(R.id.authParentView), "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé.").show();
-                            handleLoginInfo(null);
+                            handleLoginSucessfully(null);
                         }
                     }
                 });
@@ -239,15 +206,15 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
 
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth.signOut();
-                LoginManager.getInstance().logOut();
-                AccessToken.setCurrentAccessToken(null);
-                handleLoginInfo(null);
-            }
-        });
+//        logoutBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mAuth.signOut();
+//                LoginManager.getInstance().logOut();
+//                AccessToken.setCurrentAccessToken(null);
+//                handleLoginSucessfully(null);
+//            }
+//        });
     }
 
     @Override

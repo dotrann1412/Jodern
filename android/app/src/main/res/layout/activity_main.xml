@@ -30,7 +30,6 @@
             android:layout_height="62dp"
             android:layout_gravity="bottom"
             android:backgroundTint="@color/dark_gray"
-            android:layout_marginTop="8dp"
             app:fabCradleVerticalOffset="0dp"
             app:fabCradleRoundedCornerRadius="10dp"
             app:hideOnScroll="true"
@@ -40,7 +39,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
+                android:layout_marginRight="16dp">
 
                 <ImageButton
                     android:id="@+id/mainNavBarHomeBtn"
@@ -85,17 +84,17 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_cart"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/mainNavBarWishlistBtn"
+                    app:layout_constraintEnd_toStartOf="@id/mainNavBarUserBtn"
                     app:layout_constraintStart_toEndOf="@id/mainNavBarDummy"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/mainNavBarWishlistBtn"
+                    android:id="@+id/mainNavBarUserBtn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@android:color/transparent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_wishlist"
+                    android:src="@drawable/ic_user"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/mainNavBarCartBtn"

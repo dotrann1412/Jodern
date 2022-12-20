@@ -47,8 +47,6 @@ public class OrderActivity extends AppCompatActivity {
     private static final int EMAIL_INVALID = 2;
     private static final int PHONE_INVALID = 3;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,34 +128,33 @@ public class OrderActivity extends AppCompatActivity {
                     JSONObject params = new JSONObject();
                     params.put("cart", cartParams);
 
-//                    orderLoadingWrapper.setVisibility(View.VISIBLE);
-//                    String url = "http://jodern.store:8000/api/" + entry + "/";
-//                    JsonObjectRequest postRequest = new JsonObjectRequest(
-//                            url,
-//                            params,
-//                            new Response.Listener<JSONObject>() {
-//                                @Override
-//                                public void onResponse(JSONObject response) {
-//                                    orderLoadingWrapper.setVisibility(View.GONE);
-//                                    handleSuccess(response);
-//                                }
-//                            },
-//                            new Response.ErrorListener() {
-//                                @Override
-//                                public void onErrorResponse(VolleyError error) {
-//                                    System.out.println(error.toString());
-//                                    orderLoadingWrapper.setVisibility(View.GONE);
-//                                    handleError(error);
-//                                }
-//                            }
-//                    );
-//                    // increase timeout
-////                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
-////                            3000,
-////                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-////                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//                    Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
-                    handleSuccess(null);
+                    orderLoadingWrapper.setVisibility(View.VISIBLE);
+                    String url = BuildConfig.SERVER_URL + entry + "/";
+                    JsonObjectRequest postRequest = new JsonObjectRequest(
+                            url,
+                            params,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    orderLoadingWrapper.setVisibility(View.GONE);
+                                    handleSuccess(response);
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    System.out.println(error.toString());
+                                    orderLoadingWrapper.setVisibility(View.GONE);
+                                    handleError(error);
+                                }
+                            }
+                    );
+                    // increase timeout
+//                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                            3000,
+//                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                    Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());
                 }
@@ -178,30 +175,22 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void handleSuccess(JSONObject response) {
-        for (CartItem item : cartInfo)
-        CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
+        try {
+            if (response.getString("message").equals("Done!")) {
+                for (CartItem item : cartInfo)
+                    CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
 
-        // Move to cart activity (with empty cart) and show success message
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("nextFragment", CartFragment.TAG);
-        intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
-        startActivity(intent);
-//        try {
-//            if (response.getString("message").equals("Done!")) {
-//                for (CartItem item : cartInfo)
-//                    CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
-//
-//                // Move to cart activity (with empty cart) and show success message
-//                Intent intent = new Intent(this, MainActivity.class);
-//                intent.putExtra("nextFragment", CartFragment.TAG);
-//                intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
-//                startActivity(intent);
-//            } else {
-//                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
-//            }
-//        } catch (JSONException jsonException) {
-//            jsonException.printStackTrace();
-//        }
+                // Move to cart activity (with empty cart) and show success message
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("nextFragment", CartFragment.TAG);
+                intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
+                startActivity(intent);
+            } else {
+                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+            }
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
+        }
     }
 
     private int formValidator(String name, String email, String phone, String address) {
