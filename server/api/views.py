@@ -136,7 +136,7 @@ class RelatedProduct(APIView):
     def get(self, request, *args, **kwargs):
         try:
             id = request.query_params.get('id', None)
-            top_k = request.query_params.get('top_k', None)
+            top_k = int(request.query_params.get('top_k', 0), 10)
             res = RelatedItems(id, top_k)
         except Exception as err:
             traceback.print_exc()
