@@ -20,20 +20,25 @@ class Verifier:
 
     def verify(**kwargs):
         try: 
-            decodedPayload = pyjwt.decode(kwargs['token'], 'secret', algorithms=['HS256'])
+            decodedPayload = pyjwt.decode(kwargs['token'], Config.getValue('app-secret-key'), algorithms=['HS256'])
             if decodedPayload['exp'] < datetime.datetime.now().timestamp():
                 return False
         except: return False
         return True
 
     def generateToken(**kwargs):
-        return pyjwt.encode(kwargs['payload'], 'secret', algorithm='HS256')        
+        return pyjwt.encode(kwargs['payload'], Config.getValue('app-secret-key'), algorithm='HS256')        
 
 class FacebookAuthenticator:
     def Login(**kwargs):
-        userid = kwargs['userid']
-        token = kwargs['token']
-        
+        userid = kwargs.get("userid", "Unknown")
+        fullname = kwargs.get("fullname", "Unknown")
+        email = kwargs.get("email", "Unknown")
+        avt = kwargs.get("avt", "Unknown")
+        phone = kwargs.get("phone", "Unknown")
+        token = kwargs.get("token", "Unknown")
+
+
         if not FacebookAuthenticator.verify(userid, token):
             return {
                 "error": "invalid token"
@@ -44,9 +49,9 @@ class FacebookAuthenticator:
         cursor.execute(query, userid)
         row = cursor.fetchone()
         if not row:
-            query = "insert into users (userid, token) values (?, ?)"
-            cursor.execute(query, userid, token)
-            Connector.establishConnection().commit()
+            query = "insert into users (userid, fullname, email, Phone, Address, avatar) values (?, ?, ?, ?, ?, ?)"
+            cursor.execute(query, (userid, fullname, email, phone, "", avt))
+            cursor.commit()
 
         return {
             "message": "Chào mừng đến với Jodern!",
