@@ -27,12 +27,6 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.camera.flash" />
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -46,6 +40,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activity.OrderListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AuthActivity"
+            android:exported="false" /> <!-- Facebook Login Auth -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
+
+        <activity
             android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
@@ -56,7 +66,8 @@
         </activity>
         <activity
             android:name=".activity.OrderActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.ProductDetailActivity"
             android:exported="false" />
@@ -67,7 +78,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDOapVFOGYyOGZ0gh12Z4OB_YrLmIdvEeA" />
+            android:value="${MAPS_API_KEY}" />
 
         <activity
             android:name=".activity.MapActivity"

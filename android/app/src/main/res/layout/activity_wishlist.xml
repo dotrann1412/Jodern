@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wishlistParentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.WishlistFragment"
-    android:id="@+id/wishlistParentView"
-    >
+    tools:context=".activity.WishlistActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -49,33 +49,41 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:visibility="visible"
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/wishlistLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
+
             android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="4dp"
-            android:orientation="vertical">
+            android:visibility="visible">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/wishlistRecyclerView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:paddingBottom="5dp" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/wishlistRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
-            android:visibility="visible"
             android:id="@+id/wishlistEmptyWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="60dp"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,9 +96,8 @@
                     android:id="@+id/searchImageView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/empty_wishlist"
                     android:adjustViewBounds="true"
-                />
+                    android:src="@drawable/empty_wishlist" />
             </LinearLayout>
 
             <TextView
@@ -98,12 +105,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Danh sách sản phẩm yêu thích của bạn đang trống.\nKhám phá Jodern ngay!"
+                android:text="Danh sách sản phẩm yêu thích của bạn đang trống"
                 android:textAlignment="center"
                 android:textColor="@color/primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/wishlistGoToShopBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="@color/primary"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Khám phá Jodern ngay!"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="16dp" />
         </LinearLayout>
+
+
     </LinearLayout>
 
     <LinearLayout

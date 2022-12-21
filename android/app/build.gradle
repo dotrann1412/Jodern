@@ -1,6 +1,11 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
 android {
     compileSdk 32
@@ -13,6 +18,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "SERVER_URL", "\"" + localProperties["SERVER_URL"] + "\"" // link/to/server/api/
     }
 
     buildTypes {
@@ -28,10 +34,18 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {
     implementation 'com.github.smarteist:autoimageslider:1.4.0'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-auth:21.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.4.0'
+
+    // Facebook SDK
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
@@ -45,6 +59,9 @@ dependencies {
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+
+    // Round image
+    implementation 'com.makeramen:roundedimageview:2.3.0'
 
     // GoogleMap
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
@@ -60,3 +77,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
 }
+
+apply plugin: 'com.google.gms.google-services'

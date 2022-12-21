@@ -17,17 +17,21 @@ import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.HomeFragment;
 import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.fragment.WishlistFragment;
+import com.example.jodern.fragment.UserFragment;
 import com.example.jodern.provider.Provider;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.MaterialShapeDrawable;
 
 public class MainActivity extends AppCompatActivity {
-    private ImageButton homeBtn, mapBtn, cartBtn, wishlistBtn;
-    private MaterialButton searchBtn;
+    private ImageButton homeBtn, mapBtn, cartBtn, userBtn;
+    private FloatingActionButton searchBtn;
     private HomeFragment homeFragment;
     private CartFragment cartFragment;
-    private WishlistFragment wishlistFragment;
+    private UserFragment userFragment;
     private ConstraintLayout mainParentView;
+    private BottomAppBar bottomAppBar;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -47,12 +51,13 @@ public class MainActivity extends AppCompatActivity {
 
         resetNavbarBtns();
         String currentFragment = Provider.with(this).getCurrentFragment();
+        System.out.println("Current fragment: " + currentFragment);
         if (currentFragment.equals(HomeFragment.TAG))
             homeBtn.setImageResource(R.drawable.ic_home_filled);
         else if (currentFragment.equals(CartFragment.TAG))
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
-        else if (currentFragment.equals(WishlistFragment.TAG))
-            wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
+        else if (currentFragment.equals(UserFragment.TAG))
+            userBtn.setImageResource(R.drawable.ic_user_filled);
     }
 
     private void initViews() {
@@ -61,12 +66,28 @@ public class MainActivity extends AppCompatActivity {
         homeBtn = findViewById(R.id.mainNavBarHomeBtn);
         mapBtn = findViewById(R.id.mainNavBarMapBtn);
         cartBtn = findViewById(R.id.mainNavBarCartBtn);
-        wishlistBtn = findViewById(R.id.mainNavBarWishlistBtn);
+        userBtn = findViewById(R.id.mainNavBarUserBtn);
         searchBtn = findViewById(R.id.mainNavBarSearchBtn);
 
         homeFragment = new HomeFragment(homeBtn);
         cartFragment = new CartFragment(cartBtn);
-        wishlistFragment = new WishlistFragment(wishlistBtn);
+        userFragment = new UserFragment(userBtn);
+
+        bottomAppBar = findViewById(R.id.mainBottomNavBar);
+
+        // bottomAppBar corner radius
+        MaterialShapeDrawable bottomBarBackground = (MaterialShapeDrawable) bottomAppBar.getBackground();
+        bottomBarBackground.setShapeAppearanceModel(
+                bottomBarBackground.getShapeAppearanceModel()
+                        .toBuilder()
+                        .setTopRightCorner(CornerFamily.ROUNDED, 60)
+                        .setTopLeftCorner(CornerFamily.ROUNDED, 60)
+                        .build());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void setupInitialFragments() {
@@ -88,8 +109,10 @@ public class MainActivity extends AppCompatActivity {
             else if (nextFragment.equals(CartFragment.TAG)) {
                 fragment = new CartFragment();
             }
-            else if (nextFragment.equals(WishlistFragment.TAG)) {
-                fragment = new WishlistFragment();
+            else if (nextFragment.equals(UserFragment.TAG)) {
+                fragment = new UserFragment();
+                bundle = new Bundle();
+                bundle.putString("nextFragment", nextFragment);
             }
 
             if (fragment == null)
@@ -117,9 +140,12 @@ public class MainActivity extends AppCompatActivity {
             cartBtn.setImageResource(R.drawable.ic_cart_filled);
             fragment = cartFragment;
         }
-        else if (prevFragment.equals(WishlistFragment.TAG)) {
-            wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-            fragment = wishlistFragment;
+        else if (prevFragment.equals(UserFragment.TAG)) {
+            userBtn.setImageResource(R.drawable.ic_user_filled);
+            fragment = userFragment;
+            Bundle bundle = new Bundle();
+            bundle.putString("previousFragment", prevFragment);
+            fragment.setArguments(bundle);
         }
         else if (prevFragment.equals(ProductListFragment.TAG)) {
             // retrieve search params
@@ -135,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         homeBtn.setOnClickListener(onNavBarBtnClicked);
         mapBtn.setOnClickListener(onNavBarBtnClicked);
         cartBtn.setOnClickListener(onNavBarBtnClicked);
-        wishlistBtn.setOnClickListener(onNavBarBtnClicked);
+        userBtn.setOnClickListener(onNavBarBtnClicked);
         searchBtn.setOnClickListener(onSearchBtnClicked);
     }
 
@@ -189,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
+                    homeFragment = new HomeFragment(homeBtn);
                     switchFragment(homeFragment, HomeFragment.TAG);
                     break;
                 case R.id.mainNavBarMapBtn:
@@ -206,9 +233,9 @@ public class MainActivity extends AppCompatActivity {
                     switchFragment(cartFragment, CartFragment.TAG);
                     break;
 
-                case R.id.mainNavBarWishlistBtn:
-                    wishlistBtn.setImageResource(R.drawable.ic_wishlist_filled);
-                    switchFragment(wishlistFragment, WishlistFragment.TAG);
+                case R.id.mainNavBarUserBtn:
+                    userBtn.setImageResource(R.drawable.ic_user_filled);
+                    switchFragment(userFragment, UserFragment.TAG);
                     break;
             }
         }
@@ -218,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         homeBtn.setImageResource(R.drawable.ic_home);
         mapBtn.setImageResource(R.drawable.ic_map);
         cartBtn.setImageResource(R.drawable.ic_cart);
-        wishlistBtn.setImageResource(R.drawable.ic_wishlist);
+        userBtn.setImageResource(R.drawable.ic_user);
     }
 
     private void switchFragment(Fragment fragmentObject, String name) {

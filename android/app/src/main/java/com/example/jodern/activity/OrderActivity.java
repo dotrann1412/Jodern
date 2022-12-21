@@ -2,17 +2,21 @@ package com.example.jodern.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.cart.CartController;
@@ -43,8 +47,6 @@ public class OrderActivity extends AppCompatActivity {
     private static final int EMAIL_INVALID = 2;
     private static final int PHONE_INVALID = 3;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,14 @@ public class OrderActivity extends AppCompatActivity {
         orderCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Hide the keyboard
+                View focusView = OrderActivity.this.getCurrentFocus();
+                if (focusView != null) {
+                    InputMethodManager inputManager = (InputMethodManager) OrderActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+
+                // Call API
                 String entry = "process-order";
 
                 try {
@@ -119,7 +129,7 @@ public class OrderActivity extends AppCompatActivity {
                     params.put("cart", cartParams);
 
                     orderLoadingWrapper.setVisibility(View.VISIBLE);
-                    String url = "http://jodern.store:8000/api/" + entry + "/";
+                    String url = BuildConfig.SERVER_URL + entry + "/";
                     JsonObjectRequest postRequest = new JsonObjectRequest(
                             url,
                             params,
@@ -133,16 +143,21 @@ public class OrderActivity extends AppCompatActivity {
                             new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
+                                    System.out.println(error.toString());
                                     orderLoadingWrapper.setVisibility(View.GONE);
                                     handleError(error);
                                 }
                             }
                     );
+                    // increase timeout
+//                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                            3000,
+//                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                     Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());
                 }
-
             }
         });
 

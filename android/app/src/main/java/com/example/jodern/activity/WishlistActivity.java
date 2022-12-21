@@ -1,16 +1,17 @@
-package com.example.jodern.fragment;
+package com.example.jodern.activity;
 
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,61 +20,39 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
+import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.WishlistAdapter;
 import com.example.jodern.customwidget.MySnackbar;
+import com.example.jodern.fragment.ProductListFragment;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.example.jodern.wishlist.WishlistController;
 import com.example.jodern.wishlist.wishlistitem.WishlistItem;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WishlistFragment extends Fragment {
-    public static final String TAG = "WishlistFragment";
-
+public class WishlistActivity extends AppCompatActivity {
     private FrameLayout parentView;
-    private ImageButton navbarBtn;
     private RecyclerView wishlistRecyclerView;
     private WishlistController wishlistController;
-    private LinearLayout wishlistLayout, wishlistEmptyWrapper, wishlistLoadingWrapper;
+    private LinearLayout wishlistEmptyWrapper, wishlistLoadingWrapper;
+    private NestedScrollView wishlistLayout;
     private ImageButton wishlistBackBtn;
-
-    public WishlistFragment() {
-        // Required empty public constructor
-        super(R.layout.fragment_wishlist);
-    }
-
-    public WishlistFragment(ImageButton navbarBtn) {
-        super(R.layout.fragment_home);
-        this.navbarBtn = navbarBtn;
-    }
+    private MaterialButton wishlistGoToShopBtn;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
-    }
+        setContentView(R.layout.activity_wishlist);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_wishlist, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (navbarBtn != null)
-            navbarBtn.setImageResource(R.drawable.ic_wishlist_filled);
-
-        wishlistController = WishlistController.with(this.getContext());
+        wishlistController = WishlistController.with(this);
 
         initViews();
         setEvents();
@@ -81,22 +60,44 @@ public class WishlistFragment extends Fragment {
     }
 
     private void initViews() {
-        parentView = requireView().findViewById(R.id.wishlistParentView);
-        wishlistLayout = requireView().findViewById(R.id.wishlistLayout);
-        wishlistEmptyWrapper = requireView().findViewById(R.id.wishlistEmptyWrapper);
-        wishlistLoadingWrapper = requireView().findViewById(R.id.wishlistLoadingWrapper);
-        wishlistRecyclerView = requireView().findViewById(R.id.wishlistRecyclerView);
-        wishlistBackBtn = requireView().findViewById(R.id.wishlistBackBtn);
+        parentView = findViewById(R.id.wishlistParentView);
+        wishlistLayout = findViewById(R.id.wishlistLayout);
+        wishlistEmptyWrapper = findViewById(R.id.wishlistEmptyWrapper);
+        wishlistLoadingWrapper = findViewById(R.id.wishlistLoadingWrapper);
+        wishlistRecyclerView = findViewById(R.id.wishlistRecyclerView);
+        wishlistBackBtn = findViewById(R.id.wishlistBackBtn);
+        wishlistGoToShopBtn = findViewById(R.id.wishlistGoToShopBtn);
     }
 
     private void setEvents() {
         wishlistBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().onBackPressed();
+                onBackPressed();
+            }
+        });
+
+        wishlistGoToShopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Back pressed handling
+                Intent searchIntent = new Intent(WishlistActivity.this, ProductListFragment.class);
+                searchIntent.putExtra("entry", "product-list");
+                searchIntent.putExtra("sex", "nam");
+                searchIntent.putExtra("categoryName", "Thời trang nam");
+                Provider.with(WishlistActivity.this).setSearchIntent(searchIntent);
+
+                // Go to product list fragment of main activity
+                Intent intent = new Intent(WishlistActivity.this, MainActivity.class);
+                intent.putExtra("nextFragment", ProductListFragment.TAG);
+                intent.putExtra("entry", "product-list");
+                intent.putExtra("sex", "nam");
+                intent.putExtra("categoryName", "Thời trang nam");
+                startActivity(intent);
             }
         });
     }
+
 
     private void showWishlistItems() {
         if (wishlistController.getWishlistItemList().size() == 0) {
@@ -120,7 +121,7 @@ public class WishlistFragment extends Fragment {
             if (i != productIds.size() - 1)
                 params += ",";
         }
-        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
+        String url = BuildConfig.SERVER_URL + entry + "?" + params;
         JsonObjectRequest getRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,
@@ -135,11 +136,11 @@ public class WishlistFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         wishlistLoadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackar(WishlistActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
-        Provider.with(this.getContext()).addToRequestQueue(getRequest);
+        Provider.with(this).addToRequestQueue(getRequest);
     }
 
     private void handleResponse(JSONObject response) {
@@ -149,7 +150,7 @@ public class WishlistFragment extends Fragment {
         List<Product> wishlistProducts = Product.parseProductListFromResponse(response);
         wishlistController.setProductList(wishlistProducts);
 
-        WishlistAdapter adapter = new WishlistAdapter(wishlistController, this.getContext(), new ChangeNumItemsListener() {
+        WishlistAdapter adapter = new WishlistAdapter(wishlistController, this, new ChangeNumItemsListener() {
             @Override
             public void onChanged() {
                 showWishlistLayout(wishlistController.getProductList().isEmpty());
@@ -157,7 +158,7 @@ public class WishlistFragment extends Fragment {
         });
 
         wishlistRecyclerView.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         wishlistRecyclerView.setLayoutManager(layoutManager);
 
         showWishlistLayout(wishlistProducts.isEmpty());
@@ -171,12 +172,5 @@ public class WishlistFragment extends Fragment {
             wishlistEmptyWrapper.setVisibility(View.GONE);
             wishlistLayout.setVisibility(View.VISIBLE);
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        if (navbarBtn != null)
-            navbarBtn.setImageResource(R.drawable.ic_wishlist);
-        super.onDestroyView();
     }
 }

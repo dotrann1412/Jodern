@@ -2,20 +2,25 @@ package com.example.jodern.fragment;
 
 import static com.example.jodern.Utils.vndFormatPrice;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -25,6 +30,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodern.BuildConfig;
+import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.activity.OrderActivity;
 import com.example.jodern.adapter.CartAdapter;
@@ -32,6 +39,7 @@ import com.example.jodern.cart.CartController;
 import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
+import com.example.jodern.model.Category;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
 import com.google.android.material.button.MaterialButton;
@@ -52,8 +60,9 @@ public class CartFragment extends Fragment {
     private CartController cartController;
     private LinearLayout cartLayout, cartEmptyWrapper, cartLoadingWrapper;
     private ImageButton cartBackBtn;
-    private MaterialButton detailAddToCartBtn;
-    TextView subTotalText, shippingText, totalText;
+    private TextView subTotalText;
+    private String subTotalStr, shippingStr, totalStr;
+    private MaterialButton cartOrderBtn, cartAppointBtn, cartGoToShop;
 
     public CartFragment() {
         // Required empty public constructor
@@ -61,7 +70,7 @@ public class CartFragment extends Fragment {
     }
 
     public CartFragment(ImageButton navbarBtn) {
-        super(R.layout.fragment_home);
+        super(R.layout.fragment_cart);
         this.navbarBtn = navbarBtn;
     }
 
@@ -98,8 +107,22 @@ public class CartFragment extends Fragment {
         String message = bundle.getString("message");
         if (message == null)
             return;
-        MySnackbar.inforSnackar(getContext(), parentView, message).show();
+        MySnackbar.inforSnackar(getContext(), parentView, message).setAnchorView(R.id.mainNavBarSearchBtn).show();
     }
+
+    private void initViews() {
+        parentView = getView().findViewById(R.id.cartParentView);
+        cartRecyclerView = getView().findViewById(R.id.cartRecyclerView);
+        cartLayout = getView().findViewById(R.id.cartLayout);
+        subTotalText = getView().findViewById(R.id.cartSubTotalText);
+        cartEmptyWrapper = getView().findViewById(R.id.cartEmptyWrapper);
+        cartLoadingWrapper = getView().findViewById(R.id.cartLoadingWrapper);
+        cartBackBtn = getView().findViewById(R.id.cartBackBtn);
+        cartOrderBtn = getView().findViewById(R.id.cartOrderBtn);
+        cartAppointBtn = getView().findViewById(R.id.cartAppointBtn);
+        cartGoToShop = getView().findViewById(R.id.cartGoToShop);
+    }
+
 
     private void setEvents() {
         cartBackBtn.setOnClickListener(new View.OnClickListener() {
@@ -109,26 +132,129 @@ public class CartFragment extends Fragment {
             }
         });
 
-        detailAddToCartBtn.setOnClickListener(new View.OnClickListener() {
+        cartOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                showSummaryDialog();
+            }
+        });
+
+        cartAppointBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAppointDialog();
+            }
+        });
+
+        cartGoToShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new ProductListFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("entry", "product-list");
+                bundle.putString("sex", "nam");
+                bundle.putString("categoryName", "Thời trang nam");
+                fragment.setArguments(bundle);
+
+                // Back pressed handling
+                FragmentActivity activity = getActivity();
+                Intent searchIntent = new Intent(activity, ProductListFragment.class);
+                searchIntent.putExtra("entry", "product-list");
+                bundle.putString("sex", "nam");
+                bundle.putString("categoryName", "Thời trang nam");
+                Provider.with(activity).setSearchIntent(searchIntent);
+
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.mainFragmentContainer, fragment);
+                fragmentTransaction.addToBackStack("productList");
+                fragmentTransaction.commit();
+            }
+        });
+
+//        detailAddToCartBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+
+//        cartExpandBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (showSummary) {
+//                    System.out.println("Slide up");
+//                    System.out.println("cartSummaryWrapper.getHeight() = " + cartSummaryWrapper.getHeight());
+//
+//                    TranslateAnimation animate = new TranslateAnimation(0, 0, 100, 0);
+//                    animate.setDuration(500);
+//                    animate.setFillAfter(true);
+//                    cartSummaryWrapper.startAnimation(animate);
+//                }
+//                else {
+//                    System.out.println("Slide down");
+//                    System.out.println("cartSummaryWrapper.getHeight() = " + cartSummaryWrapper.getHeight());
+//                    TranslateAnimation animate = new TranslateAnimation(0, 0, 0, 100);
+//                    animate.setDuration(500);
+//                    animate.setFillAfter(true);
+//                    cartSummaryWrapper.startAnimation(animate);
+//                }
+//
+//                showSummary = !showSummary;
+//            }
+//        });
+    }
+
+    private void showSummaryDialog() {
+        final Dialog dialog = new Dialog(requireActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_cart_summary);
+
+        // Init views
+        TextView subTotalText = dialog.findViewById(R.id.cartSummarySubTotalText);
+        TextView shippingText = dialog.findViewById(R.id.cartSummaryShippingText);
+        TextView totalText = dialog.findViewById(R.id.cartSummaryTotalText);
+        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartSummaryCheckoutBtn);
+
+        // Set text
+        subTotalText.setText(subTotalStr);
+        shippingText.setText(shippingStr);
+        totalText.setText(totalStr);
+
+        // Set events
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
                 Intent intent = new Intent(requireActivity().getApplicationContext(), OrderActivity.class);
                 startActivity(intent);
             }
         });
+
+        dialog.show();
     }
 
-    private void initViews() {
-        parentView = getView().findViewById(R.id.cartParentView);
-        cartRecyclerView = getView().findViewById(R.id.cartRecyclerView);
-        cartLayout = getView().findViewById(R.id.cartLayout);
-        subTotalText = getView().findViewById(R.id.cartSubTotalText);
-        shippingText = getView().findViewById(R.id.cartShippingText);
-        totalText = getView().findViewById(R.id.cartTotalText);
-        cartEmptyWrapper = getView().findViewById(R.id.cartEmptyWrapper);
-        cartLoadingWrapper = getView().findViewById(R.id.cartLoadingWrapper);
-        cartBackBtn = getView().findViewById(R.id.cartBackBtn);
-        detailAddToCartBtn = getView().findViewById(R.id.detailAddToCartBtn);
+
+    private void showAppointDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_cart_appoint);
+
+        // Init views
+        // ...
+
+        // Set data
+        // ...
+
+        // Set events
+        // ...
+
+        dialog.show();
     }
 
     private void showCartItems() {
@@ -153,7 +279,7 @@ public class CartFragment extends Fragment {
             if (i != productIds.size() - 1)
                 params += ",";
         }
-        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
+        String url = BuildConfig.SERVER_URL + entry + "?" + params;
         JsonObjectRequest getRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,
@@ -168,7 +294,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         cartLoadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
                     }
                 }
         );
@@ -204,8 +330,11 @@ public class CartFragment extends Fragment {
         for (int i = 0; i < cartItems.size(); i++) {
             subTotal += cartItems.get(i).getQuantity() * cartProducts.get(i).getPrice();
         }
-        subTotalText.setText(vndFormatPrice(subTotal));
-        totalText.setText(vndFormatPrice(subTotal + SHIPPING_FEE));
+        subTotalStr = vndFormatPrice(subTotal);
+        totalStr = vndFormatPrice(subTotal + SHIPPING_FEE);
+        shippingStr = vndFormatPrice(SHIPPING_FEE);
+
+        subTotalText.setText(subTotalStr);
 
         if (subTotal == 0L) {
             showCartLayout(true);

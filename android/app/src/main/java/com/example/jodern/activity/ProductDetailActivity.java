@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import com.example.jodern.BuildConfig;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
 import com.example.jodern.adapter.ProductSliderAdapter;
@@ -18,7 +19,6 @@ import com.example.jodern.cart.cartitem.CartItem;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.fragment.CartFragment;
 import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.fragment.WishlistFragment;
 import com.example.jodern.interfaces.ChangeNumItemsListener;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
@@ -97,8 +97,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void getMainProduct(Intent intent) {
         String params = parseSearchParams(intent);
-        // TODO: hide API KEY
-        String url = "http://jodern.store:8000/api/" + params;
+        String url = BuildConfig.SERVER_URL + params;
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -127,7 +126,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         String id = String.valueOf(currentProduct.getId());
         String entry = "related";
         String params = "id=" + id + "&top_k=" + String.valueOf(5);
-        String url = "http://jodern.store:8000/api/" + entry + "?" + params;
+        String url = BuildConfig.SERVER_URL + entry + "?" + params;
         JsonObjectRequest stringRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -330,7 +329,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String previousFragment = intent.getStringExtra("previousFragment");
 
-        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG) && !previousFragment.equals(WishlistFragment.TAG))) {
+        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG))) {
             onBackPressed();
             finish();
             return;
@@ -385,8 +384,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                            intent.putExtra("nextFragment", WishlistFragment.TAG);
+                            Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
                             startActivity(intent);
                         }
                     });
@@ -405,8 +403,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                intent.putExtra("nextFragment", WishlistFragment.TAG);
+                Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
                 startActivity(intent);
             }
         });

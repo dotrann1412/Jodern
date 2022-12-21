@@ -2,119 +2,122 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainParentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/mainParentView"
-    >
+    tools:context=".MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/mainFragmentContainer"
-        android:name="com.example.jodern.fragment.HomeFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/mainNavBarContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_home" />
-
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/mainNavBarContainer"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/background"
-        >
+        android:layout_height="match_parent"
+        android:background="@drawable/background">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottom_nav_bar"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/mainFragmentContainer"
+            android:name="com.example.jodern.fragment.HomeFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/shape_navbar_container"
-            android:paddingTop="16dp"
-            android:paddingBottom="20dp">
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toTopOf="@id/mainNavBarContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout="@layout/fragment_home" />
 
-            <ImageButton
-                android:id="@+id/mainNavBarHomeBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_home"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/mainNavBarMapBtn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/mainBottomNavBar"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/dark_gray"
+            app:fabCradleVerticalOffset="0dp"
+            app:fabCradleRoundedCornerRadius="10dp"
+            app:hideOnScroll="true"
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
 
-            <ImageButton
-                android:id="@+id/mainNavBarMapBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_map"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/mainNavBarDummy"
-                app:layout_constraintStart_toEndOf="@id/mainNavBarHomeBtn"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp">
 
-            <ImageButton
-                android:id="@+id/mainNavBarDummy"
-                android:layout_width="60dp"
-                android:layout_height="30dp"
-                android:background="@android:color/transparent"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/mainNavBarCartBtn"
-                app:layout_constraintStart_toEndOf="@id/mainNavBarMapBtn"
-                app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/mainNavBarHomeBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_home"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mainNavBarMapBtn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/mainNavBarCartBtn"
-                android:layout_width="30dp"
-                android:layout_height="28dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_cart"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/mainNavBarWishlistBtn"
-                app:layout_constraintStart_toEndOf="@id/mainNavBarDummy"
-                app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/mainNavBarMapBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_map"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mainNavBarDummy"
+                    app:layout_constraintStart_toEndOf="@id/mainNavBarHomeBtn"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/mainNavBarWishlistBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_wishlist"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/mainNavBarCartBtn"
-                app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/mainNavBarDummy"
+                    android:layout_width="75dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mainNavBarCartBtn"
+                    app:layout_constraintStart_toEndOf="@id/mainNavBarMapBtn"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageButton
+                    android:id="@+id/mainNavBarCartBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="28dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_cart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mainNavBarUserBtn"
+                    app:layout_constraintStart_toEndOf="@id/mainNavBarDummy"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <ImageButton
+                    android:id="@+id/mainNavBarUserBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_user"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/mainNavBarCartBtn"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/mainNavBarSearchBtn"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            app:fabCustomSize="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/primary"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            android:padding="10dp"
-            android:paddingBottom="14dp"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="30dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NavBarSearchBtn" />
-    </RelativeLayout>
+            app:backgroundTint="@color/dark_gray"
+            app:borderWidth="4dp"
+            app:layout_anchor="@id/mainBottomNavBar"
+            app:srcCompat="@drawable/ic_search"
+            app:tint="@color/dark"
+            app:elevation="10dp"
+            />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

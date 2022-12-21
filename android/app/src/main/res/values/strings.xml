@@ -13,4 +13,7 @@
     <string name="go_to_cart">Xem giỏ hàng</string>
     <string name="go_to_wishlist">Xem danh sách</string>
     <string name="skip_snackbar">Ẩn</string>
+
+    <string name="facebook_app_id">5398312196963078</string>
+    <string name="facebook_client_token">8c9fb32b313ad721da8cb00cb6aebd3b</string>
 </resources>

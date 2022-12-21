@@ -17,11 +17,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
+import com.example.jodern.BuildConfig;
 import com.example.jodern.R;
 import com.example.jodern.activity.SearchActivity;
 import com.example.jodern.adapter.CategoryImageListAdapter;
@@ -29,7 +32,11 @@ import com.example.jodern.adapter.TrendingAdapter;
 import com.example.jodern.customwidget.MySnackbar;
 import com.example.jodern.model.Product;
 import com.example.jodern.provider.Provider;
+import com.facebook.AccessToken;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONObject;
 
@@ -45,6 +52,10 @@ public class HomeFragment extends Fragment {
     private MaterialButton maleSeeAllBtn;
     private MaterialButton femaleSeeAllBtn;
     private RecyclerView trendingView;
+    private RoundedImageView avatar;
+    private TextView userName;
+
+    private FirebaseAuth mAuth;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -70,12 +81,36 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         if (navbarBtn != null)
             navbarBtn.setImageResource(R.drawable.ic_home_filled);
         initViews();
+        setInfors();
         setEvents();
         setupCategoryLists();
         getTrendingProducts();
+        welcomeUser();
+    }
+
+    private void setInfors() {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        userName.setText(user.getDisplayName());
+        // avatar
+        String url = "";
+        if (AccessToken.getCurrentAccessToken() != null) {
+            url = user.getPhotoUrl() + "?access_token=" + AccessToken.getCurrentAccessToken().getToken() + "&type=large";
+        } else
+            url = user.getPhotoUrl() + "?type=large";
+        Glide.with(this).load(url).into(avatar);
+    }
+
+    private void welcomeUser() {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            System.out.println("Welcome " + currentUser.getDisplayName());
+        }
     }
 
     private void initViews() {
@@ -84,6 +119,8 @@ public class HomeFragment extends Fragment {
         maleSeeAllBtn = getView().findViewById(R.id.homeMaleSeeAllBtn);
         femaleSeeAllBtn = getView().findViewById(R.id.homeFemaleSeeAllBtn);
         trendingView = getView().findViewById(R.id.homeTrendingWrapper);
+        avatar = getView().findViewById(R.id.homeAvatar);
+        userName = getView().findViewById(R.id.homeUserName);
     }
 
     private void setEvents() {
@@ -135,7 +172,7 @@ public class HomeFragment extends Fragment {
     private void getTrendingProducts() {
         String entry = "trending";
         String params = "8";
-        String url = "http://jodern.store:8000/api/" + entry + "/" + params;
+        String url = BuildConfig.SERVER_URL + entry + "/" + params;
         JsonObjectRequest postRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,
@@ -150,7 +187,7 @@ public class HomeFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        MySnackbar.inforSnackar(getActivity().getApplicationContext(), parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackar(requireActivity().getApplicationContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
