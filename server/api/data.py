@@ -36,7 +36,7 @@ def GetProducts(sex, category):
             'id': row[0],
             'title': row[1],
             'description': row[2],
-            'price': row[3],
+            'price': int(row[3]),
             'images': [row[4]],
             'category_name': GetCategoryName(category),
             'category': category,
@@ -53,7 +53,7 @@ def GetProducts(sex, category):
                 'id': row[0],
                 'title': row[1],
                 'description': row[2],
-                'price': row[3],
+                'price': int(row[3]),
                 'images': [row[5]],
                 'sex': sex,
                 'category_name': GetCategoryName(row[4]),
@@ -71,7 +71,7 @@ def GetProducts(sex, category):
                 'id': row[0],
                 'title': row[1],
                 'description': row[2],
-                'price': row[3],
+                'price': int(row[3]),
                 'images': [row[5]],
                 'category_name': GetCategoryName(category),
                 'category': category,
@@ -81,10 +81,46 @@ def GetProducts(sex, category):
             
 import random
 
-def GetProductsByList(ids: list, limit = 8):
- 
+__allIdsList = None
+
+def GetProductsByListRand(limit, ignoreid):
+    global __allIdsList
+    if not __allIdsList:
+        query = "select id from product"
+        rows = Connector.establishConnection().cursor().execute(query).fetchall()
+        print(rows)
+        __allIdsList = [row[0] for row in rows]
+
+    print('DEBUG', __allIdsList)
+
+    if type(ignoreid) != list: ignoreid = [ignoreid]
+    randIds = [id for id in __allIdsList if id not in ignoreid]
+    randIds = random.sample(randIds, min(limit, len(randIds)))
+    
+    query = f"select id, title, descriptions, price, sexid, categoryid, imageurl from product p where p.id in ({','.join([str(i) for i in randIds])})"
+    print('[DEBUG]', query)
+    rows = Connector.establishConnection().cursor().execute(query).fetchall()
+
+    return [
+        {
+            'id': row[0],
+            'title': row[1],
+            'description': row[2],
+            'price': int(row[3]),
+            'sex': row[4],
+            'category': row[5],
+            'images': [row[6]]
+        } for row in rows
+    ]
+
+def GetProductsByList(ids: list, limit = 8, requiredSampler = True):
+    if len(ids) > limit:
+        ids = random.sample(ids, min(len(ids), limit))
+  
     if len(ids) == 0:
-        ids = [random.randint(1, 122) for i in range(limit)]
+        return {
+            'data': GetProductsByListRand(limit, -1)
+        }
     
     ids = [str(id) for id in ids]    
     
@@ -97,11 +133,14 @@ def GetProductsByList(ids: list, limit = 8):
             'id': row[0],
             'title': row[1],
             'description': row[2],
-            'price': row[3],
+            'price': int(row[3]),
             'sex': row[4],
             'category': row[5],
             'images': [row[6]]
         }]
+        
+    if len(res["data"]) < limit and requiredSampler:
+        res["data"] += GetProductsByListRand(limit - len(res["data"]), ids[0])
     return res
 
 def GetCategoriesTree():
@@ -203,7 +242,7 @@ def ProcessOrderData(order):
         generalInfo[str(row[0])] = {
             'image': row[2],
             'title': row[1],
-            'price': row[3]
+            'price': int(row[3])
         }
 
     if __mailInstance:
@@ -287,9 +326,12 @@ def RelatedItems(id, top_k = 5):
         return []
 
     catid = rows[0][0]
-    query = f'select top {top_k} id from product where categoryid = ? and id != ?'
+    
+    query = f'select top {top_k * 2} id from product where categoryid = ? and id != ?'
+    
     rows = cursor.execute(query, (catid, id)).fetchall()
-    return GetProductsByList([row[0] for row in rows], top_k)
+    randList = [row[0] for row in rows]
+    return GetProductsByList(random.sample(randList, min(len(randList), top_k)), top_k, False)
 
 def ValidateOrderData(order):    
     if len(list(order.keys())) == 0:
