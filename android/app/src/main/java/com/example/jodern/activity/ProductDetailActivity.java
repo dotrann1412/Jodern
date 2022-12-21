@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import com.bumptech.glide.request.FutureTarget;
 import com.example.jodern.BuildConfig;
 import com.example.jodern.MainActivity;
 import com.example.jodern.R;
+import com.example.jodern.ShareTask;
 import com.example.jodern.adapter.ProductSliderAdapter;
 import com.example.jodern.adapter.TrendingAdapter;
 import com.example.jodern.cart.CartController;
@@ -50,6 +52,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,7 +77,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private boolean isInWishlist = false;
     private boolean hasRemovedFromWishlist = false;
-    private ImageButton addWishlistBtn;
+    private ImageButton addWishlistBtn, shareBtn;
     private LinearLayout loadingWrapper;
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -266,6 +269,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         seeAllBtn = findViewById(R.id.detailSeeAllBtn);
         addWishlistBtn = findViewById(R.id.detailAddToWishlistBtn);
+        shareBtn = findViewById(R.id.detailShareBtn);
     }
 
     private void setEvents() {
@@ -297,6 +301,23 @@ public class ProductDetailActivity extends AppCompatActivity {
                 intent.putExtra("categoryName", currentProduct.getCategoryName());
                 intent.putExtra("nextFragment", ProductListFragment.TAG);
                 startActivity(intent);
+            }
+        });
+
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("SHAREEEE");
+                ArrayList<String> imageUrls = currentProduct.getImages();
+                ArrayList<FutureTarget<File>> futureTargets = new ArrayList<>();
+                for (String url : imageUrls) {
+                    FutureTarget<File> futureTarget = Glide.with(ProductDetailActivity.this)
+                            .asFile()
+                            .load(url)
+                            .submit();
+                    futureTargets.add(futureTarget);
+                }
+                new ShareTask(ProductDetailActivity.this, currentProduct.getName(), "image/*").execute(futureTargets.toArray(new FutureTarget[futureTargets.size()]));
             }
         });
     }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 public class Provider {
     private static Provider instance = null;
+    private String jwtToken;
     private String currentFragment;
     private RequestQueue requestQueue;
     private static Context context;
@@ -44,6 +45,18 @@ public class Provider {
 
         requestQueue = getRequestQueue();
         initData();
+    }
+
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
+    }
+
+    public void clearJwtToken() {
+        this.jwtToken = null;
     }
 
     public RequestQueue getRequestQueue() {

@@ -9,6 +9,7 @@
         app:cardCornerRadius="12dp">
 
         <ImageView
+            android:background="@color/dark_gray"
             android:id="@+id/productPreviewViewHolderImage"
             android:layout_width="250dp"
             android:layout_height="400dp"

@@ -26,6 +26,9 @@ public class SplashActivity extends AppCompatActivity {
             if (user == null) {
                 startActivity(new Intent(SplashActivity.this, AuthActivity.class));
             } else {
+                System.out.println("Userid: " + user.getUid());
+                System.out.println("User name: " + user.getDisplayName());
+                System.out.println("Token: " + user.getIdToken(false));
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
             }
             finish();
