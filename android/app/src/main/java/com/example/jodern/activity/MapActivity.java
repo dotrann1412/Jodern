@@ -23,6 +23,8 @@ import com.example.jodern.R;
 import com.example.jodern.adapter.MapMarkerInfoAdapter;
 import com.example.jodern.customwidget.MySnackbar;
 
+import com.example.jodern.helper.FetchURL;
+import com.example.jodern.helper.TaskLoadedCallback;
 import com.example.jodern.model.BranchLocation;
 import com.example.jodern.provider.Provider;
 
@@ -35,6 +37,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
@@ -43,7 +47,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, TaskLoadedCallback {
     private static final String TAG = "Map";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int DEFAULT_ZOOM = 13;
@@ -144,7 +148,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private double calculationByDistance(LatLng StartP, LatLng EndP) {
+    private double calculationByDistance(@NonNull LatLng StartP, @NonNull LatLng EndP) {
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
@@ -168,7 +172,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return Radius * c;
     }
 
-    private void setBranchMarker(BranchLocation branchLocation) {
+    private void setBranchMarker(@NonNull BranchLocation branchLocation) {
         Log.d(TAG, "setBranchMarker: setting markers for (" + branchLocation.getLatitude() + ", " + branchLocation.getLongitude() + ")");
         MarkerOptions options = new MarkerOptions()
                 .position(BranchLocation.toLatLng(branchLocation))
@@ -178,7 +182,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchLocation);
     }
-
 
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
@@ -211,9 +214,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng) {
+    private void moveCamera(@NonNull LatLng latLng) {
         Log.d(TAG, "moveCamera: move the camera to: (lat=" + latLng.latitude + ",lng=" + latLng.longitude + ")");
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+    }
+
+    private String getDirectionUrl(LatLng origin, LatLng dest, String directionMode) {
+        Log.d(TAG, "getDirectionUrl: origin = " + origin + ", destination = " + dest);
+        String originStr = "origin=" + origin.latitude + "," + origin.longitude;
+        String destStr = "destination=" + dest.latitude + "," + dest.longitude;
+        String mode = "mode=" + directionMode;
+        String parameters = originStr + "&" + destStr + "&" + mode;
+        String output = "json";
+        return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key" + BuildConfig.MAPS_API_KEY;
+    }
+
+    private void getPathToLocation(LatLng destination, String directionMode) {
+        Log.d(TAG, "getPathToLocation: getting path to location " + destination);
+        String url = getDirectionUrl(BranchLocation.toLatLng(currentLocation), destination, directionMode);
+        new FetchURL(MapActivity.this).execute(url, directionMode);
     }
 
     private void getDeviceLocation() {
@@ -229,6 +248,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         currentLocation = BranchLocation.fromLocation((Location) task.getResult());
                         moveCamera(BranchLocation.toLatLng(currentLocation));
                         retrieveBranchLocation();
+                        getPathToLocation(new LatLng(10.7314940, 106.6966400), "driving");
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
                     }
@@ -264,4 +284,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onTaskDone(Object... values) {
+        Log.d(TAG, "onTaskDone: task is done, drawing a polyline");
+        if (currentPolyline != null) {
+            currentPolyline.remove();
+        }
+        currentPolyline = googleMap.addPolyline( (PolylineOptions) values[0]);
+    }
+
+    private Polyline currentPolyline;
 }

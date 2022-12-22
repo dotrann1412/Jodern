@@ -2,6 +2,8 @@ package com.example.jodern.model;
 
 import android.location.Location;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -52,7 +54,7 @@ public class BranchLocation {
         return new LatLng(branchLocation.getLatitude(), branchLocation.getLongitude());
     }
 
-    public static BranchLocation fromLocation(Location location) {
+    public static BranchLocation fromLocation(@NonNull Location location) {
         return new BranchLocation((double) location.getLatitude(), (double) location.getLongitude());
     }
 }
