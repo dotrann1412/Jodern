@@ -20,26 +20,22 @@ class Verifier:
 
     def verify(**kwargs):
         try: 
-            decodedPayload = pyjwt.decode(kwargs['token'], Config.getValue('app-secret-key'), algorithms=['HS256'])
-            if decodedPayload['exp'] < datetime.datetime.now().timestamp():
-                return False
+            pyjwt.decode(kwargs['token'], Config.getValue('app-secret-key'), algorithms=['HS256'])
         except: return False
         return True
 
     def generateToken(**kwargs):
         return pyjwt.encode(kwargs['payload'], Config.getValue('app-secret-key'), algorithm='HS256')        
 
-class FacebookAuthenticator:
+class Authenticator:
     def Login(**kwargs):
         userid = kwargs.get("userid", "Unknown")
         fullname = kwargs.get("fullname", "Unknown")
         email = kwargs.get("email", "Unknown")
-        avt = kwargs.get("avt", "Unknown")
         phone = kwargs.get("phone", "Unknown")
         token = kwargs.get("token", "Unknown")
 
-
-        if not FacebookAuthenticator.verify(userid, token):
+        if not Authenticator.verify(userid, token):
             return {
                 "error": "invalid token"
             }
@@ -49,16 +45,17 @@ class FacebookAuthenticator:
         cursor.execute(query, userid)
         row = cursor.fetchone()
         if not row:
-            query = "insert into users (userid, fullname, email, Phone, Address, avatar) values (?, ?, ?, ?, ?, ?)"
-            cursor.execute(query, (userid, fullname, email, phone, "", avt))
+            query = "insert into users (userid, fullname, email, Phone, Address) values (?, ?, ?, ?, ?)"
+            cursor.execute(query, (userid, fullname, email, phone, ""))
             cursor.commit()
 
         return {
             "message": "Chào mừng đến với Jodern!",
-            "auth": Verifier.generateToken(
+            "access_token": Verifier.generateToken (
                 payload = {
                     "userid": userid,
-                    "exp": (datetime.datetime.now() + datetime.timedelta(minutes = Config.getValue("exp"))).timestamp()
+                    "email": email,
+                    "phone": phone
                 }
             )
         }
@@ -66,10 +63,3 @@ class FacebookAuthenticator:
     #@todo: implement this
     def verify(userid, token):
         return True
-
-class GoogleAuthenticator:
-    def Login(**kwargs):
-        pass
-    
-    def verify(**kwargs):
-        pass
