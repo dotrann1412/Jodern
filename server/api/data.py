@@ -91,14 +91,11 @@ def GetProductsByListRand(limit, ignoreid):
         print(rows)
         __allIdsList = [row[0] for row in rows]
 
-    print('DEBUG', __allIdsList)
-
     if type(ignoreid) != list: ignoreid = [ignoreid]
     randIds = [id for id in __allIdsList if id not in ignoreid]
     randIds = random.sample(randIds, min(limit, len(randIds)))
     
     query = f"select id, title, descriptions, price, sexid, categoryid, imageurl from product p where p.id in ({','.join([str(i) for i in randIds])})"
-    print('[DEBUG]', query)
     rows = Connector.establishConnection().cursor().execute(query).fetchall()
 
     return [
@@ -143,6 +140,29 @@ def GetProductsByList(ids: list, limit = 8, requiredSampler = True):
         res["data"] += GetProductsByListRand(limit - len(res["data"]), ids[0])
     return res
 
+def GetProductsByList_2(ids):
+    if type(ids) != list or len(ids) == 0:
+        return []
+    query = f"select id, title, descriptions, price, sexid, categoryid, imageurl from product p where p.id in ({','.join([str(i) for i in ids])})"
+    rows = Connector.establishConnection().cursor().execute(query).fetchall()
+    res = {
+        'data': []
+    }
+    
+    for row in rows:
+        res['data'] += [{
+            'id': row[0],
+            'title': row[1],
+            'description': row[2],
+            'price': int(row[3]),
+            'sex': row[4],
+            'category': row[5],
+            'images': [row[6]]
+        }]
+
+    return res
+        
+
 def GetCategoriesTree():
     query = "select sexid, categoryid from product group by sexid, categoryid"
     rows = Connector.establishConnection().cursor().execute(query).fetchall()
@@ -154,12 +174,19 @@ def GetCategoriesTree():
 
     return categories
 
-def GetProductDetails(id):
+def GetProductDetails(id, userid):
     queryInfo = f"select id, title, descriptions, price, sexid, categoryid from product p where p.id = ?"
     queryImage = f"select I.ImageUrl from Image I where I.ProductId = ?"
     querySize = f"select SizeId, Quantity from Inventory I where I.ProductId = ?"
     
     cursor = Connector.establishConnection().cursor()
+    
+    isInWishList = False
+    if userid is not None:
+        checkWishList = f"select count(*) from wishlist w where w.userid = ? and w.productid = ?"
+        result = cursor.execute(checkWishList, (userid, id)).fetchone()
+        if result[0] > 0: isInWishList = True
+    
     prodInfo = cursor.execute(queryInfo, (id, )).fetchone()
     images = cursor.execute(queryImage, (id, )).fetchall()
     inventory = cursor.execute(querySize, (id, )).fetchall()
@@ -175,8 +202,9 @@ def GetProductDetails(id):
         'inventory': {
             item[0]: item[1] for item in inventory
         },
-        'images': [item[0] for item in images]
-    }
+        'images': [item[0] for item in images],
+        'isInWishList': isInWishList
+    } if prodInfo else None
     
 from modules.email_service import gmail
 
@@ -338,15 +366,23 @@ def ValidateOrderData(order):
         return {"message": "Empty cart!" , 'status': 'nOK'}
     return True
 
-__storeList = None
+__storeDict = None
 
 def StoresLocationJson():
-    global __storeList
-    if not __storeList:
-        query = 'select X_coordinate, Y_coordinate from Location'
-        rows = Connector.establishConnection().cursor().execute(query).fetchall()
-        __storeList = {'location': [[row[0], row[1]] for row in rows]}
-    return __storeList
+    global __storeDict
+    if not __storeDict:
+        query = 'select locationid, X_coordinate, Y_coordinate, locationname, address from Location'
+        cursor = Connector.establishConnection().cursor()
+        rows = cursor.execute(query).fetchall()
+        __storeDict = {
+            'branchs': [{
+                    'branch_id': row[0],
+                    'branch_name': row[3],
+                    'address': row[4],
+                    'coordinate': [row[1], row[2]]
+            } for row in rows] 
+        }
+    return __storeDict
 
 def Profile(userid):
     query = "select * from users where id = ?"
@@ -361,11 +397,109 @@ def Profile(userid):
         
     }
     
+def UpdateCart(userid, cartid, items):
+    check = "select * from cart where userid = ? and cartid = ?"
+    
+    query = "select productid, quantity from cart where userid = ?"
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid,)).fetchall()
+    
+    currentItem = {
+        row[0]: row[1] for row in rows
+    }
+    
+    query = "insert into cart (userid, productid, quantity) values (?, ?, ?)"
+
+    
 def GetWishList(userid):
     query = 'select productid from wishlist where userid = ?'
     cursor = Connector.establishConnection().cursor()
     rows = cursor.execute(query, (userid,)).fetchall()
+    ids = [row[0] for row in rows]
+    return GetProductsByList_2(ids)
+
+def AddToUserWishList(userid, productid):
+    query = 'insert into wishlist (userid, productid) values (?, ?)'
+    cursor = Connector.establishConnection().cursor()
+    
+    try:
+        cursor.execute(query, (userid, productid))
+        cursor.commit()
+    except:
+        return {
+            "message": f"{productid} is already in user's wishlist!"
+        }
     
     return {
-        
+        "message": "Done!"
     }
+    
+def RemoveFromUserWishList(userid, productid):
+    query = 'delete from wishlist where userid = ? and productid = ?'
+    cursor = Connector.establishConnection().cursor()
+    
+    try:
+        cursor.execute(query, (userid, productid))
+        cursor.commit()
+    except:
+        return {
+            "message": f"{productid} has not added to user's wishlist!"
+        }
+    
+    return {
+        "message": "Removed!"
+    }
+
+def GetCartByHolder(userid):
+    query = "select cartid, totalitems, totalprices  from cart where cartholder = ? and status = 'active'"
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid,)).fetchall()
+    
+    return {
+        'data': [row[0] for row in rows]
+    }
+    
+def GetSharedCartOf(userid):
+    query = "select cartid from cartmember where memberid = ?"
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid, ))
+    ids = [row[0] for row in rows]
+    
+    if len(ids) == 0:
+        return {
+            'data': []
+        }
+
+    query = f"select cartid, totalitems, totalprices from cart where status = 'active' and cartid in ({', '.join(ids)})"
+    rows = cursor.execute(query).fetchall()
+    return {
+        'data': [row[0] for row in rows]
+    }
+
+def AddToCart(cartid, userid, productid, sizeid, quantity):
+    query = "insert into cartdetails (cartid, memberid, productid, sizeid, quantity) values (?, ?, ?, ?, ?)"
+    cursor = Connector.establishConnection().cursor()
+    cursor.execute(query, (cartid, userid, productid, sizeid, quantity))
+    cursor.commit()
+    
+    return {
+        "message": "added!"
+    }
+
+def JoinCart(cartid, userid):
+    query = 'select cartid from cart where cartid = ? and status = "active"'
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (cartid, )).fetchall()
+    if len(rows) == 0:
+        return {
+            "message": "Cartid not exists for in deactive state"
+        }
+    query = 'insert into cartmember(cartid, memberid) values (?, ?)'
+    
+    cursor.execute(query, (cartid, userid))
+    cursor.commit()
+    
+    return {
+        "message": "Done!"
+    }
+
