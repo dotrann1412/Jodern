@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.jodern">
+    package="com.example.jodernstore">
 
     <queries>
         <intent>
@@ -39,10 +39,6 @@
         android:theme="@style/Jodern"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".activity.OrderDetailActivity"
-            android:exported="false" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -53,15 +49,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity
-            android:name=".activity.OrderListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.WishlistActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.AuthActivity"
-            android:exported="false" /> <!-- Facebook Login Auth -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -70,7 +57,18 @@
             android:value="@string/facebook_client_token" />
 
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.example.jodernstore.activity.OrderListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.jodernstore.activity.WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.jodernstore.activity.AuthActivity"
+            android:exported="false" /> <!-- Facebook Login Auth -->
+
+
+        <activity
+            android:name="com.example.jodernstore.activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -79,14 +77,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.OrderActivity"
+            android:name="com.example.jodernstore.activity.OrderActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
-            android:name=".activity.ProductDetailActivity"
+            android:name="com.example.jodernstore.activity.OrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.jodernstore.activity.ProductDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SearchActivity"
+            android:name="com.example.jodernstore.activity.SearchActivity"
             android:exported="false"
             android:hardwareAccelerated="false" />
 
@@ -95,10 +98,10 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".activity.MapActivity"
+            android:name="com.example.jodernstore.activity.MapActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.jodernstore.MainActivity"
             android:exported="false" />
     </application>
 

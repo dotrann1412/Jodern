@@ -20,6 +20,7 @@
             android:layout_height="130dp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
+            android:background="@color/dark_gray"
             app:srcCompat="@drawable/demo" />
     </androidx.cardview.widget.CardView>
 

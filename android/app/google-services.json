@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "1089456245598",
-    "project_id": "jodern-627a4",
-    "storage_bucket": "jodern-627a4.appspot.com"
+    "project_number": "614628453159",
+    "project_id": "jodern-store-fiba",
+    "storage_bucket": "jodern-store-fiba.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1089456245598:android:3ae5bfc796ec64bcf3ddcf",
+        "mobilesdk_app_id": "1:614628453159:android:8df0e16a5198cce1bd9702",
         "android_client_info": {
-          "package_name": "com.example.jodern"
+          "package_name": "com.example.jodernstore"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1089456245598-rrok4eck57114gtpev8n8629v3nll16d.apps.googleusercontent.com",
+          "client_id": "614628453159-31e7llhunavk6afe0asuog4a7954oi5u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.jodern",
+            "package_name": "com.example.jodernstore",
             "certificate_hash": "107e9a9c4727b025081cac56be703565408ac3fe"
           }
         },
         {
-          "client_id": "1089456245598-msiial3mt69vkspbk9h307v6i2o7mnvd.apps.googleusercontent.com",
+          "client_id": "614628453159-lfhfnmkh7qv69eee177po79jleejviqd.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBXcQZ-9-pc4Xl7M61QwApcuVt6PlTP-Ew"
+          "current_key": "AIzaSyBwH7z69w7Swv69CRwaoYl64p6yPjxGF1o"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1089456245598-msiial3mt69vkspbk9h307v6i2o7mnvd.apps.googleusercontent.com",
+              "client_id": "614628453159-csgjev5u3h4dbjtii4pmo35iotg6io8o.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
