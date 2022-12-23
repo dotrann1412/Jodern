@@ -31,7 +31,7 @@ import com.example.jodernstore.adapter.CategoryImageListAdapter;
 import com.example.jodernstore.adapter.TrendingAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.facebook.AccessToken;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -88,7 +88,6 @@ public class HomeFragment extends Fragment {
         setEvents();
         setupCategoryLists();
         getTrendingProducts();
-        welcomeUser();
     }
 
     private void setInfors() {
@@ -102,14 +101,6 @@ public class HomeFragment extends Fragment {
         } else
             url = user.getPhotoUrl() + "?type=large";
         Glide.with(this).load(url).into(avatar);
-    }
-
-    private void welcomeUser() {
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            System.out.println("Welcome " + currentUser.getDisplayName());
-        }
     }
 
     private void initViews() {
@@ -190,7 +181,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
         );
-        Provider.with(this.getContext()).addToRequestQueue(postRequest);
+        GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
     }
 
     private void setupTrendingProducts(ArrayList<Product> trendingProducts) {
@@ -207,13 +198,13 @@ public class HomeFragment extends Fragment {
 
         // category list for male
         CategoryImageListAdapter maleAdapter = new CategoryImageListAdapter(this);
-        maleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nam"));
+        maleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nam"));
         maleView.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         CategoryImageListAdapter femaleAdapter = new CategoryImageListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nu"));
+        femaleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nu"));
         femaleView.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false));
         femaleView.setAdapter(femaleAdapter);
     }

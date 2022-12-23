@@ -21,9 +21,8 @@ import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.CartFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
-import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -38,8 +37,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
-import com.example.jodernstore.wishlist.WishlistController;
-import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
@@ -50,12 +47,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private RelativeLayout parentView;
 
     private Product currentProduct;
+    private boolean isInWishlist;
 
     private SliderView sliderView;
     private TextView detailName, detailPrice, detailInventoryQuantity, detailDescription;
@@ -70,7 +69,6 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private MaterialButton seeAllBtn;
 
-    private boolean isInWishlist = false;
     private boolean hasRemovedFromWishlist = false;
     private ImageButton addWishlistBtn, shareBtn;
     private LinearLayout loadingWrapper;
@@ -115,8 +113,15 @@ public class ProductDetailActivity extends AppCompatActivity {
                         MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
-        );
-        Provider.with(this).addToRequestQueue(stringRequest);
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
+                return params;
+            }
+        };
+        GeneralProvider.with(this).addToRequestQueue(stringRequest);
     }
 
     private void getOtherProducts(Intent intent) {
@@ -145,12 +150,13 @@ public class ProductDetailActivity extends AppCompatActivity {
                     }
                 }
         );
-        Provider.with(this).addToRequestQueue(stringRequest);
+        GeneralProvider.with(this).addToRequestQueue(stringRequest);
     }
 
     private void parseProductFromResponse(JSONObject response) {
         try {
             currentProduct = Product.parseJSON(response);
+            isInWishlist = response.optBoolean("isInWishList", false);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -197,7 +203,11 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         }
 
-        specifyProductInWishlist();
+        if (isInWishlist) {
+            addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
+        } else {
+            addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
+        };
     }
 
     private void setSizeStatus(LinearLayout detailSize, boolean isEnabled) {
@@ -205,19 +215,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             detailSize.setAlpha(0.25f);
         else
             detailSize.setAlpha(1f);
-    }
-
-    private void specifyProductInWishlist() {
-        List<WishlistItem> wishlist = WishlistController.with(this).getWishlistItemList();
-        for (WishlistItem item : wishlist) {
-            if (item.getProductId().equals(currentProduct.getId())) {
-                isInWishlist = true;
-                addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
-                return;
-            }
-        }
-        isInWishlist = false;
-        addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
     }
 
     private void setupOtherProducts(ArrayList<Product> otherProducts) {
@@ -302,7 +299,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("SHAREEEE");
                 ArrayList<String> imageUrls = currentProduct.getImages();
                 ArrayList<FutureTarget<File>> futureTargets = new ArrayList<>();
                 for (String url : imageUrls) {
@@ -365,7 +361,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void onDetailAddToCartBtnClicked(View view) {
         Long productId = currentProduct.getId();
-        Integer quantity = currentQuantity;
+        int quantity = currentQuantity;
         String size = currentSize;
         int inventory = currentProduct.getInventory(currentSize);
         if (quantity > inventory) {
@@ -390,41 +386,122 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void onDetailAddToWishlistBtnClicked(View view) {
         if (isInWishlist) {
-            WishlistController.with(this).deleteItem(currentProduct.getId(), new ChangeNumItemsListener() {
-                @Override
-                public void onChanged() {
-                    isInWishlist = false;
-                    hasRemovedFromWishlist = true;
-                    addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
-                    Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Snackbar.LENGTH_SHORT);
-                    snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                    TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
-                    textView.setAllCaps(false);
-                    snackbar.show();
-                }
-            });
-            return;
+            removeProductFromWishlist();
+        } else {
+            addProductToWishlist();
         }
+    }
 
-        WishlistController.with(this).addToWishlist(new WishlistItem(currentProduct.getId()));
-        isInWishlist = true;
-        addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
-        Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào danh sách yêu thích", Snackbar.LENGTH_SHORT);
-        snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
-                startActivity(intent);
-            }
-        });
-        TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
-        textView.setAllCaps(false);
-        snackbar.show();
+    public void addProductToWishlist() {
+        try {
+            String entry = "add-to-wishlist";
+            JSONObject params = new JSONObject();
+            params.put("product_id", currentProduct.getId());
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                isInWishlist = true;
+                                addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
+                                Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào danh sách yêu thích", Snackbar.LENGTH_SHORT);
+                                snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                                TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+                                textView.setAllCaps(false);
+                                snackbar.show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorMsg();
+        }
+    }
+
+    public void removeProductFromWishlist() {
+        try {
+            String entry = "remove-from-wishlist";
+            JSONObject params = new JSONObject();
+            params.put("product_id", currentProduct.getId());
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                isInWishlist = false;
+                                hasRemovedFromWishlist = true;
+                                addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
+                                Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Snackbar.LENGTH_SHORT);
+                                snackbar.setAction(getString(R.string.go_to_wishlist), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(ProductDetailActivity.this, WishlistActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                                TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+                                textView.setAllCaps(false);
+                                snackbar.show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorMsg();
+        }
+    }
+
+    private void showErrorMsg() {
+        MySnackbar.inforSnackar(this, parentView, getString(R.string.error_message)).show();
     }
 }

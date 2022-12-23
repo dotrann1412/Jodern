@@ -24,7 +24,7 @@ import com.example.jodernstore.adapter.MapMarkerInfoAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 
 import com.example.jodernstore.model.BranchLocation;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -113,7 +113,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 }
         );
-        Provider.with(MapActivity.this).addToRequestQueue(stringRequest);
+        GeneralProvider.with(MapActivity.this).addToRequestQueue(stringRequest);
     }
 
     private void parseLocationJSON(JSONObject response) {

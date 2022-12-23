@@ -39,7 +39,7 @@ import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
@@ -81,7 +81,7 @@ public class CartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
@@ -160,7 +160,7 @@ public class CartFragment extends Fragment {
                 searchIntent.putExtra("entry", "product-list");
                 bundle.putString("sex", "nam");
                 bundle.putString("categoryName", "Thời trang nam");
-                Provider.with(activity).setSearchIntent(searchIntent);
+                GeneralProvider.with(activity).setSearchIntent(searchIntent);
 
                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -263,7 +263,7 @@ public class CartFragment extends Fragment {
                     }
                 }
         );
-        Provider.with(this.getContext()).addToRequestQueue(getRequest);
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
     }
 
     private void handleResponse(JSONObject response) {

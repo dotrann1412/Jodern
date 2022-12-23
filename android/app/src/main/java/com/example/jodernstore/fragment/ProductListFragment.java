@@ -29,7 +29,7 @@ import com.example.jodernstore.adapter.CategoryTagListAdapter;
 import com.example.jodernstore.adapter.ProductListAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -60,7 +60,7 @@ public class ProductListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_product_list, container, false);
     }
 
@@ -130,14 +130,14 @@ public class ProductListFragment extends Fragment {
         LinearLayoutManager maleLayout = new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false);
         maleView.setLayoutManager(maleLayout);
         CategoryTagListAdapter maleAdapter = new CategoryTagListAdapter(this);
-        maleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nam", true));
+        maleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nam", true));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         LinearLayoutManager femaleLayout = new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false);
         femaleView.setLayoutManager(femaleLayout);
         CategoryTagListAdapter femaleAdapter = new CategoryTagListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nu", true));
+        femaleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nu", true));
 
         femaleView.setAdapter(femaleAdapter);
     }
@@ -170,14 +170,14 @@ public class ProductListFragment extends Fragment {
                         }
                     }
             );
-            Provider.with(this.getContext()).addToRequestQueue(getRequest);
+            GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
         }
         else if (method.equals("post")) {
             // POST requests
             String entry = args.getString("entry");
 //            String query = args.getString("query");
             HashMap<String, String> params = new HashMap<>();
-            params.put("query", Provider.with(getContext()).getImageBase64());
+            params.put("query", GeneralProvider.with(getContext()).getImageBase64());
 
             String url = BuildConfig.SERVER_URL + entry + "/";
             JsonObjectRequest postRequest = new JsonObjectRequest (
@@ -196,7 +196,7 @@ public class ProductListFragment extends Fragment {
                         }
                     }
             );
-            Provider.with(this.getContext()).addToRequestQueue(postRequest);
+            GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
         }
     }
 

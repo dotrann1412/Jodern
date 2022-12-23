@@ -28,7 +28,7 @@ import com.example.jodernstore.R;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.HomeFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
 public class SearchActivity extends AppCompatActivity {
@@ -196,7 +196,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void submitImageQuery(byte[] byteArray) {
-        Provider.with(this).setImageBase64(Base64.encodeToString(byteArray, Base64.DEFAULT));
+        GeneralProvider.with(this).setImageBase64(Base64.encodeToString(byteArray, Base64.DEFAULT));
         Intent intent = new Intent(SearchActivity.this, MainActivity.class);
         intent.putExtra("entry", "search");
         intent.putExtra("method", "post");

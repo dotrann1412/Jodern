@@ -11,9 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.adapter.ProductPreviewSliderAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -42,6 +47,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
+
+import org.json.JSONObject;
 
 public class AuthActivity extends AppCompatActivity {
     private static final String TAG = "AuthActivity";
@@ -95,55 +102,57 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        handleLoginSucessfully(currentUser);
     }
 
     private void handleLoginSucessfully(FirebaseUser user) {
         if (user == null) {
-            MySnackbar.inforSnackar(this, authParentView, "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé!").show();
+            showErrorMsg();
             return;
         }
 
         // call API to get access token
-//        try {
-//            String entry = "login";
-//            JSONObject params = new JSONObject();
-//            params.put("userid", user.getUid());
-//            params.put("email", user.getEmail());
-//            params.put("fullname", user.getDisplayName());
-//
-//            String url = BuildConfig.SERVER_URL + entry + "/";
-//            JsonObjectRequest postRequest = new JsonObjectRequest(
-//                    url,
-//                    params,
-//                    new Response.Listener<JSONObject>() {
-//                        @Override
-//                        public void onResponse(JSONObject response) {
-//                            Log.d(TAG, "onResponse: " + response.toString());
-////                            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
-////                            startActivity(intent);
-////                            finish();
-//                        }
-//                    },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            System.out.println(error.toString());
-//
-//                        }
-//                    }
-//            );
-//            Provider.with(this).addToRequestQueue(postRequest);
-//
-//
-//        } catch (Exception e) {
-//            System.out.println(e.toString());
-//        }
-        Intent intent = new Intent(AuthActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        try {
+            String entry = "login";
+            JSONObject params = new JSONObject();
+            params.put("userid", user.getUid());
+            params.put("email", user.getEmail() != null ? user.getEmail() : "");
+            params.put("fullname", user.getDisplayName());
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                String jwt = response.getString("access_token");
+                                GeneralProvider.with(AuthActivity.this).setJWT(jwt);
+                                Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } catch (Exception e) {
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            );
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    private void showErrorMsg() {
+        MySnackbar.inforSnackar(this, authParentView, "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé!").show();
     }
 
     private void setupGoogleAuth() {
@@ -214,7 +223,7 @@ public class AuthActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            MySnackbar.inforSnackar(AuthActivity.this, findViewById(R.id.authParentView), "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé.").show();
+                            showErrorMsg();
                             handleLoginSucessfully(null);
                         }
                     }
@@ -230,7 +239,7 @@ public class AuthActivity extends AppCompatActivity {
         fbLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(AuthActivity.this, Arrays.asList("public_profile", "email"));
+                    LoginManager.getInstance().logInWithReadPermissions(AuthActivity.this, Arrays.asList("public_profile", "email"));
             }
         });
 
@@ -240,16 +249,6 @@ public class AuthActivity extends AppCompatActivity {
                 logInWithGoogle();
             }
         });
-
-//        logoutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mAuth.signOut();
-//                LoginManager.getInstance().logOut();
-//                AccessToken.setCurrentAccessToken(null);
-//                handleLoginSucessfully(null);
-//            }
-//        });
     }
 
     @Override

@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jodernstore.R;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class CategoryTagListAdapter extends RecyclerView.Adapter<CategoryTagList
                     searchIntent.putExtra("entry", "product-list");
                     searchIntent.putExtra(rawKey, category.getRaw());
                     searchIntent.putExtra("categoryName", name);
-                    Provider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
+                    GeneralProvider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
 
                     FragmentManager fragmentManager = currentFragment.requireActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

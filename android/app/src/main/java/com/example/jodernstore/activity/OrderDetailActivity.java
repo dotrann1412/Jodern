@@ -27,7 +27,7 @@ import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Order;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
@@ -145,7 +145,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                     }
                 }
         );
-        Provider.with(this).addToRequestQueue(getRequest);
+        GeneralProvider.with(this).addToRequestQueue(getRequest);
     }
 
     private void handleResponse(JSONObject response) {

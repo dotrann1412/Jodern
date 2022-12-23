@@ -18,7 +18,7 @@ import com.example.jodernstore.fragment.CartFragment;
 import com.example.jodernstore.fragment.HomeFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.fragment.UserFragment;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.shape.CornerFamily;
@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        Provider.with(this.getApplicationContext());
+        GeneralProvider.with(this.getApplicationContext());
+        System.out.println("JWT: " + GeneralProvider.with(this).getJWT());
         initViews();
         setEvents();
         setupInitialFragments();
@@ -50,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         resetNavbarBtns();
-        String currentFragment = Provider.with(this).getCurrentFragment();
-        System.out.println("Current fragment: " + currentFragment);
+        String currentFragment = GeneralProvider.with(this).getCurrentFragment();
         if (currentFragment.equals(HomeFragment.TAG))
             homeBtn.setImageResource(R.drawable.ic_home_filled);
         else if (currentFragment.equals(CartFragment.TAG))
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             Bundle bundle = null;
             if (nextFragment.equals(ProductListFragment.TAG)) {
-                Provider.with(this).setSearchIntent(intent);
+                GeneralProvider.with(this).setSearchIntent(intent);
                 // Receive data from search activity, forward it to product list fragment
                 fragment = new ProductListFragment();
                 bundle = retrieveBundleForProductListFragment(intent);
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (prevFragment.equals(ProductListFragment.TAG)) {
             // retrieve search params
-            Intent searchIntent = Provider.with(this).getSearchIntent();
+            Intent searchIntent = GeneralProvider.with(this).getSearchIntent();
             fragment = new ProductListFragment();
             Bundle bundle = retrieveBundleForProductListFragment(searchIntent);
             fragment.setArguments(bundle);
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-            intent.putExtra("previousFragment", Provider.with(MainActivity.this).getCurrentFragment());
+            intent.putExtra("previousFragment", GeneralProvider.with(MainActivity.this).getCurrentFragment());
             startActivity(intent);
         }
     };

@@ -5,7 +5,7 @@ import android.content.Intent;
 import com.example.jodernstore.R;
 import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.model.Category;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -88,7 +88,7 @@ public class CategoryImageListAdapter extends RecyclerView.Adapter<CategoryImage
                     searchIntent.putExtra("entry", "product-list");
                     searchIntent.putExtra("categoryRaw", category.getRaw());
                     searchIntent.putExtra("categoryName", category.getName());
-                    Provider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
+                    GeneralProvider.with(currentFragment.getContext()).setSearchIntent(searchIntent);
 
                     FragmentManager fragmentManager = currentFragment.requireActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

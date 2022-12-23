@@ -23,7 +23,7 @@ import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.cart.cartitem.CartItemDB;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.CartFragment;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -153,7 +153,7 @@ public class OrderActivity extends AppCompatActivity {
 //                            3000,
 //                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
 //                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                    Provider.with(OrderActivity.this).addToRequestQueue(postRequest);
+                    GeneralProvider.with(OrderActivity.this).addToRequestQueue(postRequest);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());
                 }
