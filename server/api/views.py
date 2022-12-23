@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from PIL import Image
 import io
-from modules.authentication.authenticator import FacebookAuthenticator, Verifier
+from modules.authentication.authenticator import Authenticator, Verifier
 
 import base64
 import numpy as np
@@ -36,8 +36,7 @@ class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
         try:
-            ids = textRetriever.search(query)
-            return Response(GetProductsByList([id + 1 for id in ids]), status = status.HTTP_200_OK)
+            return Response(GetProductsByList_2(textRetriever.search(query)), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -49,7 +48,7 @@ class SearchEngineInterface(APIView):
             query = base64.decodebytes(request.data['query'].encode())
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
-            return Response(GetProductsByList([id + 1 for id in imageRetriever.search(query)]), status = status.HTTP_200_OK)
+            return Response(GetProductsByList_2(imageRetriever.search(query)), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -77,32 +76,31 @@ class HandleProductsList(APIView):
     
 class ProcessOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
-        try:    
-            res = ProcessOrderData(request.data['cart'])
+
+        try: Verifier.verify(request.headers['access_token'])
+        except: return Response({"message": "Login first then try again!"}, status = status.HTTP_401_UNAUTHORIZED)
+
+        try: res = ProcessOrderData(request.data['cart'])
         except Exception as err:
             traceback.print_exc()
             return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
-        print('[STATUS] process order completed') 
-        return Response(res, status = status.HTTP_200_OK)
 
-class ValidateOrder(APIView):
-    def post(self, request: Request, *arg, **kwargs):
-        try:
-            res = ValidateOrderData(request.data['cart'])
-        except Exception as err:
-            print('[EXCEPTION] exception raised while validate order. Details here: ', err)
-            return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
-        
         return Response(res, status = status.HTTP_200_OK)
 
 class HandleProductsByID(APIView):
     def get(self, request: Request, *args, **kwargs):
-        try:
-            res = GetProductDetails(kwargs['id'])
+        userid = None    
+        try: 
+            token = Verifier.decode(request.headers['access-token'])
+            userid = token['userid']
+        except: pass
+        
+        try: res = GetProductDetails(kwargs['id'], userid)
         except Exception as err:
             traceback.print_exc()
-            
-        if 'id' not in res:
+            res = None
+
+        if not res or any(key in res for key in ['error', 'errors']):
             return Response({'message': 'item not found'}, status = status.HTTP_400_BAD_REQUEST)
         
         return Response(res, status = status.HTTP_200_OK)
@@ -131,7 +129,6 @@ class Highlight(APIView):
     def get(self, request, *args, **kwargs):
         return Response(HighlightItems(kwargs['top_k']), status = status.HTTP_200_OK)
     
-    
 class RelatedProduct(APIView):
     def get(self, request, *args, **kwargs):
         try:
@@ -148,12 +145,7 @@ class Login(APIView):
     def post(self, request: Request, *args, **kwargs):
         res = {}
         try:
-            t = request.data.get('type', '')
-            if t == 'facebook' or t == 'google':
-                res = FacebookAuthenticator.Login(**request.data)
-            else:
-                res = {'error': "Hehe cái này chưa có implement"}
-
+            res = Authenticator.Login(**request.data)
         except Exception as err:
             traceback.print_exc() 
             res = {'error': "Error occured while processing request"}
@@ -164,7 +156,7 @@ class UserProfile(APIView):
     def get(self, request: Request, *args, **kwargs):
         res = {}
         try:
-            res = FacebookAuthenticator.GetUser(request.query_params.get('token', ''))
+            res = Authenticator.GetUser(request.query_params.get('token', ''))
         except Exception as err:
             traceback.print_exc() 
             res = {'error': "Error occured while processing request"}
@@ -174,21 +166,84 @@ class UserProfile(APIView):
     def post(self, request: Request, *args, **kwargs):
         res = {}
         try:
-            res = FacebookAuthenticator.UpdateUser(request.data)
+            res = Authenticator.UpdateUser(request.data)
         except Exception as err:
             traceback.print_exc() 
             res = {'error': "Error occured while processing request"}
             
         return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
-    
-class WishList(APIView):
-    def get(self, request: Request, *args, **kwargs):
-        res = {}
+
+class FetchWishList(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        res = None
+        
         try:
-            res = GetWishList(request.query_params.get('', ''))
-        except Exception as err:
-            traceback.print_exc() 
-            res = {'error': "Error occured while processing request"}
+            token = Verifier.decode(request.headers['access-token'])
             
-        return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+
+            res = GetWishList(token['userid'])
+            
+        except Exception as err:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        
+        return Response(res, status = status.HTTP_200_OK)
+
+class AddToWishlist(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            
+            userid = token['userid']
+        except Exception as err:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        res = AddToUserWishList(userid, request.data['product_id'])
+        return Response(res, status = status.HTTP_200_OK)
     
+class RemoveFromWishList(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            
+            userid = token['userid']
+        except Exception as err:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        res = RemoveFromUserWishList(userid, request.data['product_id'])
+        return Response(res, status = status.HTTP_200_OK)
+                    
+
+class FetchCart(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        pass
+    
+class UpdateCart(APIView):
+    def post(self, request, Request, *args, **kwargs):
+        pass
+
+class CartManager(APIView):
+    def post(self, requests: Request, *args, **kwargs):
+        pass
+    
+class ValidateAccessToken(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        token = request.data.get('token', '')
+        if not Verifier.verify(token):
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': 'Valid access token'}, status = status.HTTP_200_OK)
