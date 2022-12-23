@@ -3,8 +3,9 @@ from django.urls import path, include
 from .views import (
     Test, HandleProductsList, HandleProductsByID, 
     SearchEngineInterface, HandleCategoriesTree, StoresLocation,
-    Trending, Highlight, ValidateOrder, ProcessOrder, RelatedProduct,
-    Login
+    Trending, Highlight, ProcessOrder, RelatedProduct,
+    Login, ValidateAccessToken, AddToWishlist, RemoveFromWishList,
+    FetchWishList
 )
 
 urlpatterns = [ 
@@ -19,9 +20,11 @@ urlpatterns = [
     path('best-selling/<int:top_k>', Trending.as_view()),
     path('highlight/<int:top_k>', Highlight.as_view()),
     path('related/', RelatedProduct.as_view()),
-    path('validate-order/', ValidateOrder.as_view()),
     path('process-order/', ProcessOrder.as_view()),
     path('login/', Login.as_view()),
     path('profile/', Test.as_view()),
-    path('wishlist/', Test.as_view())
+    path('wishlist/', FetchWishList.as_view()),
+    path('verify-token', ValidateAccessToken.as_view()),
+    path('add-to-wishlist/', AddToWishlist.as_view()),
+    path('remove-from-wishlist/', RemoveFromWishList.as_view()),
 ]
