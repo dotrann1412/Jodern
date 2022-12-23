@@ -1,11 +1,11 @@
-package com.example.jodern.provider;
+package com.example.jodernstore.provider;
 
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.jodern.R;
-import com.example.jodern.fragment.HomeFragment;
-import com.example.jodern.model.Category;
+import com.example.jodernstore.R;
+import com.example.jodernstore.fragment.HomeFragment;
+import com.example.jodernstore.model.Category;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;

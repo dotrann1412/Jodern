@@ -1,4 +1,4 @@
-package com.example.jodern;
+package com.example.jodernstore;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -11,14 +11,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.example.jodern.activity.MapActivity;
-import com.example.jodern.activity.SearchActivity;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.fragment.CartFragment;
-import com.example.jodern.fragment.HomeFragment;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.fragment.UserFragment;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.activity.MapActivity;
+import com.example.jodernstore.activity.SearchActivity;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.HomeFragment;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.fragment.UserFragment;
+import com.example.jodernstore.provider.Provider;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.shape.CornerFamily;

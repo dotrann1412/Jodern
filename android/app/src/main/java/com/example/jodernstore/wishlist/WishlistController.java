@@ -1,18 +1,18 @@
-package com.example.jodern.wishlist;
+package com.example.jodernstore.wishlist;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.example.jodern.wishlist.wishlistitem.WishlistItem;
-import com.example.jodern.wishlist.wishlistitem.WishlistItemDB;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
+import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
+import com.example.jodernstore.wishlist.wishlistitem.WishlistItemDB;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WishlistController {
-    private static final String TAG = com.example.jodern.wishlist.WishlistController.class.getName();
+    private static final String TAG = com.example.jodernstore.wishlist.WishlistController.class.getName();
 
     private List<WishlistItem> wishlistItemList;
     private List<Product> productList = new ArrayList<>();
@@ -35,8 +35,8 @@ public class WishlistController {
     }
     
     
-    public static com.example.jodern.wishlist.WishlistController with(Context context) {
-        return new com.example.jodern.wishlist.WishlistController(context);
+    public static com.example.jodernstore.wishlist.WishlistController with(Context context) {
+        return new com.example.jodernstore.wishlist.WishlistController(context);
     }
 
     public void addToWishlist(WishlistItem wishlistItem) {

@@ -1,11 +1,7 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,17 +16,17 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jodern.BuildConfig;
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
-import com.example.jodern.adapter.WishlistAdapter;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
-import com.example.jodern.provider.Provider;
-import com.example.jodern.wishlist.WishlistController;
-import com.example.jodern.wishlist.wishlistitem.WishlistItem;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.R;
+import com.example.jodernstore.adapter.WishlistAdapter;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
+import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.wishlist.WishlistController;
+import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;

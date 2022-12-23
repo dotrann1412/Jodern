@@ -1,10 +1,10 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.jodern.R;
+import com.example.jodernstore.R;
 
 public class OrderListActivity extends AppCompatActivity {
 

@@ -14,7 +14,7 @@
     <string name="go_to_wishlist">Xem danh sách</string>
     <string name="skip_snackbar">Ẩn</string>
 
-    <string name="facebook_app_id">5398312196963078</string>
-    <string name="facebook_client_token">8c9fb32b313ad721da8cb00cb6aebd3b</string>
+    <string name="facebook_app_id">839976223727536</string>
+    <string name="facebook_client_token">b58f542ccaf4e9b6293ce778cee2f07d</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiaHV1dGhpZW4iLCJhIjoiY2xieXEzNG53MHE2OTNubW43YW0yNHQ1YyJ9.8AYtDEF-T4Y2cc6htmBEDg</string>
 </resources>

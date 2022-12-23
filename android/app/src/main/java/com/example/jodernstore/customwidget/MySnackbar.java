@@ -1,10 +1,10 @@
-package com.example.jodern.customwidget;
+package com.example.jodernstore.customwidget;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.jodern.R;
+import com.example.jodernstore.R;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MySnackbar {

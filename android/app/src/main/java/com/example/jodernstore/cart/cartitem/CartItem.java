@@ -1,12 +1,8 @@
-package com.example.jodern.cart.cartitem;
-
-import android.os.Parcel;
-import android.os.Parcelable;
+package com.example.jodernstore.cart.cartitem;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 @Entity(primaryKeys = {"product_id", "size"})
 public class CartItem {

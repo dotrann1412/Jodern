@@ -1,9 +1,9 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
 import android.content.Intent;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.R;
-import com.example.jodern.model.Category;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.R;
+import com.example.jodernstore.model.Category;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,15 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jodern.R;
-import com.example.jodern.model.Category;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;

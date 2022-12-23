@@ -1,6 +1,6 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
-import static com.example.jodern.Utils.vndFormatPrice;
+import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,25 +9,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
-import com.example.jodern.BuildConfig;
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
-import com.example.jodern.adapter.ProductSliderAdapter;
-import com.example.jodern.adapter.TrendingAdapter;
-import com.example.jodern.cart.CartController;
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.fragment.CartFragment;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.R;
+import com.example.jodernstore.adapter.ProductSliderAdapter;
+import com.example.jodernstore.adapter.TrendingAdapter;
+import com.example.jodernstore.cart.CartController;
+import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
+import com.example.jodernstore.provider.Provider;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,23 +35,18 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.jodern.wishlist.WishlistController;
-import com.example.jodern.wishlist.wishlistitem.WishlistItem;
+import com.example.jodernstore.wishlist.WishlistController;
+import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private RelativeLayout parentView;

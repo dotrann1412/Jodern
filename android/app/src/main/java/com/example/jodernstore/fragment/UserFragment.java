@@ -1,4 +1,4 @@
-package com.example.jodern.fragment;
+package com.example.jodernstore.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.jodern.R;
-import com.example.jodern.activity.AuthActivity;
-import com.example.jodern.activity.OrderActivity;
-import com.example.jodern.activity.OrderListActivity;
-import com.example.jodern.activity.WishlistActivity;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.R;
+import com.example.jodernstore.activity.AuthActivity;
+import com.example.jodernstore.activity.OrderListActivity;
+import com.example.jodernstore.activity.WishlistActivity;
+import com.example.jodernstore.provider.Provider;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;

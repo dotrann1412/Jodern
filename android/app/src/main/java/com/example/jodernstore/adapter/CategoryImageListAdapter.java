@@ -1,13 +1,11 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
-import android.content.Context;
 import android.content.Intent;
 //import com.example.jodern.ProductListActivity;
-import com.example.jodern.R;
-import com.example.jodern.fragment.HomeFragment;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.model.Category;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.R;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.model.Category;
+import com.example.jodernstore.provider.Provider;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

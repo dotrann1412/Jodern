@@ -1,14 +1,14 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
-import static com.example.jodern.Utils.vndFormatPrice;
+import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.jodern.R;
-import com.example.jodern.activity.ProductDetailActivity;
-import com.example.jodern.fragment.CartFragment;
+import com.example.jodernstore.R;
+import com.example.jodernstore.activity.ProductDetailActivity;
+import com.example.jodernstore.fragment.CartFragment;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -23,10 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.jodern.cart.CartController;
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
+import com.example.jodernstore.cart.CartController;
+import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
 
 import java.util.List;
 

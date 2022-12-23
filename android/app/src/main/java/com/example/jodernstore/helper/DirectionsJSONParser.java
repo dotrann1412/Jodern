@@ -1,4 +1,4 @@
-package com.example.jodern.helper;
+package com.example.jodernstore.helper;
 
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -13,8 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Base64;
@@ -24,18 +22,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
-import com.example.jodern.ImagePicker;
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.fragment.HomeFragment;
-import com.example.jodern.fragment.ProductListFragment;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.ImagePicker;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.R;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.HomeFragment;
+import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.provider.Provider;
 import com.google.android.material.button.MaterialButton;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 
 public class SearchActivity extends AppCompatActivity {
     // Show search history? https://stackoverflow.com/questions/21585326/implementing-searchview-in-action-bar

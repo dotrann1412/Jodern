@@ -1,4 +1,4 @@
-package com.example.jodern.wishlist.wishlistitem;
+package com.example.jodernstore.wishlist.wishlistitem;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

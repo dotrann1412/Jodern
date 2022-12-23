@@ -1,4 +1,4 @@
-package com.example.jodern.fragment;
+package com.example.jodernstore.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,14 +24,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
-import com.example.jodern.BuildConfig;
-import com.example.jodern.R;
-import com.example.jodern.activity.SearchActivity;
-import com.example.jodern.adapter.CategoryImageListAdapter;
-import com.example.jodern.adapter.TrendingAdapter;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.model.Product;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.R;
+import com.example.jodernstore.activity.SearchActivity;
+import com.example.jodernstore.adapter.CategoryImageListAdapter;
+import com.example.jodernstore.adapter.TrendingAdapter;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.model.Product;
+import com.example.jodernstore.provider.Provider;
 import com.facebook.AccessToken;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +41,6 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";

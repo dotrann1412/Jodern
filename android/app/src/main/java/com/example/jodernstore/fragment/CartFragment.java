@@ -1,6 +1,6 @@
-package com.example.jodern.fragment;
+package com.example.jodernstore.fragment;
 
-import static com.example.jodern.Utils.vndFormatPrice;
+import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -30,18 +30,16 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jodern.BuildConfig;
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
-import com.example.jodern.activity.OrderActivity;
-import com.example.jodern.adapter.CartAdapter;
-import com.example.jodern.cart.CartController;
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Category;
-import com.example.jodern.model.Product;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.R;
+import com.example.jodernstore.activity.OrderActivity;
+import com.example.jodernstore.adapter.CartAdapter;
+import com.example.jodernstore.cart.CartController;
+import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
+import com.example.jodernstore.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;

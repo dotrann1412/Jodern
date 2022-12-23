@@ -1,4 +1,4 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,14 +20,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import com.example.jodern.BuildConfig;
-import com.example.jodern.R;
-import com.example.jodern.adapter.MapMarkerInfoAdapter;
-import com.example.jodern.customwidget.MySnackbar;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.R;
+import com.example.jodernstore.adapter.MapMarkerInfoAdapter;
+import com.example.jodernstore.customwidget.MySnackbar;
 
-import com.example.jodern.helper.DirectionsJSONParser;
-import com.example.jodern.model.BranchLocation;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.helper.DirectionsJSONParser;
+import com.example.jodernstore.model.BranchLocation;
+import com.example.jodernstore.provider.Provider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;

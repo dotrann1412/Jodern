@@ -1,6 +1,6 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
-import static com.example.jodern.Utils.vndFormatPrice;
+import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,12 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.jodern.R;
-import com.example.jodern.activity.ProductDetailActivity;
-import com.example.jodern.wishlist.WishlistController;
-import com.example.jodern.wishlist.wishlistitem.WishlistItem;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
+import com.example.jodernstore.R;
+import com.example.jodernstore.activity.ProductDetailActivity;
+import com.example.jodernstore.wishlist.WishlistController;
+import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Product;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;

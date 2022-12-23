@@ -1,21 +1,15 @@
-package com.example.jodern.cart;
+package com.example.jodernstore.cart;
 
 import android.content.Context;
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.cart.cartitem.CartItemDB;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.cart.cartitem.CartItemDB;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import android.util.Log;
 
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.cart.cartitem.CartItemDB;
-import com.example.jodern.interfaces.ChangeNumItemsListener;
-import com.example.jodern.model.Product;
+import com.example.jodernstore.model.Product;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class CartController {
     private static final String TAG = CartController.class.getName();

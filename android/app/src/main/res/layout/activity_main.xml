@@ -15,7 +15,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/mainFragmentContainer"
-            android:name="com.example.jodern.fragment.HomeFragment"
+            android:name="com.example.jodernstore.fragment.HomeFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toTopOf="@id/mainNavBarContainer"

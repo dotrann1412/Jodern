@@ -1,4 +1,4 @@
-package com.example.jodern;
+package com.example.jodernstore;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -19,12 +19,10 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.exifinterface.media.ExifInterface;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

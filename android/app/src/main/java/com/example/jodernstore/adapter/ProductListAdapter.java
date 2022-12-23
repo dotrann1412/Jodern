@@ -1,12 +1,12 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
-import static com.example.jodern.Utils.vndFormatPrice;
+import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import android.content.Context;
 import android.content.Intent;
-import com.example.jodern.activity.ProductDetailActivity;
-import com.example.jodern.R;
-import com.example.jodern.model.Product;
+import com.example.jodernstore.activity.ProductDetailActivity;
+import com.example.jodernstore.R;
+import com.example.jodernstore.model.Product;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

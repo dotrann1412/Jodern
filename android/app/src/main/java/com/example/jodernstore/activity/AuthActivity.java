@@ -1,4 +1,4 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 
 import androidx.annotation.NonNull;
@@ -9,13 +9,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.jodern.MainActivity;
-import com.example.jodern.adapter.ProductPreviewSliderAdapter;
-import com.example.jodern.customwidget.MySnackbar;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.adapter.ProductPreviewSliderAdapter;
+import com.example.jodernstore.customwidget.MySnackbar;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -39,7 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.example.jodern.R;
+import com.example.jodernstore.R;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;

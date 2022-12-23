@@ -1,4 +1,4 @@
-package com.example.jodern;
+package com.example.jodernstore;
 
 import android.content.Context;
 

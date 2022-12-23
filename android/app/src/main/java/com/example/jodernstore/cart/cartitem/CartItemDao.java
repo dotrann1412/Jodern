@@ -1,4 +1,4 @@
-package com.example.jodern.cart.cartitem;
+package com.example.jodernstore.cart.cartitem;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

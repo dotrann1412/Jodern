@@ -1,4 +1,4 @@
-package com.example.jodern.model;
+package com.example.jodernstore.model;
 
 public class Category {
     private final String name;

@@ -1,4 +1,4 @@
-package com.example.jodern;
+package com.example.jodernstore;
 import java.text.DecimalFormat;
 
 public class Utils {

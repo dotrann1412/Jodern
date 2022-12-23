@@ -1,4 +1,4 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,19 +12,18 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jodern.BuildConfig;
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
-import com.example.jodern.cart.CartController;
-import com.example.jodern.cart.cartitem.CartItem;
-import com.example.jodern.cart.cartitem.CartItemDB;
-import com.example.jodern.customwidget.MySnackbar;
-import com.example.jodern.fragment.CartFragment;
-import com.example.jodern.provider.Provider;
+import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.R;
+import com.example.jodernstore.cart.CartController;
+import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.cart.cartitem.CartItemDB;
+import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.provider.Provider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 

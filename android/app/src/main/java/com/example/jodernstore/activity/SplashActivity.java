@@ -1,4 +1,4 @@
-package com.example.jodern.activity;
+package com.example.jodernstore.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.example.jodern.MainActivity;
-import com.example.jodern.R;
+import com.example.jodernstore.MainActivity;
+import com.example.jodernstore.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

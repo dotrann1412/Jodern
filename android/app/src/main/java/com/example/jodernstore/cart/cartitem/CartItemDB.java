@@ -1,4 +1,4 @@
-package com.example.jodern.cart.cartitem;
+package com.example.jodernstore.cart.cartitem;
 
 import android.content.Context;
 

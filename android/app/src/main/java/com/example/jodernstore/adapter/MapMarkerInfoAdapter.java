@@ -1,9 +1,9 @@
-package com.example.jodern.adapter;
+package com.example.jodernstore.adapter;
 
 import android.content.Context;
 
-import com.example.jodern.R;
-import com.example.jodern.model.BranchLocation;
+import com.example.jodernstore.R;
+import com.example.jodernstore.model.BranchLocation;
 import android.view.LayoutInflater;
 import android.view.View;
 
