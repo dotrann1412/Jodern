@@ -9,7 +9,7 @@ from modules.helpers import config
 class Connector:
     __connection = None
     __lastUsed = None
-    
+            
     def establishConnection():
         if Connector.__connection == None or datetime.datetime.now() - Connector.__lastUsed > datetime.timedelta(minutes = 15):
             Connector.__connection = pyodbc.connect(
