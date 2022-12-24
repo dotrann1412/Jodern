@@ -118,13 +118,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void parseLocationJSON(JSONObject response) {
         try {
-            JSONArray locations = response.getJSONArray("location");
-            for (int i = 0; i < locations.length(); ++i) {
-                JSONArray latLng = (JSONArray) locations.get(i);
+            JSONArray branches = response.getJSONArray("branchs");
+            for (int i = 0; i < branches.length(); ++i) {
+                JSONObject branch = (JSONObject) branches.get(i);
+                JSONArray latLng = (JSONArray) branch.get("coordinate");
                 BranchLocation location = new BranchLocation((double) latLng.get(0), (double) latLng.get(1));
-
                 setBranchMarker(location);
-
                 if (i == 0) {
                     Log.d(TAG, "parseLocationJSON: initialize nearest branch (" + location.getLatitude() + ", " + location.getLongitude() + ")");
                     nearestBranch = location;
@@ -144,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private double calculationByDistance(LatLng StartP, LatLng EndP) {
+    private double calculationByDistance(@NonNull LatLng StartP, @NonNull LatLng EndP) {
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
