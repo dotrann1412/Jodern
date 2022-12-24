@@ -45,6 +45,7 @@ public class WishlistActivity extends AppCompatActivity {
 
     private Wishlist currentWishlist;
     private boolean shouldCallUpdateAPI = false;
+    private boolean shouldCallFetchAPI = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +97,22 @@ public class WishlistActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (shouldCallFetchAPI) {
+            getAndShowWishlistData();
+        }
+    }
+
+    @Override
     protected void onStop() {
-        // Call API to update wishlist data
-        System.out.println("WishlistActivity onStop");
-        updateWishlistData();
+        shouldCallFetchAPI = true;
+
+        // Call API to update wishlist data (if necessary)
+        if (shouldCallUpdateAPI) {
+            System.out.println("updating wishlist");
+            updateWishlistData();
+        }
         super.onStop();
     }
 
@@ -196,6 +209,7 @@ public class WishlistActivity extends AppCompatActivity {
     }
 
     private void handleResponse(JSONObject response) {
+        shouldCallFetchAPI = false;
         wishlistLoadingWrapper.setVisibility(View.GONE);
 
         ArrayList<Product> wishlistItems = Product.parseProductListFromResponse(response);
