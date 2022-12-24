@@ -14,8 +14,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.example.jodernstore.BuildConfig;
@@ -50,7 +48,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Boolean locationPermissionGranted = false;
     private GoogleMap googleMap;
-    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private BranchLocation nearestBranch;
     private BranchLocation currentLocation;
@@ -97,20 +94,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        parseLocationJSON(response);
-                        Log.d(TAG, "onResponse: successful");
-                    }
+                response -> {
+                    parseLocationJSON(response);
+                    Log.d(TAG, "onResponse: successful");
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
-                        Log.d(TAG, "onErrorResponse: VolleyError: " + error);
-                        loadingWrapper.setVisibility(View.GONE);
-                    }
+                error -> {
+                    MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
+                    Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+                    loadingWrapper.setVisibility(View.GONE);
                 }
         );
         Provider.with(MapActivity.this).addToRequestQueue(stringRequest);
@@ -167,13 +158,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return Radius * c;
     }
 
-    private void setBranchMarker(BranchLocation branchLocation) {
+    private void setBranchMarker(@NonNull BranchLocation branchLocation) {
         Log.d(TAG, "setBranchMarker: setting markers for (" + branchLocation.getLatitude() + ", " + branchLocation.getLongitude() + ")");
         MarkerOptions options = new MarkerOptions()
                 .position(BranchLocation.toLatLng(branchLocation))
-                .title("Jodern")
+                .title(getString(R.string.app_name))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_logo_icon));
 
         Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchLocation);
     }
@@ -210,18 +200,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng) {
+    private void moveCamera(@NonNull LatLng latLng) {
         Log.d(TAG, "moveCamera: move the camera to: (lat=" + latLng.latitude + ",lng=" + latLng.longitude + ")");
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
     }
 
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting device location");
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (locationPermissionGranted) {
-                @SuppressLint("MissingPermission") Task location = fusedLocationProviderClient.getLastLocation();
+                @SuppressLint("MissingPermission") Task<Location> location = fusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: found location!");
@@ -245,20 +235,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; ++i) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                            locationPermissionGranted = false;
-                            return;
-                        }
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0) {
+                for (int grantResult : grantResults) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                        locationPermissionGranted = false;
+                        return;
                     }
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                    locationPermissionGranted = true;
-                    initMap();
                 }
+                Log.d(TAG, "onRequestPermissionsResult: permission granted");
+                locationPermissionGranted = true;
+                initMap();
             }
         }
     }
