@@ -2,11 +2,14 @@ package com.example.jodernstore.model;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Product {
@@ -151,5 +154,20 @@ public class Product {
             }
         }
         return null;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Product{" +
+                "\nid=" + id +
+                ", \nname='" + name + '\'' +
+                ", \nimageURLs=" + imageURLs +
+                ", \nprice=" + price +
+                ", \ndescription='" + description + '\'' +
+                ", \ncategory='" + category + '\'' +
+                ", \ncategoryName='" + categoryName + '\'' +
+                ", \ninventories=" + Arrays.toString(inventories) +
+                "\n}";
     }
 }

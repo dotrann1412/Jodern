@@ -83,52 +83,40 @@ public class OrderListActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-                finish();
-            }
+        backBtn.setOnClickListener(view -> {
+            onBackPressed();
+            finish();
         });
 
-        allBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(allBtn);
-                shownOrders = allOrders;
-                showOrderList();
-            }
+        allBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(allBtn);
+            shownOrders = allOrders;
+            showOrderList();
         });
 
-        deliveryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(deliveryBtn);
-                shownOrders = new ArrayList<>();
-                for (Order order : allOrders) {
-                    if (order.getType() == 0) {
-                        shownOrders.add(order);
-                    }
+        deliveryBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(deliveryBtn);
+            shownOrders = new ArrayList<>();
+            for (Order order : allOrders) {
+                if (order.getType() == 0) {
+                    shownOrders.add(order);
                 }
-                showOrderList();
             }
+            showOrderList();
         });
 
-        appointBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(appointBtn);
-                shownOrders = new ArrayList<>();
-                for (Order order : allOrders) {
-                    if (order.getType() == 1) {
-                        shownOrders.add(order);
-                    }
+        appointBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(appointBtn);
+            shownOrders = new ArrayList<>();
+            for (Order order : allOrders) {
+                if (order.getType() == 1) {
+                    shownOrders.add(order);
                 }
-                showOrderList();
             }
+            showOrderList();
         });
     }
 
@@ -139,6 +127,7 @@ public class OrderListActivity extends AppCompatActivity {
         loadingWrapper.setVisibility(View.VISIBLE);
 
         new Handler().postDelayed((Runnable) () -> {
+            // TODO: replace later
             // just demo
             allOrders = new ArrayList<>();
             allOrders.add(new Order(1L, 0, 2, 1000000L, stringToDate("10/12/2022"), true));

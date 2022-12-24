@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -34,8 +36,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class OrderDetailActivity extends AppCompatActivity {
+    private static final String TAG = OrderDetailActivity.class.getName();
     private RelativeLayout parentView;
     private ImageButton backBtn;
     private TextView orderID, orderStatus, orderDate, orderType, orderCount, orderTotal;
@@ -45,6 +49,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     private RecyclerView productRecycler;
     private TextView summarySubTotal, summaryShipping, summaryTotal;
     private MaterialButton confirmBtn;
+
+    // Appointment information
+    private MaterialButton mapBtn;
+    private TextView orderDetailAppointBranch, orderDetailAppointDate;
 
     private Order currentOrder;
     private ArrayList<Product> products;
@@ -88,6 +96,10 @@ public class OrderDetailActivity extends AppCompatActivity {
         summaryTotal = findViewById(R.id.orderDetailSummaryTotal);
 
         confirmBtn = findViewById(R.id.orderDetailConfirmBtn);
+
+        orderDetailAppointBranch = findViewById(R.id.orderDetailAppointBranch);
+        orderDetailAppointDate = findViewById(R.id.orderDetailAppointDate);
+        mapBtn = findViewById(R.id.orderDetailAppointMapBtn);
     }
 
     private void retrieveOrderInfor() {
@@ -120,29 +132,22 @@ public class OrderDetailActivity extends AppCompatActivity {
             productIds.add(cartItem.getProductId());
         }
         String entry = "product-list";
-        String params = "id=";
+        StringBuilder params = new StringBuilder("id=");
         for (int i = 0; i < productIds.size(); i++) {
-            params += String.valueOf(productIds.get(i));
+            params.append(productIds.get(i));
             if (i != productIds.size() - 1)
-                params += ",";
+                params.append(",");
         }
         String url = BuildConfig.SERVER_URL + entry + "?" + params;
+        Log.d(TAG, "retrieveOrderInfor: API URL " + url);
         JsonObjectRequest getRequest = new JsonObjectRequest (
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        handleResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        loadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
-                    }
+                this::handleResponse,
+                error -> {
+                    loadingWrapper.setVisibility(View.GONE);
+                    MySnackbar.inforSnackar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
                 }
         );
         Provider.with(this).addToRequestQueue(getRequest);
@@ -150,11 +155,14 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void handleResponse(JSONObject response) {
         this.products = Product.parseProductListFromResponse(response);
+        Log.d(TAG, "handleResponse: " + products);
         loadingWrapper.setVisibility(View.GONE);
         setInfo();
     }
 
+    @SuppressLint("SetTextI18n")
     private void setInfo() {
+        Log.d(TAG, "setInfo: running");
         orderID.setText(currentOrder.getId().toString());
         orderStatus.setText(!currentOrder.getStatus() ? "Chưa nhận hàng" : "Đã nhận hàng");
         orderStatus.setTextColor(!currentOrder.getStatus() ? getResources().getColor(R.color.light_red) : getResources().getColor(R.color.light_green));
@@ -168,16 +176,27 @@ public class OrderDetailActivity extends AppCompatActivity {
         customerPhone.setText(currentOrder.getCustomerInfor().get("customerPhone"));
 
         if (currentOrder.getType() == 0) {
+            Log.d(TAG, "setInfo: setting info for a shipping order");
             appointmentParent.setVisibility(View.GONE);
             customerAddress.setVisibility(View.VISIBLE);
             customerAddress.setText(currentOrder.getCustomerInfor().get("customerAddress"));
+
+            orderDetailAppointBranch.setVisibility(View.GONE);
+            orderDetailAppointDate.setVisibility(View.GONE);
+            mapBtn.setVisibility(View.GONE);
         } else {
+            Log.d(TAG, "setInfo: setting info for an appointed order");
             appointmentParent.setVisibility(View.VISIBLE);
             customerAddress.setVisibility(View.GONE);
 
-            // TODO: set information for appointment order
+            // TODO: set information for appointment order: branch, date
+            orderDetailAppointBranch.setVisibility(View.VISIBLE);
+            orderDetailAppointDate.setVisibility(View.VISIBLE);
+            mapBtn.setVisibility(View.VISIBLE);
+
         }
 
+        Log.d(TAG, "setInfo: setting adapter");
         OrderDetailAdapter adapter = new OrderDetailAdapter(this);
         adapter.setProducts(products);
         adapter.setCartItems(currentOrder.getItems());
@@ -185,11 +204,12 @@ public class OrderDetailActivity extends AppCompatActivity {
         productRecycler.setLayoutManager(layoutManager);
         productRecycler.setAdapter(adapter);
 
+        Log.d(TAG, "setInfo: calculating current order total cost");
         // total price of products
         Long subTotal = 0L;
         for (CartItem cartItem : currentOrder.getItems()) {
             for (Product product : products) {
-                if (product.getId() == cartItem.getProductId()) {
+                if (Objects.equals(product.getId(), cartItem.getProductId())) {
                     subTotal += product.getPrice() * cartItem.getQuantity();
                     break;
                 }
@@ -203,19 +223,17 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-                finish();
-            }
+        backBtn.setOnClickListener(view -> {
+            onBackPressed();
+            finish();
         });
 
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Call API to confirm order
-            }
+        confirmBtn.setOnClickListener(view -> {
+            // TODO: Call API to confirm order
+        });
+
+        mapBtn.setOnClickListener(view -> {
+            // TODO: send current location of the branch to map activity to draw the pathway
         });
     }
 }

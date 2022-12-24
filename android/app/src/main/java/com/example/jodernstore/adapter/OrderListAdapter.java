@@ -35,6 +35,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         return new ViewHolder(inflater);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Order order = orderList.get(position);

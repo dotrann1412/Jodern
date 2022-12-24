@@ -335,7 +335,80 @@
                         android:textColor="@color/text"
                         android:textStyle="bold" />
 
-                    <!-- TODO: UI for appointment order type (notice about the button linked to map activity) -->
+                    <LinearLayout
+                        android:id="@+id/orderDetailAppointBranchParent"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginRight="24dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chi nhánh: "
+                            android:textColor="@color/text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/orderDetailAppointBranch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Jodern California"
+                            android:textColor="@color/primary" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/orderDetailAppointDateParent"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginRight="24dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày thử: "
+                            android:textColor="@color/text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/orderDetailAppointDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25/12/2022"
+                            android:textColor="@color/primary" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/orderDetailAppointMapParent"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginRight="24dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xem chỉ dẫn đến chi nhánh tại đây 👉"
+                            android:textColor="@color/text"
+                            android:textStyle="italic"
+                            android:paddingEnd="10dp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/orderDetailAppointMapBtn"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:textColor="@color/primary"
+                            app:icon="@drawable/ic_location"
+                            app:iconSize="24dp"
+                            app:iconPadding="0dp"
+                            app:iconGravity="textStart"
+                            android:gravity="center"
+                            app:cornerRadius="30dp" />
+                    </LinearLayout>
+
+
                 </LinearLayout>
 
                 <LinearLayout

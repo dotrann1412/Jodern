@@ -5,6 +5,7 @@ import static com.example.jodernstore.Utils.vndFormatPrice;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.example.jodernstore.model.Product;
 import java.util.List;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
+    private static final String TAG = OrderDetailAdapter.class.getName();
     private final Context context;
     private List<Product> productList;
     private List<CartItem> cartItemList;
@@ -33,6 +35,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         this.context = context;
     }
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,8 +43,10 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         return new ViewHolder(inflater);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        Log.d(TAG, "onBindViewHolder: position: " + position);
         Product product = productList.get(position);
         CartItem item = cartItemList.get(position);
 
@@ -93,14 +98,11 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         }
 
         private void setEvents() {
-            wrapper.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Product productItem = productList.get(getAdapterPosition());
-                    Intent intent = new Intent(context, ProductDetailActivity.class);
-                    intent.putExtra("productId", productItem.getId());
-                    context.startActivity(intent);
-                }
+            wrapper.setOnClickListener(view -> {
+                Product productItem = productList.get(getAdapterPosition());
+                Intent intent = new Intent(context, ProductDetailActivity.class);
+                intent.putExtra("productId", productItem.getId());
+                context.startActivity(intent);
             });
         }
     }
