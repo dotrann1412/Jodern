@@ -2,6 +2,7 @@ package com.example.jodernstore.adapter;
 
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import com.example.jodernstore.activity.ProductDetailActivity;
@@ -23,7 +24,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import java.util.ArrayList;
 
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ViewHolder> {
-//    private ArrayList<ProductListItem> productList;
     private ArrayList<Product> productList;
 
     private final Context mContext;
@@ -56,6 +56,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     @Override
     public int getItemCount() {
         return (productList != null) ? productList.size() : 0;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void addProducts(ArrayList<Product> products) {
+        productList.addAll(products);
+        notifyDataSetChanged();
     }
 
     public void setProductList(ArrayList<Product> productList) {

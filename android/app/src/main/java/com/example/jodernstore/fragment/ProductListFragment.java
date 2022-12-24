@@ -1,5 +1,6 @@
 package com.example.jodernstore.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -47,9 +48,14 @@ public class ProductListFragment extends Fragment {
     private TextView productSearchBarText;
     private LinearLayout searchBar;
     private LinearLayout currentCateWrapper;
-    private LinearLayout loadingWrapper;
+    private LinearLayout loadingWrapper, moreLoadingWrapper;
     private LinearLayout emptyWrapper;
     private FloatingActionButton floatBtn;
+
+    // user for handling scroll event (for sex query only)
+    private int currentPage = 0;
+    private String currentSex = null;
+
 
     public ProductListFragment() {
         // Required empty public constructor
@@ -81,6 +87,7 @@ public class ProductListFragment extends Fragment {
         searchBar = getView().findViewById(R.id.productSearchBar);
         currentCateWrapper = getView().findViewById(R.id.productCurrentCateWrapper);
         loadingWrapper = getView().findViewById(R.id.productLoadingWrapper);
+        moreLoadingWrapper = getView().findViewById(R.id.productMoreLoadingWrapper);
         emptyWrapper = getView().findViewById(R.id.productEmptyWrapper);
         floatBtn = getView().findViewById(R.id.productFloatBtn);
 
@@ -115,11 +122,21 @@ public class ProductListFragment extends Fragment {
                 } else {
                     floatBtn.hide();
                 }
+
+                // check if scroll to bottom of the page
+                @SuppressLint("RestrictedApi") int scrollRange = v.computeVerticalScrollRange();
+                @SuppressLint("RestrictedApi") int scrollOffset = v.computeVerticalScrollOffset();
+                if (scrollRange - scrollOffset == v.getHeight()) {
+                    // fetch more data
+                    if (currentSex != null) {
+                        moreLoadingWrapper.setVisibility(View.VISIBLE);
+                        fetchMoreData();
+                    }
+                }
+
             }
         });
-
     }
-
 
     private void setupCategoryLists() {
         // find views
@@ -200,6 +217,41 @@ public class ProductListFragment extends Fragment {
         }
     }
 
+    private void fetchMoreData() {
+        String searchParams = parseSearchParams(getArguments());
+        String url = BuildConfig.SERVER_URL + searchParams;
+        JsonObjectRequest getRequest = new JsonObjectRequest (
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ArrayList<Product> productList = parseProductListFromResponse(response);
+                        if (productList.size() > 0) {
+                            // update current page
+                            currentPage += 1;
+                            RecyclerView productListView = getView().findViewById(R.id.productListWrapper);
+                            GridLayoutManager layout = new GridLayoutManager(getContext(), 2);
+                            productListView.setLayoutManager(layout);
+                            ((ProductListAdapter)productListView.getAdapter()).addProducts(productList);
+                            moreLoadingWrapper.setVisibility(View.GONE);
+                        } else
+                            currentSex = null;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError(error);
+                    }
+                }
+        );
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
+    }
+
+
+
     private String parseSearchParams(Bundle args) {
         HashMap<String, String> params = new HashMap<>();
         String entry = args.getString("entry");
@@ -211,8 +263,12 @@ public class ProductListFragment extends Fragment {
         else if (entry.equals("product-list")) {
             String sex = args.getString("sex");
             String categoryRaw = args.getString("categoryRaw");
-            if (sex != null)
+            if (sex != null) {
                 params.put("sex", sex);
+                params.put("page", this.currentPage + "");
+                this.currentSex = sex;
+                this.currentPage += 1;
+            }
 
             if (categoryRaw != null) {
                 params.remove("sex");
