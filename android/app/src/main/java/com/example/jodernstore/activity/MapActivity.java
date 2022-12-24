@@ -142,7 +142,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
             Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
-            getPathToLocation(new LatLng(10.7314940, 106.6966400));
+//            getPathToLocation(new LatLng(10.7314940, 106.6966400));
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
