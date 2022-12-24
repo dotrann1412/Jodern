@@ -32,7 +32,7 @@
                     android:id="@+id/wishlistBackBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:background="@drawable/cart_image_shape"
+                    android:background="@drawable/card_image_shape"
                     android:padding="10dp"
                     android:src="@drawable/ic_back"
                     app:tint="@color/primary_dark" />
@@ -54,9 +54,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="4dp"
             android:visibility="visible">
 

@@ -59,20 +59,28 @@ public class Product {
             }
 
             // inventory quantities
-            JSONObject inventories = response.getJSONObject("inventory");
-            Integer[] inventory = new Integer[5];
-            for (int i = 0; i < sizes.length; i++) {
-                inventory[i] = inventories.getInt(sizes[i]);
+            Integer[] inventory = new Integer[sizes.length];
+
+            if (response.has("inventory")) {
+                JSONObject inventories = response.getJSONObject("inventory");
+                for (int i = 0; i < sizes.length; i++) {
+                    inventory[i] = inventories.getInt(sizes[i]);
+                }
+            } else {
+                for (int i = 0; i < sizes.length; ++i)
+                    inventory[i] = 0;
             }
 
             String category = response.getString("category");
-            String categoryName = response.getString("category_name");
+            String categoryName = "unknown";
+            if (response.has("category_name"))
+                categoryName = response.getString("category_name");
 
             Log.d(TAG, "parseJSON: parse JSON object to Product object successfully");
             return new Product(id, name, images, price, description, category, categoryName, inventory);
         }
         catch (Exception e) {
-            Log.d(TAG, "parseJSON: failed to parse JSON object to Product object");
+            Log.d(TAG, "parseJSON: failed to parse JSON object to Product object " + e.toString());
             return null;
         }
     }

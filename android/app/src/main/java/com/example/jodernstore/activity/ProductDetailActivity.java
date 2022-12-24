@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import com.bumptech.glide.request.FutureTarget;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
+import com.example.jodernstore.ShareTask;
 import com.example.jodernstore.adapter.ProductSliderAdapter;
 import com.example.jodernstore.adapter.TrendingAdapter;
 import com.example.jodernstore.cart.CartController;
@@ -35,6 +37,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.example.jodernstore.wishlist.WishlistController;
 import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
 import com.google.android.material.button.MaterialButton;
@@ -45,6 +48,7 @@ import com.smarteist.autoimageslider.SliderView;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +72,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private boolean isInWishlist = false;
     private boolean hasRemovedFromWishlist = false;
-    private ImageButton addWishlistBtn;
+    private ImageButton addWishlistBtn, shareBtn;
     private LinearLayout loadingWrapper;
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -260,6 +264,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         seeAllBtn = findViewById(R.id.detailSeeAllBtn);
         addWishlistBtn = findViewById(R.id.detailAddToWishlistBtn);
+        shareBtn = findViewById(R.id.detailShareBtn);
     }
 
     private void setEvents() {
@@ -291,6 +296,23 @@ public class ProductDetailActivity extends AppCompatActivity {
                 intent.putExtra("categoryName", currentProduct.getCategoryName());
                 intent.putExtra("nextFragment", ProductListFragment.TAG);
                 startActivity(intent);
+            }
+        });
+
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("SHAREEEE");
+                ArrayList<String> imageUrls = currentProduct.getImages();
+                ArrayList<FutureTarget<File>> futureTargets = new ArrayList<>();
+                for (String url : imageUrls) {
+                    FutureTarget<File> futureTarget = Glide.with(ProductDetailActivity.this)
+                            .asFile()
+                            .load(url)
+                            .submit();
+                    futureTargets.add(futureTarget);
+                }
+                new ShareTask(ProductDetailActivity.this, currentProduct.getName(), "image/*").execute(futureTargets.toArray(new FutureTarget[futureTargets.size()]));
             }
         });
     }

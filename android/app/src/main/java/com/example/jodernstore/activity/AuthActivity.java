@@ -106,7 +106,42 @@ public class AuthActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
+        // call API to get access token
+//        try {
+//            String entry = "login";
+//            JSONObject params = new JSONObject();
+//            params.put("userid", user.getUid());
+//            params.put("email", user.getEmail());
+//            params.put("fullname", user.getDisplayName());
+//
+//            String url = BuildConfig.SERVER_URL + entry + "/";
+//            JsonObjectRequest postRequest = new JsonObjectRequest(
+//                    url,
+//                    params,
+//                    new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject response) {
+//                            Log.d(TAG, "onResponse: " + response.toString());
+////                            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+////                            startActivity(intent);
+////                            finish();
+//                        }
+//                    },
+//                    new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            System.out.println(error.toString());
+//
+//                        }
+//                    }
+//            );
+//            Provider.with(this).addToRequestQueue(postRequest);
+//
+//
+//        } catch (Exception e) {
+//            System.out.println(e.toString());
+//        }
+        Intent intent = new Intent(AuthActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -142,6 +177,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void handleGoogleIdToken(String idToken) {
+        System.out.println(idToken);
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -158,6 +194,7 @@ public class AuthActivity extends AppCompatActivity {
                             handleLoginSucessfully(null);
                         }
                     }
+
                 });
     }
 

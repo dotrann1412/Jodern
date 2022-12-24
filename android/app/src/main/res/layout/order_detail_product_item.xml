@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/orderDetailItemWrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:elevation="3dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp">
+
+        <ImageView
+            android:id="@+id/orderDetailItemImage"
+            android:layout_width="100dp"
+            android:layout_height="130dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:background="@color/dark_gray"
+            app:srcCompat="@drawable/demo" />
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/orderDetailItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:scrollHorizontally="true"
+            android:text="Áo thun nữ cực cool"
+            android:textColor="@color/text"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/orderDetailItemPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="69.000 VND"
+            android:textColor="@color/primary_dark"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/orderDetailItemSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Size XL"
+            android:textColor="@color/gray" />
+
+        <LinearLayout
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số lượng: "
+                android:textColor="@color/gray" />
+
+            <TextView
+                android:id="@+id/orderDetailItemCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

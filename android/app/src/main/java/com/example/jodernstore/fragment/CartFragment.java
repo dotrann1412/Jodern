@@ -169,39 +169,6 @@ public class CartFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-
-//        detailAddToCartBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
-//        cartExpandBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (showSummary) {
-//                    System.out.println("Slide up");
-//                    System.out.println("cartSummaryWrapper.getHeight() = " + cartSummaryWrapper.getHeight());
-//
-//                    TranslateAnimation animate = new TranslateAnimation(0, 0, 100, 0);
-//                    animate.setDuration(500);
-//                    animate.setFillAfter(true);
-//                    cartSummaryWrapper.startAnimation(animate);
-//                }
-//                else {
-//                    System.out.println("Slide down");
-//                    System.out.println("cartSummaryWrapper.getHeight() = " + cartSummaryWrapper.getHeight());
-//                    TranslateAnimation animate = new TranslateAnimation(0, 0, 0, 100);
-//                    animate.setDuration(500);
-//                    animate.setFillAfter(true);
-//                    cartSummaryWrapper.startAnimation(animate);
-//                }
-//
-//                showSummary = !showSummary;
-//            }
-//        });
     }
 
     private void showSummaryDialog() {

@@ -39,6 +39,23 @@
         android:theme="@style/Jodern"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
+
         <activity
             android:name="com.example.jodernstore.activity.OrderListActivity"
             android:exported="false" />
@@ -48,12 +65,7 @@
         <activity
             android:name="com.example.jodernstore.activity.AuthActivity"
             android:exported="false" /> <!-- Facebook Login Auth -->
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-        <meta-data
-            android:name="com.facebook.sdk.ClientToken"
-            android:value="@string/facebook_client_token" />
+
 
         <activity
             android:name="com.example.jodernstore.activity.SplashActivity"
@@ -68,6 +80,11 @@
             android:name="com.example.jodernstore.activity.OrderActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.example.jodernstore.activity.OrderDetailActivity"
+            android:exported="false" />
+
         <activity
             android:name="com.example.jodernstore.activity.ProductDetailActivity"
             android:exported="false" />
