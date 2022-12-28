@@ -10,6 +10,6 @@ public class DeliveryOrder extends Order {
     // customerInfor = {name, phone, address}
     // type: 0
     public DeliveryOrder(Long id, Integer numItems, Long totalPrice, LocalDate checkoutDate, boolean status, HashMap<String, String> customerInfor, ArrayList<CartItem> items) {
-        super(id, 0, numItems, totalPrice, checkoutDate, status, customerInfor, items);
+        super(id, 0, numItems, totalPrice, checkoutDate, customerInfor, items, status);
     }
 }

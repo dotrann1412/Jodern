@@ -4,6 +4,7 @@ import static com.example.jodernstore.Utils.localDateToString;
 import static com.example.jodernstore.Utils.stringToDate;
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,14 +20,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.OrderDetailAdapter;
 import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.model.AppointmentOrder;
+import com.example.jodernstore.model.BranchInfo;
 import com.example.jodernstore.model.Order;
 import com.example.jodernstore.model.Product;
 import com.example.jodernstore.provider.Provider;
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class OrderDetailActivity extends AppCompatActivity {
@@ -44,7 +46,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private ImageButton backBtn;
     private TextView orderID, orderStatus, orderDate, orderType, orderCount, orderTotal;
     private TextView customerName, customerEmail, customerPhone, customerAddress;
-    private LinearLayout appointmentParent;
+    private LinearLayout appointmentParent, orderDetailAddressParent;
     private LinearLayout loadingWrapper;
     private RecyclerView productRecycler;
     private TextView summarySubTotal, summaryShipping, summaryTotal;
@@ -86,6 +88,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         customerAddress = findViewById(R.id.orderDetailCustomerAddress);
 
         appointmentParent = findViewById(R.id.orderDetailAppointParentView);
+        orderDetailAddressParent = findViewById(R.id.orderDetailAddressParent);
 
         productRecycler = findViewById(R.id.orderDetailRecyclerView);
 
@@ -110,7 +113,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         // ...
 
         // the below codes are used for demo purpose
-        Order order = new Order(1L, 0, 2, 1000000L, stringToDate("10/12/2022"), true);
+//        Order order = new Order(Long.valueOf(id), 0, 5, 1000000L, stringToDate("10/12/2022"), true);
+//        order.setBranchInfo(new BranchInfo(10.762986, 106.682835, "Jodern Demo"));
+        Order order = new AppointmentOrder(Long.valueOf(id), 5, 1000000L, stringToDate("25/12/2022"), true, stringToDate("31/12/2022"), null, null, new BranchInfo(10.762986, 106.682835, "Jodern Demo"));
         currentOrder = order;
         HashMap<String, String> customerInfor = new HashMap<>();
         customerInfor.put("customerName", "Hoàng Trọng Vũ");
@@ -131,6 +136,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         for (CartItem cartItem : currentOrder.getItems()) {
             productIds.add(cartItem.getProductId());
         }
+        Log.d(TAG, "retrieveOrderInfor: productIds " + productIds);
         String entry = "product-list";
         StringBuilder params = new StringBuilder("id=");
         for (int i = 0; i < productIds.size(); i++) {
@@ -144,7 +150,9 @@ public class OrderDetailActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url,
                 null,
-                this::handleResponse,
+                response -> {
+                    handleResponse(response, productIds);
+                },
                 error -> {
                     loadingWrapper.setVisibility(View.GONE);
                     MySnackbar.inforSnackar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
@@ -153,9 +161,21 @@ public class OrderDetailActivity extends AppCompatActivity {
         Provider.with(this).addToRequestQueue(getRequest);
     }
 
-    private void handleResponse(JSONObject response) {
-        this.products = Product.parseProductListFromResponse(response);
-        Log.d(TAG, "handleResponse: " + products);
+    private void handleResponse(JSONObject response, @NonNull List<Long> productIds) {
+        List<Product> receivedProducts = Product.parseProductListFromResponse(response);
+        ArrayList<Product> displayedProducts = new ArrayList<>();
+
+        for (Long id : productIds) {
+            for (Product product : receivedProducts) {
+                if (id.equals(product.getId())) {
+                    displayedProducts.add(product);
+                }
+            }
+        }
+
+        this.products = displayedProducts;
+
+        Log.d(TAG, "handleResponse: done with parsing product list with length of " + products.size());
         loadingWrapper.setVisibility(View.GONE);
         setInfo();
     }
@@ -168,6 +188,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         orderStatus.setTextColor(!currentOrder.getStatus() ? getResources().getColor(R.color.light_red) : getResources().getColor(R.color.light_green));
         orderDate.setText(localDateToString(currentOrder.getCheckoutDate()));
         orderType.setText(currentOrder.getType() == 0 ? "Đặt giao hàng" : "Hẹn thử đồ");
+        Log.d(TAG, "setInfo: " + currentOrder.getId() + " with type " + currentOrder.getType());
         orderCount.setText(String.valueOf(currentOrder.getItems().size()));
         orderTotal.setText(vndFormatPrice(currentOrder.getTotalPrice()));
 
@@ -176,24 +197,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         customerPhone.setText(currentOrder.getCustomerInfor().get("customerPhone"));
 
         if (currentOrder.getType() == 0) {
-            Log.d(TAG, "setInfo: setting info for a shipping order");
+            Log.d(TAG, "setInfo: setting info for a shipping order " + currentOrder.getId());
             appointmentParent.setVisibility(View.GONE);
-            customerAddress.setVisibility(View.VISIBLE);
+            orderDetailAddressParent.setVisibility(View.VISIBLE);
             customerAddress.setText(currentOrder.getCustomerInfor().get("customerAddress"));
 
-            orderDetailAppointBranch.setVisibility(View.GONE);
-            orderDetailAppointDate.setVisibility(View.GONE);
-            mapBtn.setVisibility(View.GONE);
         } else {
-            Log.d(TAG, "setInfo: setting info for an appointed order");
+            Log.d(TAG, "setInfo: setting info for an appointment order " + currentOrder.getId());
             appointmentParent.setVisibility(View.VISIBLE);
-            customerAddress.setVisibility(View.GONE);
+            orderDetailAddressParent.setVisibility(View.GONE);
 
-            // TODO: set information for appointment order: branch, date
-            orderDetailAppointBranch.setVisibility(View.VISIBLE);
-            orderDetailAppointDate.setVisibility(View.VISIBLE);
-            mapBtn.setVisibility(View.VISIBLE);
-
+            // init order detail information
+            orderDetailAppointBranch.setText(currentOrder.getBranchInfo().getBranchName());
+            orderDetailAppointDate.setText("hehehehehe");
         }
 
         Log.d(TAG, "setInfo: setting adapter");
@@ -234,6 +250,11 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         mapBtn.setOnClickListener(view -> {
             // TODO: send current location of the branch to map activity to draw the pathway
+            Intent intent = new Intent(OrderDetailActivity.this, MapActivity.class);
+            intent.putExtra("lat", currentOrder.getBranchInfo().getLatitude());
+            intent.putExtra("lng", currentOrder.getBranchInfo().getLongitude());
+            intent.putExtra("order", true);
+            startActivity(intent);
         });
     }
 }
