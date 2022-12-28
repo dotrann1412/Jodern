@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'JodernServices.urls'
@@ -64,13 +62,12 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',  
-                'social_django.context_processors.login_redirect',  
+                'django.contrib.messages.context_processors.messages'
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'JodernServices.wsgi.application'
 
