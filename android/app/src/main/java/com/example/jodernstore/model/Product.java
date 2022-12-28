@@ -88,7 +88,8 @@ public class Product {
         }
     }
 
-    public static ArrayList<Product> parseProductListFromResponse(JSONObject response) {
+    @NonNull
+    public static ArrayList<Product> parseProductListFromResponse(@NonNull JSONObject response) {
         ArrayList<Product> productList = new ArrayList<>();
 
         try {
