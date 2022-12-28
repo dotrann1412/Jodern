@@ -146,6 +146,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
             loadingWrapper.setVisibility(View.GONE);
+
+            // Get Intent from OrderDetailActivity to draw the path
+            Intent intent = getIntent();
+            boolean drawPath = intent.getBooleanExtra("order", false);
+            if (drawPath) {
+                double lat = intent.getDoubleExtra("lat", 0.f);
+                double lng = intent.getDoubleExtra("lng", 0.f);
+                Log.d(TAG, "parseLocationJSON: drawing the path to the branch location (" + lat + ", " + lng + ")");
+//                getPathToLocation(new LatLng(lat, lng));
+            }
         }
     }
 
