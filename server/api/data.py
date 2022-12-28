@@ -5,6 +5,7 @@ import threading
 from modules.helpers import config
 from modules.data_acess.driver import Connector
 
+ITEM_PER_PAGE = config.Config.getValue('item-per-page')
 __categoryName = None
 
 def GetCategoryName(code):
@@ -25,14 +26,17 @@ def GetSexName(code):
         __sexName = {row[0]: row[1] for row in rows}
     return __sexName[code]
 
-def GetProducts(sex, category):
+def GetProducts(sex, category, page = None):
     if not sex and not category:
         return {}
+    
+    res = {}
     
     if sex and category:
         query = 'select id, title, descriptions, price, imageurl from product where sexid = ? and categoryid = ?'
         rows = Connector.establishConnection().cursor().execute(query, (sex, category)).fetchall()
-        return [{
+        
+        res = {'data': [{
             'id': row[0],
             'title': row[1],
             'description': row[2],
@@ -41,12 +45,21 @@ def GetProducts(sex, category):
             'category_name': GetCategoryName(category),
             'category': category,
             'sex': sex
-        } for row in rows]
-    
+        } for row in rows]}
+        
+        if page is not None:
+            lIdx = page * ITEM_PER_PAGE
+            rIdx = (page + 1) * ITEM_PER_PAGE
+            _lIdx, _rIdx = max(lIdx, 0), min(rIdx, len(res['data']))
+            res['data'] = res['data'][_lIdx : _rIdx]
+        
+        return res        
+
     if sex:
         query = 'select id, title, descriptions, price, categoryid, imageurl from product where sexid = ?'
         rows = Connector.establishConnection().cursor().execute(query, (sex, )).fetchall()
         res = {}
+        
         for row in rows:
             if row[4] not in res: res[row[4]] = []
             res[row[4]] += [{
@@ -59,6 +72,16 @@ def GetProducts(sex, category):
                 'category_name': GetCategoryName(row[4]),
                 'category': row[4]
             }]
+        
+        if page is not None:
+            
+            lIdx = page * ITEM_PER_PAGE // 6
+            rIdx = (page + 1) * ITEM_PER_PAGE // 6
+            
+            res = {
+                key: val[max(lIdx, 0): min(rIdx, len(val))] for key, val in res.items()
+            }
+        
         return res
     
     if category:
@@ -77,6 +100,16 @@ def GetProducts(sex, category):
                 'category': category,
                 'sex': row[4]
             }]
+        
+        if page is not None:
+            
+            lIdx = page * ITEM_PER_PAGE
+            rIdx = (page + 1) * ITEM_PER_PAGE
+            
+            res = {
+                key: val[max(lIdx, 0): min(rIdx, len(val))] for key, val in res.items()
+            }
+
         return res
             
 import random
@@ -138,13 +171,17 @@ def GetProductsByList(ids: list, limit = 8, requiredSampler = True):
         
     if len(res["data"]) < limit and requiredSampler:
         res["data"] += GetProductsByListRand(limit - len(res["data"]), ids[0])
-    return res
+    return res  
 
-def GetProductsByList_2(ids):
+def GetProductsByList_2(ids, page = None):
     if type(ids) != list or len(ids) == 0:
-        return []
+        return {
+            'data': []
+        }
+    
     query = f"select id, title, descriptions, price, sexid, categoryid, imageurl from product p where p.id in ({','.join([str(i) for i in ids])})"
     rows = Connector.establishConnection().cursor().execute(query).fetchall()
+    
     res = {
         'data': []
     }
@@ -159,6 +196,10 @@ def GetProductsByList_2(ids):
             'category': row[5],
             'images': [row[6]]
         }]
+        
+    if page is not None:
+        lIdx, rIdx = (page) * ITEM_PER_PAGE, (page + 1) * ITEM_PER_PAGE
+        res['data'] = res['data'][max(0, lIdx) : min(rIdx, len(res['data']))]
 
     return res
         
@@ -411,12 +452,12 @@ def UpdateCart(userid, cartid, items):
     query = "insert into cart (userid, productid, quantity) values (?, ?, ?)"
 
     
-def GetWishList(userid):
+def GetWishList(userid, page = None):
     query = 'select productid from wishlist where userid = ?'
     cursor = Connector.establishConnection().cursor()
     rows = cursor.execute(query, (userid,)).fetchall()
     ids = [row[0] for row in rows]
-    return GetProductsByList_2(ids)
+    return GetProductsByList_2(ids, page)
 
 def AddToUserWishList(userid, productid):
     query = 'insert into wishlist (userid, productid) values (?, ?)'
@@ -503,3 +544,16 @@ def JoinCart(cartid, userid):
         "message": "Done!"
     }
 
+def UpdateUserWishList(userid, wishlist):
+    query = 'delete from wishlist where userid = ?'
+    cursor = Connector.establishConnection().cursor()
+    cursor.execute(query, (userid, ))
+    cursor.commit()
+    query = 'insert into wishlist (userid, productid) values (?, ?)' # + ', '.join(['(?, ?)' for _ in range(len(wishlist))] )
+    cursor.executemany(query, tuple((userid, item) for item in wishlist))
+    cursor.commit()
+    
+    return {
+        'message': "All done!"
+    }
+    
