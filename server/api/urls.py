@@ -5,7 +5,7 @@ from .views import (
     SearchEngineInterface, HandleCategoriesTree, StoresLocation,
     Trending, Highlight, ProcessOrder, RelatedProduct,
     Login, ValidateAccessToken, AddToWishlist, RemoveFromWishList,
-    FetchWishList
+    FetchWishList, UpdateWishList
 )
 
 urlpatterns = [ 
@@ -27,4 +27,5 @@ urlpatterns = [
     path('verify-token', ValidateAccessToken.as_view()),
     path('add-to-wishlist/', AddToWishlist.as_view()),
     path('remove-from-wishlist/', RemoveFromWishList.as_view()),
+    path('update-wishlist/', UpdateWishList.as_view())
 ]
