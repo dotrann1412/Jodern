@@ -1,5 +1,4 @@
 torch
-faiss
 requests
 Pillow
 numpy
@@ -9,3 +8,4 @@ transformers==4.24.0
 Django
 djangorestframework
 PyJWT==2.6.0
+pyodbc
