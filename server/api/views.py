@@ -35,8 +35,14 @@ import traceback
 class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
         query = request.query_params.get('query', '').lower()
+        limit = request.query_params.get('limit', None)
         try:
-            return Response(GetProductsByList_2(textRetriever.search(query)), status = status.HTTP_200_OK)
+            res = textRetriever.search(query) # = GetProductsByList_2(textRetriever.search(query))
+            if limit is not None:
+                limit = int(limit)
+                res = res[: min(len(res), limit)]
+                
+            return Response(GetProductsByList_2(res), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -46,9 +52,16 @@ class SearchEngineInterface(APIView):
     def post(self, request: Request, *args, **kwargs):
         try:
             query = base64.decodebytes(request.data['query'].encode())
+            limit = request.data.get('limit', None)
             query = np.frombuffer(query, dtype = np.uint8)
             query = np.reshape(query, (256, 256, 3))
-            return Response(GetProductsByList_2(imageRetriever.search(query)), status = status.HTTP_200_OK)
+            res = imageRetriever.search(query)
+
+            if limit is not None:
+                limit = int(limit)
+
+                res = res[: min(len(res), limit)]
+            return Response(GetProductsByList_2(res), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
             return Response({"message": "Error on processing"}, status = status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -59,14 +72,19 @@ class HandleProductsList(APIView):
         sex, category = None, None
         sex = request.query_params.get('sex', None)
         category = request.query_params.get('category', None)
-    
+        pageIndex = request.query_params.get('page', None)
+        
+        if pageIndex is not None:
+            pageIndex = int(pageIndex)
+        
         res = {}
     
         try:
             if 'id' in request.query_params:
                 ids = request.query_params['id'].split(',')
-                res = GetProductsByList(ids)
-            else: res = GetProducts(sex, category)
+                res = GetProductsByList_2(ids, pageIndex)
+            else:
+                res = GetProducts(sex, category, pageIndex)
         except Exception as err:    
             print('[EXCEPTION] Details here: ', err)
             traceback.print_exc()
@@ -174,7 +192,7 @@ class UserProfile(APIView):
         return Response(res, status = status.HTTP_200_OK if 'error' not in res else status.HTTP_401_UNAUTHORIZED)
 
 class FetchWishList(APIView):
-    def post(self, request: Request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         res = None
         
         try:
@@ -182,14 +200,41 @@ class FetchWishList(APIView):
             
             if 'userid' not in token:
                 raise Exception('Invalid access token')
+            
+            pageIndex = request.query_params.get('page', None)
+            
+            if pageIndex is not None:
+                pageIndex = int(pageIndex)
 
-            res = GetWishList(token['userid'])
+            res = GetWishList(token['userid'], pageIndex)
             
         except Exception as err:
             traceback.print_exc()
             return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
 
         
+        return Response(res, status = status.HTTP_200_OK)
+
+class UpdateWishList(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            
+            userid = token['userid']
+        except Exception as err:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            res = UpdateUserWishList(userid, request.data.get('wishlist', []))
+        except:
+            traceback.print_exc()
+
         return Response(res, status = status.HTTP_200_OK)
 
 class AddToWishlist(APIView):
