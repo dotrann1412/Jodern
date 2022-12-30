@@ -30,7 +30,7 @@ def get_item_html_template(image, pName, price, itemCount, size):
             <div class="item-title"><p><a href="{image}">
                 <b>{productName}</b></a></p></div>
             <div class="item-detail">
-                <div><p><b>Đơn giá: </b> {price:,.3f}</p></div>
+                <div><p><b>Đơn giá: </b> {price:,.1f}</p></div>
                 <div><p><b>Số lượng: </b> {itemCount}</p></div>
                 <div><p><b>Size: </b> {size}</p></div>
             </div>
@@ -47,6 +47,9 @@ def get_item_html_template(image, pName, price, itemCount, size):
 from datetime import datetime
 import datetime
 
+def html_mail_pickup_order(**kwargs):
+    pass
+
 def html_mail(**kwargs):
     total = kwargs.get('price', 0) + kwargs.get('shipping_fee', 0)
     
@@ -55,6 +58,23 @@ def html_mail(**kwargs):
     delivered_on = datetime.datetime.now() + datetime.timedelta(days = 5)
     # if preoder_required:
     #     delivered_on += datetime.timedelta(days = 2)
+    shippingFeeDetails = '''
+<p><b>Sản phẩm: </b>{price:,.1f} (VND)</p>
+<p><b>Phí vận chuyển:</b> {shipping_fee:,.1f} (VND)</p>
+<hr width="50%" style="margin-right: 0"/>
+'''.format(
+    price = kwargs.get('price', 0),
+    shipping_fee = kwargs.get('shipping_fee', 0),
+)
+
+    mailHeader = '''
+    Jodern Store xin cảm ơn quý khách hàng <b>{customer_name}</b> vì đã tin tưởng và sử dụng dịch vụ của chúng tôi. Đơn hàng của quý khách bao gồm <b>{pcnt}</b> sản phẩm, chi tiết như sau:
+    '''.format(
+        customer_name = kwargs.get('customer_name', ''),
+        pcnt = kwargs.get('product_count', 0),
+    ) if kwargs['orderType'] == 0 else '''
+    Jodern Store xin cảm ơn quý khách hàng <b>{customer_name}</b> vì đã tin tưởng và sử dụng dịch vụ của chúng tôi. Dưới đây là thông tin về lịch hẹn và :
+    '''
 
     html_template = str('''<!DOCTYPE html>
 <html lang="en">
@@ -248,10 +268,10 @@ def html_mail(**kwargs):
         </div>
 
         <div class="container order-summary">
-            <p><b>Sản phẩm: </b>{price:,.3f} (VND)</p>
-            <p><b>Phí vận chuyển:</b> {shipping_fee:,.3f} (VND)</p>
-            <hr width="50%" style="margin-right: 0"/>
-            <p><b>Tổng:</b> {total:,.3f} (VND)</p>
+            
+            {shippingFeeDetails}
+            
+            <p><b>Thành tiền:</b> {total:,.1f} (VND)</p>
         </div>
 
         <div class="container">
@@ -264,15 +284,14 @@ def html_mail(**kwargs):
     ''').format(
         total = total,
         day = delivered_on.strftime(r'%Y-%m-%d'),
-        price = kwargs.get('price', 0),
-        tax = kwargs.get('tax', 0),
-        shipping_fee = kwargs.get('shipping_fee', 0),
-        content = kwargs.get('html_content'),
-        pcnt = kwargs.get('product_count', 0),
         customer_name = kwargs.get('customer_name', ''),
+        pcnt = kwargs.get('product_count', 0),
+        tax = kwargs.get('tax', 0),
+        content = kwargs.get('html_content'),
         phone = kwargs['phone_number'],
         address = kwargs['location'],
-        more = '<p><i>(Một hoặc vài sản phẩm trong đơn hàng của quý khách cần thời gian preoder, thời gian giao có thể chậm hơn 1 hoặc 2 ngày. Quý khách hàng thông cảm cho Jodern nhé!)</i></p>' if preoder_required else ''
+        more = '<p><i>(Một hoặc vài sản phẩm trong đơn hàng của quý khách cần thời gian preoder, thời gian giao có thể chậm hơn 1 hoặc 2 ngày. Quý khách hàng thông cảm cho Jodern nhé!)</i></p>' if preoder_required else '',
+        shippingFeeDetails = shippingFeeDetails if kwargs['orderType'] == 0 else ""
     )
         
     return html_template
@@ -303,14 +322,17 @@ class MailService:
     def __init__(self):
         self.imap_server = imaplib.IMAP4_SSL(IMAP_HOST)
         self.smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT)
+        self.email = None
+        self.password = None
 
-    def login(self, username, password):        
-        self.imap_server.login(username, password)
+    def login(self, username, password):   
+        # self.imap_server.login(username, password)
         self.smtp_server.login(username, password)
-        
+        self.password = password
+        self.username = username
 
     def logout(self):
-        self.imap_server.logout()
+        # self.imap_server.logout()
         self.smtp_server.quit()
 
     def read_email (self, category = 'primary', box = 'inbox'):  
@@ -360,4 +382,8 @@ class MailService:
         return mail_list
 
     def send_mail(self, mail):
-        self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
+        try:
+            self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
+        except:
+            self.login(self.username, self.password)
+            self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
