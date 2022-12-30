@@ -7,15 +7,15 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.example.jodernstore.BuildConfig;
@@ -23,6 +23,7 @@ import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.MapMarkerInfoAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 
+import com.example.jodernstore.helper.DirectionsJSONParser;
 import com.example.jodernstore.model.BranchLocation;
 import com.example.jodernstore.provider.GeneralProvider;
 
@@ -35,22 +36,31 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String TAG = "Map";
+    private static final String TAG = MapActivity.class.getName();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int DEFAULT_ZOOM = 13;
 
     private Boolean locationPermissionGranted = false;
     private GoogleMap googleMap;
-    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private BranchLocation nearestBranch;
     private BranchLocation currentLocation;
@@ -97,20 +107,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        parseLocationJSON(response);
-                        Log.d(TAG, "onResponse: successful");
-                    }
+                response -> {
+                    parseLocationJSON(response);
+                    Log.d(TAG, "onResponse: successful");
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
-                        Log.d(TAG, "onErrorResponse: VolleyError: " + error);
-                        loadingWrapper.setVisibility(View.GONE);
-                    }
+                error -> {
+                    MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
+                    Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+                    loadingWrapper.setVisibility(View.GONE);
                 }
         );
         GeneralProvider.with(MapActivity.this).addToRequestQueue(stringRequest);
@@ -126,17 +130,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 setBranchMarker(location);
 
                 if (i == 0) {
-                    Log.d(TAG, "parseLocationJSON: initialize nearest branch (" + location.getLatitude() + ", " + location.getLongitude() + ")");
+                    Log.d(TAG, "parseLocationJSON: initialize nearest branch " + location);
                     nearestBranch = location;
                 } else {
                     if (calculationByDistance(BranchLocation.toLatLng(nearestBranch), BranchLocation.toLatLng(currentLocation))
                             > calculationByDistance(BranchLocation.toLatLng(location), BranchLocation.toLatLng(currentLocation))) {
-                        Log.d(TAG, "parseLocationJSON: modify nearest branch (" + location.getLatitude() + ", " + location.getLongitude() + ")");
+                        Log.d(TAG, "parseLocationJSON: modify nearest branch " + location);
                         nearestBranch = location;
                     }
                 }
             }
             moveCamera(BranchLocation.toLatLng(nearestBranch));
+            Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
+//            getPathToLocation(new LatLng(10.7314940, 106.6966400));
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
@@ -144,7 +150,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private double calculationByDistance(LatLng StartP, LatLng EndP) {
+    private double calculationByDistance(@NonNull LatLng StartP, @NonNull LatLng EndP) {
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
@@ -168,7 +174,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return Radius * c;
     }
 
-    private void setBranchMarker(BranchLocation branchLocation) {
+    private void setBranchMarker(@NonNull BranchLocation branchLocation) {
         Log.d(TAG, "setBranchMarker: setting markers for (" + branchLocation.getLatitude() + ", " + branchLocation.getLongitude() + ")");
         MarkerOptions options = new MarkerOptions()
                 .position(BranchLocation.toLatLng(branchLocation))
@@ -179,7 +185,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchLocation);
     }
 
-
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -189,12 +194,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 locationPermissionGranted = true;
                 initMap();
 
-            }
-            else {
+            } else {
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
             }
-        }
-        else {
+        } else {
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
@@ -211,22 +214,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng) {
-        Log.d(TAG, "moveCamera: move the camera to: (lat=" + latLng.latitude + ",lng=" + latLng.longitude + ")");
+    private void moveCamera(@NonNull LatLng latLng) {
+        Log.d(TAG, "moveCamera: move the camera to: " + latLng);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+    }
+
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+        Log.d(TAG, "getDirectionUrl: origin = " + origin + ", destination = " + dest);
+        String originStr = origin.longitude + "," + origin.latitude;
+        String destStr = dest.longitude + "," + dest.latitude;
+        return "https://api.mapbox.com/directions/v5/mapbox/driving/" + originStr + ";" + destStr + "?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=" + getString(R.string.mapbox_access_token);
+    }
+
+    private void getPathToLocation(LatLng destination) {
+        Log.d(TAG, "getPathToLocation: getting path to location " + destination);
+        String url = getDirectionsUrl(BranchLocation.toLatLng(currentLocation), destination);
+        Log.d(TAG, "getPathToLocation: direction URL is " + url);
+        DownloadTask downloadTask = new DownloadTask();
+        downloadTask.execute(url);
     }
 
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting device location");
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (locationPermissionGranted) {
-                @SuppressLint("MissingPermission") Task location = fusedLocationProviderClient.getLastLocation();
+                @SuppressLint("MissingPermission") Task<Location> location = fusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: found location!");
                         currentLocation = BranchLocation.fromLocation((Location) task.getResult());
+                        Log.d(TAG, "onComplete: current location " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
                         moveCamera(BranchLocation.toLatLng(currentLocation));
                         retrieveBranchLocation();
                     } else {
@@ -246,22 +264,141 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; ++i) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                            locationPermissionGranted = false;
-                            return;
-                        }
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0) {
+                for (int grantResult : grantResults) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                        locationPermissionGranted = false;
+                        return;
                     }
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                    locationPermissionGranted = true;
-                    initMap();
                 }
+                Log.d(TAG, "onRequestPermissionsResult: permission granted");
+                locationPermissionGranted = true;
+                initMap();
             }
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    private class DownloadTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... url) {
+            Log.d(TAG, "Background Task: doing with " + url[0]);
+            String data = "";
+            try {
+                data = downloadUrl(url[0]);
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
+            }
+            Log.d(TAG, "Background Task: done and return data = " + data);
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, "onPostExecute: " + result);
+            super.onPostExecute(result);
+            ParserTask parserTask = new ParserTask();
+            parserTask.execute(result);
+        }
+    }
+
+
+    /**
+     * A class to parse the Mapbox Direction API result in JSON format
+     */
+    @SuppressLint("StaticFieldLeak")
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+            Log.d(TAG, "ParserTask background task: " + jsonData[0]);
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes;
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                routes = parser.parseGeoJSON(jObject);
+            } catch (Exception e) {
+                Log.e(TAG, "ParserTask background task: " + e.getMessage());
+                return null;
+            }
+            Log.d(TAG, "ParserTask post background task: " + routes.toString());
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(@NonNull List<List<HashMap<String, String>>> result) {
+            Log.d(TAG, "onPostExecute: result is not null: " + result);
+            ArrayList<LatLng> points;
+            PolylineOptions lineOptions = null;
+
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList<>();
+                lineOptions = new PolylineOptions();
+
+                List<HashMap<String, String>> path = result.get(i);
+
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
+
+                    double lat = Double.parseDouble(Objects.requireNonNull(point.get("lat")));
+                    double lng = Double.parseDouble(Objects.requireNonNull(point.get("lng")));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                lineOptions.addAll(points);
+                lineOptions.width(12);
+                lineOptions.color(Color.RED);
+                lineOptions.geodesic(true);
+
+            }
+
+            // Drawing polyline in the Google Map for the i-th route
+            assert lineOptions != null;
+            googleMap.addPolyline(lineOptions);
+        }
+    }
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.connect();
+
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
 }

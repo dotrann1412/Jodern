@@ -2,6 +2,7 @@ package com.example.jodernstore.adapter;
 
 import android.content.Intent;
 import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.R;
 import com.example.jodernstore.model.Category;
 
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.jodernstore.R;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
