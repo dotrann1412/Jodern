@@ -17,10 +17,10 @@ import numpy as np
 
 from .data import *
 
-from modules.retriever import (
-    ImageRetriever,
-    TextRetriever
-)
+# from modules.retriever import (
+#     ImageRetriever,
+#     TextRetriever
+# )
 
 class Test(APIView):
     def get(self, request, *args, **kwargs):
@@ -29,8 +29,8 @@ class Test(APIView):
     def post(self, request, *args, **kwargs):
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
-textRetriever = TextRetriever.TextRetriever()
-imageRetriever = ImageRetriever.ImageRetriever()
+# textRetriever = TextRetriever.TextRetriever()
+# imageRetriever = ImageRetriever.ImageRetriever()
 import traceback
 class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
@@ -38,10 +38,11 @@ class SearchEngineInterface(APIView):
         limit = request.query_params.get('limit', None)
         try:
             res = textRetriever.search(query) # = GetProductsByList_2(textRetriever.search(query))
+            
             if limit is not None:
                 limit = int(limit)
                 res = res[: min(len(res), limit)]
-                
+
             return Response(GetProductsByList_2(res), status = status.HTTP_200_OK)
         except Exception as err:
             traceback.print_exc()
@@ -94,14 +95,16 @@ class HandleProductsList(APIView):
     
 class ProcessOrder(APIView):
     def post(self, request: Request, *arg, **kwargs):
-
-        try: Verifier.verify(request.headers['access_token'])
-        except: return Response({"message": "Login first then try again!"}, status = status.HTTP_401_UNAUTHORIZED)
-
-        try: res = ProcessOrderData(request.data['cart'])
-        except Exception as err:
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if token is None or 'userid' not in token:
+                return Response({'message': 'invalid token'}, status = status.HTTP_401_UNAUTHORIZED)
+            userid = token['userid']
+            res = ProcessOrderData(userid, request.data.get('order-info', {}))
+        except Exception as e:
             traceback.print_exc()
-            return Response({'message': 'wrong data format'}, status = status.HTTP_400_BAD_REQUEST) 
+            return Response({'message': e}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(res, status = status.HTTP_200_OK)
 
@@ -275,16 +278,49 @@ class RemoveFromWishList(APIView):
                     
 
 class FetchCart(APIView):
-    def post(self, request: Request, *args, **kwargs):
-        pass
-    
-class UpdateCart(APIView):
-    def post(self, request, Request, *args, **kwargs):
-        pass
+    def get(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = GetCartByHolder(userid)
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
 
-class CartManager(APIView):
-    def post(self, requests: Request, *args, **kwargs):
-        pass
+        return Response(res, status = status.HTTP_200_OK)
+
+class AddItemToCart(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = AddToCart(userid, request.data['productid'], request.data['sizeid'], request.data['quantity'])
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        return Response(res, status = status.HTTP_200_OK)
+
+class FetchSharedCart(APIView):
+    def get(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = GetSharedCartByUserId(userid)
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        return Response(res, status = status.HTTP_200_OK)
     
 class ValidateAccessToken(APIView):
     def post(self, request: Request, *args, **kwargs):
@@ -292,3 +328,62 @@ class ValidateAccessToken(APIView):
         if not Verifier.verify(token):
             return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
         return Response({'message': 'Valid access token'}, status = status.HTTP_200_OK)
+    
+class MakeSharedCart(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = ProcessMakeSharedCart(userid)
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        return Response(res, status = status.HTTP_200_OK)
+
+class SaveCart(APIView):
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = ProcessSaveCart(userid, request.data['data'])
+        except Exception as err:
+            traceback.print_exc()
+            return Response({'error': err}, status = status.HTTP_401_UNAUTHORIZED)
+    
+        return Response(res, status = status.HTTP_200_OK)
+    
+class GetOrder(APIView):
+    def get(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = GetOrdersData(userid)
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        return Response(res, status = status.HTTP_200_OK)
+    
+    def post(self, request: Request, *args, **kwargs):
+        userid, res = None, None
+        try:
+            token = Verifier.decode(request.headers['access-token'])
+            if 'userid' not in token:
+                raise Exception('Invalid access token')
+            userid = token['userid']
+            res = OrderDetails(userid, request.data['orderid'])
+        except:
+            traceback.print_exc()
+            return Response({'error': 'Invalid access token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+        return Response(res, status = status.HTTP_200_OK)
