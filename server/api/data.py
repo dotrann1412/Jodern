@@ -17,6 +17,7 @@ def GetCategoryName(code):
     return __categoryName[code]
 
 __sexName = None
+__asccii = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def GetSexName(code):
     global __sexName
@@ -121,7 +122,6 @@ def GetProductsByListRand(limit, ignoreid):
     if not __allIdsList:
         query = "select id from product"
         rows = Connector.establishConnection().cursor().execute(query).fetchall()
-        print(rows)
         __allIdsList = [row[0] for row in rows]
 
     if type(ignoreid) != list: ignoreid = [ignoreid]
@@ -249,127 +249,135 @@ def GetProductDetails(id, userid):
     
 from modules.email_service import gmail
 
-__mailInstance = None
+__mailInstance = gmail.MailService()
+__mailInstance.login('joderm.store@gmail.com', config.Config.getValue('email-password'))
 
-import time, traceback
+import time, traceback, datetime
 
-def ProcessOrderData(order):
+def ProcessSharedOrder(cartid, extraInfo):
+    pass
+
+def ProcessOrderData(userid, extraInfo):
     global __mailInstance
 
     preorder_required = False
     total_price = 0
     
-    ids = list(order['items'].keys())
-    prices = {id: 0 for id in ids}
-    inventories = {id: {} for id in ids}
+    orderType = extraInfo.get('type', 0) # 0 --> delivery, 1 --> pickup
     
+    customer_name, phone_number, location, email, branchid, date = extraInfo.get('customer_name' , None),\
+        extraInfo.get('phone_number', None), extraInfo.get('location', None), \
+        extraInfo.get('email', None), extraInfo.get('branchid', None), extraInfo.get('date', None)
+        
+    if date is not None:
+        date = datetime.datetime.strptime(date, '%d-%m-%Y')
+        
+    print('DEBUG\t', date)
+    
+    if not phone_number or not email:
+        return {"message": "User info should be provided"}
+    
+    if orderType == 0 and (not location):
+        return {"message": "Location should be provided"}
+    
+    if orderType == 1 and (not branchid or not date):
+        return {"message": "Branch id and Date should be provided for pickup order"}
+    
+    query = 'select cartid from cart where cartholder = ? and opening = 1'
     cursor = Connector.establishConnection().cursor()
+    cartid = cursor.execute(query, (userid, )).fetchone()
     
-    pricesQuery = f'select id, price from product where id in ({", ".join(ids)})'
-    rows = cursor.execute(pricesQuery).fetchall()
+    if not cartid:
+        return {"message": "Cart is empty"}
+    
+    cartid = cartid[0]
+    
+    query = 'select cd.productid, cd.quantity, cd.sizeid, p.price, p.imageurl, p.title from (select productid, quantity, sizeid from CartDetail where cartid = ?) cd left join product p on (p.id = cd.productid)'
+    rows = cursor.execute(query, (cartid, )).fetchall()
+    
+    orderData = [{
+        'productid': row[0],
+        'quantity': row[1],
+        'sizeid': row[2],
+        'price': row[3],
+        'imageurl': row[4],
+        'title': row[5],
+    } for row in rows]
+    
+    if len(orderData) == 0:
+        return {'message': 'Cart is empty'}
+    
+    query = "select productid, sizeid, quantity from inventory where productid in ({})".format(','.join([str(item['productid']) for item in orderData]))
+    rows = cursor.execute(query).fetchall()
+    
+    inventoriesData = {}
+    
     for row in rows:
-        prices[row[0]] = row[1]
+        if str(row[0]) not in inventoriesData:
+            inventoriesData[str(row[0])] = {}
+        inventoriesData[str(row[0])][row[1]] = row[2]
     
-    inventoriesQuery = f'select ProductId, sizeid, quantity from inventory where ProductId in ({", ".join(ids)})'
-    rows = cursor.execute(inventoriesQuery).fetchall()
-    
-    for row in rows:
-        inventories[str(row[0])][row[1]] = row[2]
-    
-    orderedItems = {}
     updateTrendingQueryPattern = 'exec UpdateTrending ?, ?'
     dropDownQuery = 'update inventory set quantity = (select max(a) from (values (quantity - ?), (0)) as tmptable(a)) where productid = ? and sizeid = ?'
     
-    for id, val in order['items'].items():
-        for size, num in val.items():
-            if inventories[str(id)][size] < num:
-                preorder_required = True
-
-            cursor.execute(dropDownQuery, (num, id, size))
-
-            if id in orderedItems:
-                orderedItems[id] += num 
-            else: orderedItems[id] = num
-            
-            total_price += num * prices[id]
+    for item in orderData:
+        if inventoriesData[str(item['productid'])][item['sizeid']] < item['quantity']:
+            preorder_required = True
         
-    for key, val in orderedItems.items():
-        cursor.execute(updateTrendingQueryPattern, (key, val))
+        cursor.execute(dropDownQuery, (item['quantity'], item['productid'], item['sizeid']))
+        total_price += item['quantity'] * item['price']
+
+        cursor.execute(updateTrendingQueryPattern, (item['productid'], item['quantity']))
             
-    if __mailInstance is None:
-        try: 
-            __mailInstance = gmail.MailService()
-            __mailInstance.login('joderm.store@gmail.com', 'isowkkrraoqqihqk')
-        except: __mailInstance = None
+    content = ''
+
+    for item in orderData:
+        content += gmail.get_item_html_template(
+            item['imageurl'],
+            item['title'],
+            item['price'],
+            item['quantity'],
+            item['sizeid']
+        ) + '<br>\n'
     
-    generalInfo = { }
+    cost = total_price
+    tax = int(total_price) * 0.06
+    shipping_fee = 30000
+        
+    html_mail = gmail.html_mail(
+        price = cost,
+        tax = tax,
+        shipping_fee = shipping_fee,
+        html_content = content,
+        product_count = len(orderData),
+        customer_name = customer_name,
+        phone_number = phone_number,
+        location = location,
+        preorder_required = preorder_required,
+        orderType = orderType,
+        pickupdate = date,
+    )
+
+    mailContent = gmail.build_email_content(
+        'joderm.store@gmail.com', 
+        [email], 
+        subject = 'Đơn hàng của bạn đang trên đường vận chuyển!' if orderType == 0 else 'Lịch hẹn thử đồ!', 
+        content = {'html': html_mail}
+    )
     
-    getGeneralInfoQuery = 'select id, title, imageurl, price from product where product.id in ({})'.format(', '.join(ids))
-    rows = cursor.execute(getGeneralInfoQuery).fetchall()
+    threading.Thread(target = __mailInstance.send_mail, args = (mailContent, )).start()
+
+    newCartId = ''.join([__asccii[random.randint(0, len(__asccii) - 1)] for _ in range(10)])
     
-    for row in rows:
-        generalInfo[str(row[0])] = {
-            'image': row[2],
-            'title': row[1],
-            'price': int(row[3])
-        }
-
-    if __mailInstance:
-        try:
-            content = ''
-
-            for key, value in order['items'].items():
-                value_keys = list(value.keys())
-                
-                content += gmail.get_item_html_template(
-                    generalInfo[key]['image'],
-                    generalInfo[key]['title'],
-                    generalInfo[key]['price'],
-                    value[value_keys[0]],
-                    value_keys[0]
-                ) + '<br>\n'
-                
-            customer_name, phone_number, location = 'Unknown', 'Unknown', 'Unknown'
-            
-            try: customer_name = order['info']['customer_name']
-            except: customer_name = ''
-            
-            try: phone_number = order['info']['phone_number']
-            except: pass
-            
-            try: location = order['info']['location']
-            except: pass
-            
-            cost = total_price
-            tax = total_price * 0.06
-            shipping_fee = 30000
-                
-            html_mail = gmail.html_mail(
-                price = cost,
-                tax = tax,
-                shipping_fee = shipping_fee,
-                html_content = content,
-                product_count = len(list(order['items'].keys())),
-                customer_name = customer_name,
-                phone_number = phone_number,
-                location = location,
-                preorder_required = preorder_required
-            )
-
-            mailContent = gmail.build_email_content(
-                'joderm.store@gmail.com', 
-                [order.get('info', {}).get('email', None)], 
-                subject = 'Đơn hàng của bạn đang trên đường vận chuyển!', 
-                content = {'html': html_mail}
-            )
-            
-            __mailInstance.send_mail(mailContent)
-        except Exception as err:
-            print('[EXCEPTION] Failed on sending email! Details here: ')
-            traceback.print_exc()
-            __mailInstance = None
-            return {"message": "Something went wrong while processing your order. Please tell to us if you need any support!"}
-
+    cursor.execute('update cart set opening = 0 where cartid = ?', (cartid, ))
+    
+    
+    if orderType == 0:
+        cursor.execute('insert into orders(cartid, paymentstatus, deliverstatus, OrderType, CustomerName, CustomerPhone, Address, Email) values (?, ?, ?, ?, ?, ?, ?, ?)', (cartid, 0, 0, orderType, customer_name, phone_number, location, email))
+    else: 
+        cursor.execute('insert into orders(cartid, paymentstatus, deliverstatus, OrderType, CustomerName, CustomerPhone, Address, Email, branchid, Pickuptime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (cartid, 0, 0, orderType, customer_name, phone_number, location, email, branchid, date))
+    cursor.execute('insert into cart(cartid, cartholder) values (?, ?)', (newCartId, userid))
+    
     cursor.commit()
     return {"message": "Done!"}
 
@@ -401,11 +409,6 @@ def RelatedItems(id, top_k = 5):
     rows = cursor.execute(query, (catid, id)).fetchall()
     randList = [row[0] for row in rows]
     return GetProductsByList(random.sample(randList, min(len(randList), top_k)), top_k, False)
-
-def ValidateOrderData(order):    
-    if len(list(order.keys())) == 0:
-        return {"message": "Empty cart!" , 'status': 'nOK'}
-    return True
 
 __storeDict = None
 
@@ -492,56 +495,86 @@ def RemoveFromUserWishList(userid, productid):
     }
 
 def GetCartByHolder(userid):
-    query = "select cartid, totalitems, totalprices  from cart where cartholder = ? and status = 'active'"
+    query = "select cartid, totalprice  from cart where cartholder = ? and opening = 1"
     cursor = Connector.establishConnection().cursor()
-    rows = cursor.execute(query, (userid,)).fetchall()
+    row = cursor.execute(query, (userid,)).fetchone()
     
-    return {
-        'data': [row[0] for row in rows]
-    }
-    
-def GetSharedCartOf(userid):
-    query = "select cartid from cartmember where memberid = ?"
-    cursor = Connector.establishConnection().cursor()
-    rows = cursor.execute(query, (userid, ))
-    ids = [row[0] for row in rows]
-    
-    if len(ids) == 0:
+    if not row:
+        cartid = ''.join([__asccii[random.randint(0, len(__asccii) - 1)] for _ in range(10)])
+        query = "insert into cart (cartid, cartholder, opening) values (?, ?, 1)"
+        cursor.execute(query, (cartid, userid))
+        cursor.commit()
+        
         return {
-            'data': []
+            'total-price': 0,
+            'details': []
         }
-
-    query = f"select cartid, totalitems, totalprices from cart where status = 'active' and cartid in ({', '.join(ids)})"
-    rows = cursor.execute(query).fetchall()
+    
+    total_price = row[1]
+    cartid = row[0]
+    
+    query = "select cd.productid, cd.sizeid, cd.quantity, p.title, p.Descriptions, p.Price, p.SexId, p.CategoryId, p.ImageUrl from (select productid, sizeid, quantity from cartdetail c where c.cartid = ?) cd left join product p on cd.productid = p.id"
+    rows = cursor.execute(query, (cartid,)).fetchall()
+    
     return {
-        'data': [row[0] for row in rows]
+        'total-price': total_price,
+        'details': [{
+            'size': row[1],
+            'quantity': row[2],
+            'product': {
+                'id': row[0],
+                'title': row[3],
+                'description': row[4],
+                'price': row[5],
+                'sex': row[6],
+                'category': row[7],
+                'images': [row[8]]
+            }
+        } for row in rows]
     }
 
-def AddToCart(cartid, userid, productid, sizeid, quantity):
-    query = "insert into cartdetails (cartid, memberid, productid, sizeid, quantity) values (?, ?, ?, ?, ?)"
-    cursor = Connector.establishConnection().cursor()
-    cursor.execute(query, (cartid, userid, productid, sizeid, quantity))
+
+def __updateTotalPriceBG(cursor, cartid):
+    # pass the cursor as params due to threading issue
+    query = "select sum(cd.quantity * p.price) from ( select productid, quantity from CartDetail where cartid = ? ) cd left join product p on cd.productid = p.id"
+    total_price = cursor.execute(query, (cartid,)).fetchone()[0]
+    query = "update cart set totalprice = ? where cartid = ?"
+    cursor.execute(query, (total_price, cartid))
     cursor.commit()
+    
+import threading
+
+def AddToCart(userid, productid, sizeid, quantity):
+    query = "select cartid from cart where cartholder = ? and opening = 1"
+    cursor = Connector.establishConnection().cursor()
+    
+    row = cursor.execute(query, (userid,)).fetchone()
+    
+    if not row:
+        cartid = ''.join([__asccii[random.randint(0, len(__asccii) - 1)] for _ in range(10)])
+        query = "insert into cart (cartid, cartholder, opening) values (?, ?, 1)"
+        cursor.execute(query, (cartid, userid))
+        cursor.commit()
+    else: 
+        cartid = row[0]
+    
+    query = "select quantity from cartdetail where cartid = ? and productid = ? and sizeid = ?"
+    row = cursor.execute(query, (cartid, productid, sizeid)).fetchone()
+    
+    if not row:
+        query = "insert into cartdetail (cartid, productid, sizeid, quantity) values (?, ?, ?, ?)"
+        cursor.execute(query, (cartid, productid, sizeid, quantity))
+    else:
+        if row[0] + quantity <= 0:
+            query = "delete from cartdetail where cartid = ? and productid = ? and sizeid = ?"
+        else: query = "update cartdetail set quantity = ? where cartid = ? and productid = ? and sizeid = ?"
+        cursor.execute(query, (row[0] + quantity, cartid, productid, sizeid))
+    
+    cursor.commit()
+    threading.Thread(target=__updateTotalPriceBG, args = (cursor, cartid, )).start()
     
     return {
         "message": "added!"
-    }
-
-def JoinCart(cartid, userid):
-    query = 'select cartid from cart where cartid = ? and status = "active"'
-    cursor = Connector.establishConnection().cursor()
-    rows = cursor.execute(query, (cartid, )).fetchall()
-    if len(rows) == 0:
-        return {
-            "message": "Cartid not exists for in deactive state"
-        }
-    query = 'insert into cartmember(cartid, memberid) values (?, ?)'
-    
-    cursor.execute(query, (cartid, userid))
-    cursor.commit()
-    
-    return {
-        "message": "Done!"
     }
 
 def UpdateUserWishList(userid, wishlist):
@@ -557,3 +590,149 @@ def UpdateUserWishList(userid, wishlist):
         'message': "All done!"
     }
     
+def GetSharedCartByUserId(userid):
+    query = "select cartid from sharedcartmember where memberid = ?"
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid, )).fetchall()
+    ids = [row[0] for row in rows]
+    
+    query = "select cartid, cartholder, opening, totalprice from sharedcart where cartid in ({})".format(', '.join(ids))
+
+def GetSharedCartByCode(code):
+    query = "select cartid, cartholder, opening, totalprice, numbersOfMembers, createdAt from sharedcart where cartid = ?"
+    cursor = Connector.establishConnection().cursor()
+    row = cursor.execute(query, (code, )).fetchone()
+    
+    return {
+        "id": row[0],
+        "cartholder": row[1],
+        "opening": row[2],
+        "totalprice": row[3],
+        "members": row[4],
+    }
+
+def ProcessMakeSharedCart(userid):
+    newSharedCartId = ''.join([__asccii[random.randint(0, len(__asccii) - 1)] for _ in range(10)])
+    query = "insert into sharedcart (cartid, cartholder, opening) values (?, ?, 1)"
+    
+    cursor = Connector.establishConnection().cursor()
+    cursor.execute(query, (newSharedCartId, userid))
+    
+    query = "insert into sharedcartmember (cartid, memberid) values (?, ?)"
+    cursor.execute(query, (newSharedCartId, userid))
+    cursor.commit()
+    
+    return {
+        "Message": "New shared cart created!",
+        "shared-cart-id": newSharedCartId
+    }
+    
+def ProcessSaveCart(userid, data):
+    query = 'delete from CartDetail where cartid = (select cartid from cart where cartholder = ? and opening = 1)'
+    cursor = Connector.establishConnection().cursor()
+    cursor.execute(query, (userid, ))
+    cursor.commit()
+    query = "select cartid, opening from cart where cartholder = ? and opening = 1"
+    row = cursor.execute(query, (userid, )).fetchone()
+    
+    cartid = None
+    if not row:
+        newCartId = ''.join([__asccii[random.randint(0, len(__asccii) - 1)] for _ in range(10)])
+        query = "insert into cart (cartid, cartholder) values (?, ?)"
+        cursor.execute(query, (newCartId, userid))
+        cartid = newCartId
+    else: 
+        cartid = row[0]
+
+    query = 'insert into CartDetail (cartid, productid, sizeid, quantity) values (?, ?, ?, ?)'
+
+    if len(data) != 0:
+        cursor.executemany(query, tuple((cartid, item['productid'], item['size'], item['quantity']) for item in data))
+        cursor.commit()
+        threading.Thread(target=__updateTotalPriceBG, args = (cursor, cartid, )).start()
+    
+    return {
+        "message": "saved!"
+    }
+    
+def JoinCart(cartid, userid):  
+    cursor = Connector.establishConnection().cursor()
+    query = "select cartid from sharedcart where cartid = ? and opening = 1"
+    row = cursor.execute(query, (cartid, )).fetchone()
+    if not row:
+        return {
+            "message": "shared cart not found"
+        }
+    
+    query = "select sharedcartmember where memberid = ? and cartid = ?"
+    row = cursor.execute(query, (userid, cartid)).fetchone()
+    if row:
+        return {
+            "message": "you are already in this shared cart"
+        }
+    try:
+        query = "insert into sharedcartmember (cartid, memberid) values (?, ?)"
+        cursor.execute(query, (cartid, userid))
+        cursor.commit()
+    except:
+        return {"message": "Something went wrong"}
+
+    return {
+        "message": "joined!"
+    }
+    
+def GetOrdersData(userid):
+    query = '''select KK.cartid, KK.totalprice, count(CartDetail.productid), KK.createdAt, KK.PaymentStatus, KK.DeliverStatus, OrderType, branchid
+from cartdetail right join (
+    select K.cartid, K.totalprice, orders.CreatedAt, PaymentStatus, DeliverStatus, OrderType, branchid 
+    from (select cartid, totalprice from cart c where cartholder = ? and opening = 0) K 
+    left join orders on (orders.cartid = K.cartid)
+) KK on (KK.cartid = CartDetail.cartid)
+group by KK.cartid, KK.totalprice, KK.createdAt, KK.PaymentStatus, KK.DeliverStatus, OrderType, branchid'''
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query, (userid, )).fetchall()
+    return {
+        "orders": [
+            {
+                "orderid": row[0],
+                "totalprice": row[1],
+                "totalitems": row[2], 
+                "createdat": datetime.datetime.strftime(row[3] + datetime.timedelta(hours = 7), '%d-%m-%Y') if row[3] else None,
+                "paymentstatus": row[4],
+                "deliverstatus": row[5],
+                "ordertype": 1 if row[6] else 0,
+                "branchid": row[7]
+            } for row in rows
+        ]
+    }
+    
+def OrderDetails(userid, code):
+    cursor = Connector.establishConnection().cursor()
+    
+    query = "select cartid, cartholder, totalprice from cart where cartholder = ? and cartid = ? and opening = 0"
+    row = cursor.execute(query, (userid, code, )).fetchone()
+    if not row:
+        raise Exception("permission denied")
+    
+    totalprice = row[2]
+    
+    query = "select c.productid, c.sizeid, c.quantity, p.title, p.descriptions, p.price, p.sexid, p.categoryid, p.imageurl from (select productid, sizeid, quantity from cartdetail where cartid = ?) c left join product p on (p.id = c.productid)"
+    rows = cursor.execute(query, (code, )).fetchall()
+    return {
+        "totalprice": totalprice,
+        "details": [
+            {
+                "sizeid": row[1],
+                "quantity": row[2],
+                "product": {
+                    'id': row[0],
+                    'title': row[3],
+                    'description': row[4],
+                    'price': row[5],
+                    'sex': row[6],
+                    'category': row[7],
+                    'images': [row[8]]
+                }
+            } for row in rows
+        ]
+    }
