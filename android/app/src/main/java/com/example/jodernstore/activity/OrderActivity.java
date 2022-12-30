@@ -18,11 +18,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
-import com.example.jodernstore.cart.CartController;
-import com.example.jodernstore.cart.cartitem.CartItem;
-import com.example.jodernstore.cart.cartitem.CartItemDB;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.MyCartFragment;
+import com.example.jodernstore.model.CartItem;
+import com.example.jodernstore.provider.CartProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -39,7 +38,7 @@ public class OrderActivity extends AppCompatActivity {
     private TextInputEditText orderName, orderEmail, orderPhone, orderAddress;
     private MaterialButton orderCheckout;
     private ImageButton orderBackBtn;
-    private List<CartItem> cartInfo;
+    private List<CartItem> cartItems;
 
     private static final int FORM_VALIDATED = 0;
     private static final int BLANK_INPUT = 1;
@@ -51,7 +50,7 @@ public class OrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
-        cartInfo = CartController.with(this).getCartList();
+        cartItems = CartProvider.getInstance().getMyCart().getItems();
         initViews();
         setEvents();
     }
@@ -83,10 +82,10 @@ public class OrderActivity extends AppCompatActivity {
                 try {
                     JSONObject cartParams = new JSONObject();
                     JSONObject itemHM = new JSONObject();
-                    for (CartItem item : cartInfo) {
+                    for (CartItem item : cartItems) {
                         JSONObject sizeHM = new JSONObject();
                         sizeHM.put(item.getSize(), item.getQuantity());
-                        itemHM.put(item.getProductId().toString(), sizeHM);
+                        itemHM.put(item.getProduct().getId().toString(), sizeHM);
                     }
                     JSONObject info = new JSONObject();
 
@@ -176,12 +175,11 @@ public class OrderActivity extends AppCompatActivity {
     private void handleSuccess(JSONObject response) {
         try {
             if (response.getString("message").equals("Done!")) {
-                for (CartItem item : cartInfo)
-                    CartItemDB.with(OrderActivity.this).orderItemDao().delete(item);
+                CartProvider.getInstance().getMyCart().clear();
 
                 // Move to cart activity (with empty cart) and show success message
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("nextFragment", CartFragment.TAG);
+                Intent intent = new Intent(this, CartActivity.class);
+                intent.putExtra("nextFragment", MyCartFragment.TAG);
                 intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
                 startActivity(intent);
             } else {

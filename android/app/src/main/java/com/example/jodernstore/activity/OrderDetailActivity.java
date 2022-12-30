@@ -23,8 +23,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.OrderDetailAdapter;
-import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.model.Order;
 import com.example.jodernstore.model.Product;
 import com.example.jodernstore.provider.GeneralProvider;
@@ -98,54 +98,54 @@ public class OrderDetailActivity extends AppCompatActivity {
         // ...
 
         // the below codes are used for demo purpose
-        Order order = new Order(1L, 0, 2, 1000000L, stringToDate("10/12/2022"), true);
-        currentOrder = order;
-        HashMap<String, String> customerInfor = new HashMap<>();
-        customerInfor.put("customerName", "Hoàng Trọng Vũ");
-        customerInfor.put("customerEmail", "trongvulqd@gmail.com");
-        customerInfor.put("customerPhone", "0947124559");
-        customerInfor.put("customerAddress", "39 Cao Lỗ, P4, Q8, TPHCM");
-        order.setCustomerInfor(customerInfor);
-        ArrayList<CartItem> items = new ArrayList<>();
-        items.add(new CartItem(1L, 1, "XL"));
-        items.add(new CartItem(2L, 2, "L"));
-        items.add(new CartItem(2L, 2, "XL"));
-        items.add(new CartItem(2L, 1, "M"));
-        items.add(new CartItem(2L, 1, "S"));
-        order.setItems(items);
-
-        // call API to get products
-        ArrayList<Long> productIds = new ArrayList<>();
-        for (CartItem cartItem : currentOrder.getItems()) {
-            productIds.add(cartItem.getProductId());
-        }
-        String entry = "product-list";
-        String params = "id=";
-        for (int i = 0; i < productIds.size(); i++) {
-            params += String.valueOf(productIds.get(i));
-            if (i != productIds.size() - 1)
-                params += ",";
-        }
-        String url = BuildConfig.SERVER_URL + entry + "?" + params;
-        JsonObjectRequest getRequest = new JsonObjectRequest (
-                Request.Method.GET,
-                url,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        handleResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        loadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
-                    }
-                }
-        );
-        GeneralProvider.with(this).addToRequestQueue(getRequest);
+//        Order order = new Order(1L, 0, 2, 1000000L, stringToDate("10/12/2022"), true);
+//        currentOrder = order;
+//        HashMap<String, String> customerInfor = new HashMap<>();
+//        customerInfor.put("customerName", "Hoàng Trọng Vũ");
+//        customerInfor.put("customerEmail", "trongvulqd@gmail.com");
+//        customerInfor.put("customerPhone", "0947124559");
+//        customerInfor.put("customerAddress", "39 Cao Lỗ, P4, Q8, TPHCM");
+//        order.setCustomerInfor(customerInfor);
+//        ArrayList<CartItem> items = new ArrayList<>();
+//        items.add(new CartItem(1L, 1, "XL"));
+//        items.add(new CartItem(2L, 2, "L"));
+//        items.add(new CartItem(2L, 2, "XL"));
+//        items.add(new CartItem(2L, 1, "M"));
+//        items.add(new CartItem(2L, 1, "S"));
+//        order.setItems(items);
+//
+//        // call API to get products
+//        ArrayList<Long> productIds = new ArrayList<>();
+//        for (CartItem cartItem : currentOrder.getItems()) {
+//            productIds.add(cartItem.getProductId());
+//        }
+//        String entry = "product-list";
+//        String params = "id=";
+//        for (int i = 0; i < productIds.size(); i++) {
+//            params += String.valueOf(productIds.get(i));
+//            if (i != productIds.size() - 1)
+//                params += ",";
+//        }
+//        String url = BuildConfig.SERVER_URL + entry + "?" + params;
+//        JsonObjectRequest getRequest = new JsonObjectRequest (
+//                Request.Method.GET,
+//                url,
+//                null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        handleResponse(response);
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        loadingWrapper.setVisibility(View.GONE);
+//                        MySnackbar.inforSnackar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
+//                    }
+//                }
+//        );
+//        GeneralProvider.with(this).addToRequestQueue(getRequest);
     }
 
     private void handleResponse(JSONObject response) {
@@ -179,7 +179,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         }
 
         OrderDetailAdapter adapter = new OrderDetailAdapter(this);
-        adapter.setProducts(products);
         adapter.setCartItems(currentOrder.getItems());
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         productRecycler.setLayoutManager(layoutManager);
@@ -188,13 +187,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         // total price of products
         Long subTotal = 0L;
         for (CartItem cartItem : currentOrder.getItems()) {
-            for (Product product : products) {
-                if (product.getId() == cartItem.getProductId()) {
-                    subTotal += product.getPrice() * cartItem.getQuantity();
-                    break;
-                }
-            }
+            subTotal += cartItem.getQuantity() * cartItem.getProduct().getPrice();
         }
+
         summarySubTotal.setText(vndFormatPrice(subTotal));
         summaryShipping.setText(vndFormatPrice(30000L));
         summaryTotal.setText(vndFormatPrice(subTotal + 30000L));

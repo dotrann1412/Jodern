@@ -16,10 +16,8 @@ import com.example.jodernstore.R;
 import com.example.jodernstore.ShareTask;
 import com.example.jodernstore.adapter.ProductSliderAdapter;
 import com.example.jodernstore.adapter.TrendingAdapter;
-import com.example.jodernstore.cart.CartController;
-import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.model.Product;
 import com.example.jodernstore.provider.GeneralProvider;
@@ -70,7 +68,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private MaterialButton seeAllBtn;
 
     private boolean hasRemovedFromWishlist = false;
-    private ImageButton addWishlistBtn, shareBtn;
+    private ImageButton addWishlistBtn, shareBtn, goToHomeBtn;
     private LinearLayout loadingWrapper;
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -262,6 +260,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         seeAllBtn = findViewById(R.id.detailSeeAllBtn);
         addWishlistBtn = findViewById(R.id.detailAddToWishlistBtn);
         shareBtn = findViewById(R.id.detailShareBtn);
+        goToHomeBtn = findViewById(R.id.detailGoToHomeBtn);
     }
 
     private void setEvents() {
@@ -311,6 +310,14 @@ public class ProductDetailActivity extends AppCompatActivity {
                 new ShareTask(ProductDetailActivity.this, currentProduct.getName(), "image/*").execute(futureTargets.toArray(new FutureTarget[futureTargets.size()]));
             }
         });
+
+        goToHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void updateCurrentSizeView(boolean isSelected) {
@@ -339,23 +346,32 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void onDetailBackBtnClicked(View view) {
         Intent intent = getIntent();
-        String previousFragment = intent.getStringExtra("previousFragment");
 
-        if (previousFragment == null || (!previousFragment.equals(CartFragment.TAG))) {
+        String previousFragment = intent.getStringExtra("previousFragment");
+        if (previousFragment == null) {
             onBackPressed();
             finish();
             return;
         }
 
-        // This product is access from cart or wishlist
-        Intent newIntent = new Intent(this, MainActivity.class);
-        if (hasRemovedFromWishlist) {
-            // reload destination (for example, this product has just been removed from wishlist, at this activity)
-            newIntent.putExtra("nextFragment", previousFragment);
+        Intent newIntent = null;
+        if (previousFragment.equals(MyCartFragment.TAG)) {
+            // CartActivity
+            newIntent = new Intent(this, CartActivity.class);
         } else {
-            // do not reload destination
-            newIntent.putExtra("previousFragment", previousFragment);
+            // MainActivity
+            newIntent = new Intent(this, MainActivity.class);
+            if (hasRemovedFromWishlist) {
+                // reload destination (for example, this product has just been removed from wishlist, at this activity)
+                newIntent.putExtra("nextFragment", previousFragment);
+            } else {
+                // do not reload destination
+                newIntent.putExtra("previousFragment", previousFragment);
+            }
         }
+
+        // do not put to back stack
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(newIntent);
     }
 
@@ -369,19 +385,59 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-        CartController.with(this).addToCart(new CartItem(productId, quantity, size));
-        Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào giỏ hàng", Snackbar.LENGTH_SHORT);
-        snackbar.setAction(getString(R.string.go_to_cart), new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                intent.putExtra("nextFragment", CartFragment.TAG);
-                startActivity(intent);
-            }
-        });
-        TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
-        textView.setAllCaps(false);
-        snackbar.show();
+//        CartController.with(this).addToCart(new CartItem(productId, quantity, size));
+        // call API
+        try {
+            String entry = "add-to-cart";
+            JSONObject params = new JSONObject();
+            params.put("product_id", currentProduct.getId());
+            params.put("quantity", quantity);
+            params.put("sizeid", currentSize);
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào giỏ hàng", Snackbar.LENGTH_SHORT);
+                                snackbar.setAction(getString(R.string.go_to_cart), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(ProductDetailActivity.this, CartActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                                TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+                                textView.setAllCaps(false);
+                                snackbar.show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorMsg();
+        }
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {

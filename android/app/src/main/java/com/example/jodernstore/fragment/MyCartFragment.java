@@ -11,9 +11,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,54 +19,50 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.activity.OrderActivity;
 import com.example.jodernstore.adapter.CartAdapter;
-import com.example.jodernstore.cart.CartController;
-import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
-import com.example.jodernstore.model.Product;
+import com.example.jodernstore.model.Cart;
+import com.example.jodernstore.provider.CartProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CartFragment extends Fragment {
+public class MyCartFragment extends Fragment {
     private final Long SHIPPING_FEE = 30000L;
 
-    public static final String TAG = "CartFragment";
+    public static final String TAG = "MyCartFragment";
     private FrameLayout parentView;
 
-    private ImageButton navbarBtn;
+    private Cart currentCart;
+    private boolean shouldCallUpdateAPI = false;
+    private boolean shouldCallFetchAPI = false;
+
     private RecyclerView cartRecyclerView;
-    private CartController cartController;
     private LinearLayout cartLayout, cartEmptyWrapper, cartLoadingWrapper;
-    private ImageButton cartBackBtn;
     private TextView subTotalText;
     private String subTotalStr, shippingStr, totalStr;
     private MaterialButton cartOrderBtn, cartAppointBtn, cartGoToShop;
 
-    public CartFragment() {
+    public MyCartFragment() {
         // Required empty public constructor
-        super(R.layout.fragment_cart);
-    }
-
-    public CartFragment(ImageButton navbarBtn) {
-        super(R.layout.fragment_cart);
-        this.navbarBtn = navbarBtn;
+        super(R.layout.fragment_my_cart);
     }
 
     @Override
@@ -81,21 +74,36 @@ public class CartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
-        return inflater.inflate(R.layout.fragment_cart, container, false);
+        return inflater.inflate(R.layout.fragment_my_cart, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (navbarBtn != null)
-            navbarBtn.setImageResource(R.drawable.ic_cart_filled);
-        cartController = CartController.with(this.getContext());
-
         initViews();
         setEvents();
         showInitialMessage();
-        showCartItems();
+//        getAndShowCartItems();    // TODO: uncomment later
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (shouldCallFetchAPI) {
+            getAndShowCartItems();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        shouldCallFetchAPI = true;
+
+        // Call API to update wishlist data (if necessary)
+        if (shouldCallUpdateAPI) {
+            System.out.println("updating cart");
+            updateCartData();
+        }
+        super.onStop();
     }
 
     private void showInitialMessage() {
@@ -110,26 +118,18 @@ public class CartFragment extends Fragment {
 
     private void initViews() {
         parentView = getView().findViewById(R.id.cartParentView);
-        cartRecyclerView = getView().findViewById(R.id.cartRecyclerView);
-        cartLayout = getView().findViewById(R.id.cartLayout);
-        subTotalText = getView().findViewById(R.id.cartSubTotalText);
-        cartEmptyWrapper = getView().findViewById(R.id.cartEmptyWrapper);
-        cartLoadingWrapper = getView().findViewById(R.id.cartLoadingWrapper);
-        cartBackBtn = getView().findViewById(R.id.cartBackBtn);
-        cartOrderBtn = getView().findViewById(R.id.cartOrderBtn);
-        cartAppointBtn = getView().findViewById(R.id.cartAppointBtn);
-        cartGoToShop = getView().findViewById(R.id.cartGoToShop);
+        cartRecyclerView = getView().findViewById(R.id.myCartRecyclerView);
+        cartLayout = getView().findViewById(R.id.myCartLayout);
+        subTotalText = getView().findViewById(R.id.myCartSubTotalText);
+        cartEmptyWrapper = getView().findViewById(R.id.myCartEmptyWrapper);
+        cartLoadingWrapper = getView().findViewById(R.id.myCartLoadingWrapper);
+        cartOrderBtn = getView().findViewById(R.id.myCartOrderBtn);
+        cartAppointBtn = getView().findViewById(R.id.myCartAppointBtn);
+        cartGoToShop = getView().findViewById(R.id.myCartGoToShop);
     }
 
 
     private void setEvents() {
-        cartBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireActivity().onBackPressed();
-            }
-        });
-
         cartOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,26 +147,20 @@ public class CartFragment extends Fragment {
         cartGoToShop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new ProductListFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("entry", "product-list");
-                bundle.putString("sex", "nam");
-                bundle.putString("categoryName", "Thời trang nam");
-                fragment.setArguments(bundle);
-
                 // Back pressed handling
-                FragmentActivity activity = getActivity();
-                Intent searchIntent = new Intent(activity, ProductListFragment.class);
+                Intent searchIntent = new Intent(MyCartFragment.this.getContext(), ProductListFragment.class);
                 searchIntent.putExtra("entry", "product-list");
-                bundle.putString("sex", "nam");
-                bundle.putString("categoryName", "Thời trang nam");
-                GeneralProvider.with(activity).setSearchIntent(searchIntent);
+                searchIntent.putExtra("sex", "nam");
+                searchIntent.putExtra("categoryName", "Thời trang nam");
+                GeneralProvider.with(MyCartFragment.this.getContext()).setSearchIntent(searchIntent);
 
-                FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.mainFragmentContainer, fragment);
-                fragmentTransaction.addToBackStack("productList");
-                fragmentTransaction.commit();
+                // Go to product list fragment of main activity
+                Intent intent = new Intent(MyCartFragment.this.getContext(), MainActivity.class);
+                intent.putExtra("nextFragment", ProductListFragment.TAG);
+                intent.putExtra("entry", "product-list");
+                intent.putExtra("sex", "nam");
+                intent.putExtra("categoryName", "Thời trang nam");
+                startActivity(intent);
             }
         });
     }
@@ -222,33 +216,28 @@ public class CartFragment extends Fragment {
         dialog.show();
     }
 
-    private void showCartItems() {
-        if (cartController.getCartList().size() == 0) {
-            cartEmptyWrapper.setVisibility(View.VISIBLE);
-            cartLoadingWrapper.setVisibility(View.GONE);
-            cartLayout.setVisibility(View.GONE);
-            return;
-        }
-
-        ArrayList<Long> productIds = new ArrayList<>();
-        for (CartItem cartItem : cartController.getCartList()) {
-            productIds.add(cartItem.getProductId());
-        }
-
-        // call API to get products
+    private void getAndShowCartItems() {
+        currentCart = CartProvider.getInstance().getMyCart();
+//        if (cartController.getCartList().size() == 0) {
+//            cartEmptyWrapper.setVisibility(View.VISIBLE);
+//            cartLoadingWrapper.setVisibility(View.GONE);
+//            cartLayout.setVisibility(View.GONE);
+//            return;
+//        }
+//
+//        ArrayList<Long> productIds = new ArrayList<>();
+//        for (CartItem cartItem : cartController.getCartList()) {
+//            productIds.add(cartItem.getProductId());
+//        }
         cartLoadingWrapper.setVisibility(View.VISIBLE);
-        String entry = "product-list";
-        String params = "id=";
-        for (int i = 0; i < productIds.size(); i++) {
-            params += String.valueOf(productIds.get(i));
-            if (i != productIds.size() - 1)
-                params += ",";
-        }
-        String url = BuildConfig.SERVER_URL + entry + "?" + params;
-        JsonObjectRequest getRequest = new JsonObjectRequest (
-                Request.Method.GET,
+
+        // call API
+        String entry = "cart";
+        String url = BuildConfig.SERVER_URL + entry + "/";
+        String jwt = GeneralProvider.with(getContext()).getJWT();
+        JsonObjectRequest postRequest = new JsonObjectRequest (
                 url,
-                null,
+                new JSONObject(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -262,46 +251,58 @@ public class CartFragment extends Fragment {
                         MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
                     }
                 }
-        );
-        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Access-token", jwt);
+                return params;
+            }
+        };
+        GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
+    }
+
+    public void updateCartData() {
+        // TODO: Update cart data
     }
 
     private void handleResponse(JSONObject response) {
         cartLoadingWrapper.setVisibility(View.GONE);
-
-        // Get the information of products in cart
-        List<Product> cartProducts = Product.parseProductListFromResponse(response);
-        cartController.setProductList(cartProducts);
-
-        updateTotalPrice();
-
-        CartAdapter adapter = new CartAdapter(cartController, this.getContext(), new ChangeNumItemsListener() {
-            @Override
-            public void onChanged() {
-                updateTotalPrice();
+        try {
+            JSONArray items = (JSONArray)response.get("details");
+            for (int j = 0; j < items.length(); j++) {
+                CartItem item = CartItem.parseJSON((JSONObject)items.get(j));
+                if (item != null)
+                    currentCart.addItem(item);
             }
-        });
-        cartRecyclerView.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
-        cartRecyclerView.setLayoutManager(layoutManager);
+            updateTotalPrice();
 
-        showCartLayout(cartProducts.isEmpty());
+            CartAdapter adapter = new CartAdapter(this.getContext(), currentCart, new ChangeNumItemsListener() {
+                @Override
+                public void onChanged() {
+                    updateTotalPrice();
+                }
+            });
+
+            cartRecyclerView.setAdapter(adapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+            cartRecyclerView.setLayoutManager(layoutManager);
+            showCartLayout(currentCart.getItems().isEmpty());
+        }
+        catch (Exception e) {
+            showErrorMsg();
+        }
     }
 
     private void updateTotalPrice() {
-        Long subTotal = 0L;
-        List<CartItem> cartItems = cartController.getCartList();
-        List<Product> cartProducts = cartController.getProductList();
-        for (int i = 0; i < cartItems.size(); i++) {
-            subTotal += cartItems.get(i).getQuantity() * cartProducts.get(i).getPrice();
-        }
+        Long subTotal = currentCart.getTotal();
         subTotalStr = vndFormatPrice(subTotal);
         totalStr = vndFormatPrice(subTotal + SHIPPING_FEE);
         shippingStr = vndFormatPrice(SHIPPING_FEE);
 
         subTotalText.setText(subTotalStr);
 
-        if (subTotal == 0L) {
+        if (subTotal.equals(0L)) {
             showCartLayout(true);
         }
     }
@@ -316,10 +317,7 @@ public class CartFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        if (navbarBtn != null)
-            navbarBtn.setImageResource(R.drawable.ic_cart);
-        super.onDestroyView();
+    private void showErrorMsg() {
+        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 }

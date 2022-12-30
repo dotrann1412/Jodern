@@ -8,7 +8,7 @@ import android.content.Context;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodernstore.R;
 import com.example.jodernstore.activity.ProductDetailActivity;
-import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.MyCartFragment;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -23,29 +23,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.jodernstore.cart.CartController;
-import com.example.jodernstore.cart.cartitem.CartItem;
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
+import com.example.jodernstore.model.Cart;
+import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.model.Product;
-
-import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private static final String TAG = CartAdapter.class.getName();
-
-    private final List<CartItem> cartItemList;
-    private final List<Product> productList;
+    private Cart currentCart;
     private final ChangeNumItemsListener changeNumItemsListener;
-
-    private final CartController cartController;
 
     private final Context context;
 
 
-    public CartAdapter(CartController cartController, Context context, ChangeNumItemsListener changeNumItemsListener) {
-        this.cartItemList = cartController.getCartList();
-        this.productList = cartController.getProductList();
-        this.cartController = cartController;
+    public CartAdapter(Context context, Cart cart, ChangeNumItemsListener changeNumItemsListener) {
+        currentCart = cart;
         this.changeNumItemsListener = changeNumItemsListener;
         this.context = context;
     }
@@ -60,15 +52,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Product product = productList.get(position);
-        CartItem item = cartItemList.get(position);
+        CartItem item = currentCart.getItems().get(position);
+        Product product = item.getProduct();
 
         holder.itemName.setText(product.getName());
         holder.itemPrice.setText(vndFormatPrice(product.getPrice()));
         holder.itemQuantity.setText(String.valueOf(item.getQuantity()));
         holder.itemSize.setText("Size " + item.getSize());
         Glide.with(context)
-                .load(productList.get(position).getFirstImageURL())
+                .load(product.getFirstImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.item_placeholder)
                 .into(holder.itemImage);
@@ -76,7 +68,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return cartItemList.size();
+        return currentCart.getItems().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -103,8 +95,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             itemIncBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // update on the database
-                    cartController.increaseNumItems(getAdapterPosition(), new ChangeNumItemsListener() {
+                    currentCart.increaseQuantity(getAdapterPosition(), new ChangeNumItemsListener() {
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onChanged() {
                             notifyDataSetChanged();
@@ -122,7 +114,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             itemDecBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    cartController.decreaseNumItems(getAdapterPosition(), new ChangeNumItemsListener() {
+                    currentCart.decreaseQuantity(getAdapterPosition(), new ChangeNumItemsListener() {
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onChanged() {
                             notifyDataSetChanged();
@@ -143,7 +136,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-                    cartController.deleteItem(getAdapterPosition(), new ChangeNumItemsListener() {
+                    currentCart.removeItem(getAdapterPosition(), new ChangeNumItemsListener() {
                         @Override
                         public void onChanged() {
                             notifyDataSetChanged();
@@ -156,10 +149,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             itemWrapper.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Product productItem = productList.get(getAdapterPosition());
+                    Product productItem = currentCart.getItems().get(getAdapterPosition()).getProduct();
                     Intent intent = new Intent(context, ProductDetailActivity.class);
                     intent.putExtra("productId", productItem.getId());
-                    intent.putExtra("previousFragment", CartFragment.TAG);
+                    intent.putExtra("previousFragment", MyCartFragment.TAG);
                     context.startActivity(intent);
                 }
             });

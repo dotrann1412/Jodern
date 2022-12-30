@@ -93,6 +93,8 @@ public class HomeFragment extends Fragment {
     private void setInfors() {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null)
+            return;
         userName.setText(user.getDisplayName());
         // avatar
         String url = "";
@@ -171,6 +173,10 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         ArrayList<Product> trendingProducts = Product.parseProductListFromResponse(response);
+                        for (Product product : trendingProducts) {
+                            System.out.println(product.getId());
+                            System.out.println(product.getName());
+                        }
                         setupTrendingProducts(trendingProducts);
                     }
                 },

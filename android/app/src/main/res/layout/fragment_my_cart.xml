@@ -6,77 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".fragment.CartFragment">
+    tools:context=".fragment.MyCartFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp">
-
-                <ImageButton
-                    android:id="@+id/cartBackBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/card_image_shape"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="@color/primary_dark" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Giỏ hàng"
-                android:textAlignment="center"
-                android:textColor="@color/text"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
         <LinearLayout
-            android:id="@+id/cartLayout"
+            android:id="@+id/myCartLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="36dp"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/cartRecyclerView"
+                android:id="@+id/myCartRecyclerView"
                 android:nestedScrollingEnabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:layout_weight="1"
                 android:paddingBottom="5dp" />
 
             <LinearLayout
-                android:id="@+id/cartSummaryWrapper"
+                android:id="@+id/myCartSummaryWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/shape_cart_sum_container"
                 android:orientation="vertical"
@@ -98,7 +57,7 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/cartSubTotalText"
+                        android:id="@+id/myCartSubTotalText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -116,7 +75,7 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/cartOrderBtn"
+                        android:id="@+id/myCartOrderBtn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -130,7 +89,7 @@
                         app:cornerRadius="16dp" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/cartAppointBtn"
+                        android:id="@+id/myCartAppointBtn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -149,7 +108,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/cartEmptyWrapper"
+            android:id="@+id/myCartEmptyWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="80dp"
@@ -165,7 +124,6 @@
                 android:layout_marginBottom="8dp">
 
                 <ImageView
-                    android:id="@+id/searchImageView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
@@ -173,7 +131,6 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/searchTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -183,7 +140,7 @@
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/cartGoToShop"
+                android:id="@+id/myCartGoToShop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/primary"
@@ -198,7 +155,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/cartLoadingWrapper"
+        android:id="@+id/myCartLoadingWrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/shape_overlay"

@@ -33,7 +33,6 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
     private final ChangeNumItemsListener changeNumItemsListener;
 
     public WishlistAdapter(Context context, Wishlist wishlist, ChangeNumItemsListener changeNumItemsListener) {
-//        this.productList = WishlistProvider.getInstance().getItems();
         this.productList = wishlist.getItems();
         this.currentWishlist = wishlist;
         this.context = context;
@@ -86,13 +85,6 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-//                    WishlistProvider.getInstance().removeItem(getAdapterPosition(), new ChangeNumItemsListener() {
-//                        @Override
-//                        public void onChanged() {
-//                            notifyDataSetChanged();
-//                            changeNumItemsListener.onChanged();
-//                        }
-//                    });
                     currentWishlist.removeItem(getAdapterPosition(), new ChangeNumItemsListener() {
                         @Override
                         public void onChanged() {

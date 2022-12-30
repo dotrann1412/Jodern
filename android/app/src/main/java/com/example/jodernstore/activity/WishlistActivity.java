@@ -105,7 +105,7 @@ public class WishlistActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         shouldCallFetchAPI = true;
 
         // Call API to update wishlist data (if necessary)

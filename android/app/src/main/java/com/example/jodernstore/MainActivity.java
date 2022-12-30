@@ -11,10 +11,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.example.jodernstore.activity.CartActivity;
 import com.example.jodernstore.activity.MapActivity;
 import com.example.jodernstore.activity.SearchActivity;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.HomeFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.fragment.UserFragment;
@@ -26,9 +27,9 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 
 public class MainActivity extends AppCompatActivity {
     private ImageButton homeBtn, mapBtn, cartBtn, userBtn;
+    private ImageButton selectingBtn;
     private FloatingActionButton searchBtn;
     private HomeFragment homeFragment;
-    private CartFragment cartFragment;
     private UserFragment userFragment;
     private ConstraintLayout mainParentView;
     private BottomAppBar bottomAppBar;
@@ -52,12 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         resetNavbarBtns();
         String currentFragment = GeneralProvider.with(this).getCurrentFragment();
-        if (currentFragment.equals(HomeFragment.TAG))
+        if (currentFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
-        else if (currentFragment.equals(CartFragment.TAG))
-            cartBtn.setImageResource(R.drawable.ic_cart_filled);
-        else if (currentFragment.equals(UserFragment.TAG))
+            selectingBtn = homeBtn;
+        } else if (currentFragment.equals(UserFragment.TAG)) {
             userBtn.setImageResource(R.drawable.ic_user_filled);
+            selectingBtn = userBtn;
+        }
     }
 
     private void initViews() {
@@ -68,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
         cartBtn = findViewById(R.id.mainNavBarCartBtn);
         userBtn = findViewById(R.id.mainNavBarUserBtn);
         searchBtn = findViewById(R.id.mainNavBarSearchBtn);
+        selectingBtn = homeBtn;
 
         homeFragment = new HomeFragment(homeBtn);
-        cartFragment = new CartFragment(cartBtn);
         userFragment = new UserFragment(userBtn);
 
         bottomAppBar = findViewById(R.id.mainBottomNavBar);
@@ -106,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new ProductListFragment();
                 bundle = retrieveBundleForProductListFragment(intent);
             }
-            else if (nextFragment.equals(CartFragment.TAG)) {
-                fragment = new CartFragment();
+            else if (nextFragment.equals(MyCartFragment.TAG)) {
+                fragment = new MyCartFragment();
             }
             else if (nextFragment.equals(UserFragment.TAG)) {
                 fragment = new UserFragment();
@@ -135,10 +137,6 @@ public class MainActivity extends AppCompatActivity {
         if (prevFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
             fragment = homeFragment;
-        }
-        else if (prevFragment.equals(CartFragment.TAG)) {
-            cartBtn.setImageResource(R.drawable.ic_cart_filled);
-            fragment = cartFragment;
         }
         else if (prevFragment.equals(UserFragment.TAG)) {
             userBtn.setImageResource(R.drawable.ic_user_filled);
@@ -208,32 +206,44 @@ public class MainActivity extends AppCompatActivity {
     private final View.OnClickListener onNavBarBtnClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            resetNavbarBtns();
-
             int viewId = view.getId();
+            // check selecting btn
+            if (viewId == selectingBtn.getId()) {
+                return;
+            }
 
+            resetNavbarBtns();
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
+                    selectingBtn = homeBtn;
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
                     homeFragment = new HomeFragment(homeBtn);
                     switchFragment(homeFragment, HomeFragment.TAG);
                     break;
                 case R.id.mainNavBarMapBtn:
+                    selectingBtn = mapBtn;
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
                     try {
                         Intent intent = new Intent(MainActivity.this, MapActivity.class);
                         startActivity(intent);
                     } catch (Exception e) {
-                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, "Map is not available").show();
+                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
                     }
                     break;
 
                 case R.id.mainNavBarCartBtn:
+                    selectingBtn = cartBtn;
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
-                    switchFragment(cartFragment, CartFragment.TAG);
+                    try {
+                        Intent intent = new Intent(MainActivity.this, CartActivity.class);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
+                    }
                     break;
 
                 case R.id.mainNavBarUserBtn:
+                    selectingBtn = userBtn;
                     userBtn.setImageResource(R.drawable.ic_user_filled);
                     switchFragment(userFragment, UserFragment.TAG);
                     break;

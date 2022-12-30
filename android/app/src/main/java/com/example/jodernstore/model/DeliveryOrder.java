@@ -1,7 +1,5 @@
 package com.example.jodernstore.model;
 
-import com.example.jodernstore.cart.cartitem.CartItem;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
