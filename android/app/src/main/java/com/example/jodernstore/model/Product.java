@@ -47,6 +47,9 @@ public class Product {
     public static Product parseJSON(JSONObject response) {
         try {
             Long id = response.getLong("id");
+            if (id == null)
+                id = response.getLong("productid");
+
             String name = response.getString("title");
             String description = response.getString("description");
             Long price = response.getLong("price");

@@ -16,29 +16,30 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
-import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.MyCartFragment;
-import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.provider.CartProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-public class OrderActivity extends AppCompatActivity {
+public class OrderFormActivity extends AppCompatActivity {
     private RelativeLayout orderParentView;
     private LinearLayout orderLoadingWrapper;
     private TextInputEditText orderName, orderEmail, orderPhone, orderAddress;
     private MaterialButton orderCheckout;
     private ImageButton orderBackBtn;
-    private List<CartItem> cartItems;
+
+    private int orderType;
 
     private static final int FORM_VALIDATED = 0;
     private static final int BLANK_INPUT = 1;
@@ -48,9 +49,11 @@ public class OrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order);
+        setContentView(R.layout.activity_order_form);
 
-        cartItems = CartProvider.getInstance().getMyCart().getItems();
+        Intent intent = getIntent();
+        orderType = intent.getIntExtra("orderType", 0);
+
         initViews();
         setEvents();
     }
@@ -64,73 +67,98 @@ public class OrderActivity extends AppCompatActivity {
         orderAddress = findViewById(R.id.orderAddress);
         orderCheckout = findViewById(R.id.orderCheckout);
         orderBackBtn = findViewById(R.id.orderBackBtn);
+
+        if (orderType == 1) {
+            TextInputLayout orderAddressLayout = findViewById(R.id.orderAddressLayout);
+            orderAddressLayout.setVisibility(View.GONE);
+        }
     }
     private void setEvents() {
         orderCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Hide the keyboard
-                View focusView = OrderActivity.this.getCurrentFocus();
+                View focusView = OrderFormActivity.this.getCurrentFocus();
                 if (focusView != null) {
-                    InputMethodManager inputManager = (InputMethodManager) OrderActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager inputManager = (InputMethodManager) OrderFormActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
 
-                // Call API
-                String entry = "process-order";
+                Intent intent = OrderFormActivity.this.getIntent();
+
+                // ID of cart to be ordered
+                //      If id is null: self cart
+                //      Otherwise: a shared cart
+                String cartId = null;
+                if (intent.getStringExtra("cartId") != null)
+                    cartId = intent.getStringExtra("cartId");
+
+                // Type of order
+                //      0: delivery
+                //      1: appointment
+                // If type is 1, we also have branchId and date info
+                int branchId = -1;
+                String date = null;
+                if (orderType == 1) {
+                    branchId = intent.getIntExtra("branchId", -1);
+                    date = intent.getStringExtra("date");
+                }
+
+                // user info
+                String customer_name = String.valueOf(orderName.getText());
+                String email = String.valueOf(orderEmail.getText());
+                String phone = String.valueOf(orderPhone.getText());
+                String location = null;
+                if (orderType == 0)
+                    location = String.valueOf(orderAddress.getText());
 
                 try {
-                    JSONObject cartParams = new JSONObject();
-                    JSONObject itemHM = new JSONObject();
-                    for (CartItem item : cartItems) {
-                        JSONObject sizeHM = new JSONObject();
-                        sizeHM.put(item.getSize(), item.getQuantity());
-                        itemHM.put(item.getProduct().getId().toString(), sizeHM);
-                    }
-                    JSONObject info = new JSONObject();
-
-                    String customer_name = String.valueOf(orderName.getText());
-                    String email = String.valueOf(orderEmail.getText());
-                    String phone = String.valueOf(orderPhone.getText());
-                    String location = String.valueOf(orderAddress.getText());
-
+                    // validate form info
                     int formValidation = formValidator(customer_name, email, phone, location);
                     switch (formValidation) {
                         case BLANK_INPUT: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Bạn vui lòng cung cấp đầy đủ thông tin nhé").show();
+                            MySnackbar.inforSnackar(OrderFormActivity.this, orderParentView, "Bạn vui lòng cung cấp đầy đủ thông tin nhé").show();
                             return;
                         }
                         case EMAIL_INVALID: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Địa chỉ email không hợp lệ. Bạn vui lòng thử lại nhé").show();
+                            MySnackbar.inforSnackar(OrderFormActivity.this, orderParentView, "Địa chỉ email không hợp lệ. Bạn vui lòng thử lại nhé").show();
                             return;
                         }
                         case PHONE_INVALID: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Số điện thoại không hợp lệ. Bạn vui lòng thử lại nhé").show();
+                            MySnackbar.inforSnackar(OrderFormActivity.this, orderParentView, "Số điện thoại không hợp lệ. Bạn vui lòng thử lại nhé").show();
                             return;
                         }
                         case FORM_VALIDATED: {
-//                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Đang xử lý đơn hàng. Bạn vui lòng chờ nhé").show();
                             break;
                         }
                     }
-                    info.put("customer_name", customer_name);
-                    info.put("email", email);
-
                     phone = "+84" + phone.substring(1);
-                    info.put("phone_number", phone);
-                    info.put("location", location);
 
-                    cartParams.put("items", itemHM);
-                    cartParams.put("info", info);
-
+                    // params object
                     JSONObject params = new JSONObject();
-                    params.put("cart", cartParams);
+                    params.put("type", orderType);
+                    params.put("customer_name", customer_name);
+                    params.put("phone_number", phone);
+                    params.put("email", email);
+                    if (location != null)
+                        params.put("location", location);
+                    if (orderType == 1) {
+                        params.put("branchid", branchId);
+                        params.put("date", date);
+                    }
+                    if (cartId != null)
+                        params.put("cartid", cartId);
+
+                    JSONObject finalParams = new JSONObject();
+                    finalParams.put("order-info", params);
 
                     orderLoadingWrapper.setVisibility(View.VISIBLE);
+                    String entry = "process-order";
                     String url = BuildConfig.SERVER_URL + entry + "/";
+                    String jwt = GeneralProvider.with(OrderFormActivity.this).getJWT();
                     JsonObjectRequest postRequest = new JsonObjectRequest(
                             url,
-                            params,
+                            finalParams,
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
@@ -146,13 +174,20 @@ public class OrderActivity extends AppCompatActivity {
                                     handleError(error);
                                 }
                             }
-                    );
+                    ) {
+                        @Override
+                        public Map<String, String> getHeaders() {
+                            Map<String, String>  params = new HashMap<String, String>();
+                            params.put("Access-token", jwt);
+                            return params;
+                        }
+                    };
                     // increase timeout
 //                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
 //                            3000,
 //                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
 //                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                    GeneralProvider.with(OrderActivity.this).addToRequestQueue(postRequest);
+                    GeneralProvider.with(OrderFormActivity.this).addToRequestQueue(postRequest);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());
                 }
@@ -169,7 +204,7 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackar(OrderFormActivity.this, orderParentView, getString(R.string.error_message)).show();
     }
 
     private void handleSuccess(JSONObject response) {
@@ -183,7 +218,7 @@ public class OrderActivity extends AppCompatActivity {
                 intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
                 startActivity(intent);
             } else {
-                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+                MySnackbar.inforSnackar(OrderFormActivity.this, orderParentView, getString(R.string.error_message)).show();
             }
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
@@ -194,7 +229,7 @@ public class OrderActivity extends AppCompatActivity {
         if (name.trim().length() == 0) return BLANK_INPUT;
         if (email.trim().length() == 0) return BLANK_INPUT;
         if (phone.trim().length() == 0) return BLANK_INPUT;
-        if (address.trim().length() == 0) return BLANK_INPUT;
+        if (address != null && address.trim().length() == 0) return BLANK_INPUT;
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) return EMAIL_INVALID;
         if (!Pattern.compile("(84|0[3|5|7|8|9])+([0-9]{8})\\b", Pattern.CASE_INSENSITIVE).matcher(phone).find()) return PHONE_INVALID;
 

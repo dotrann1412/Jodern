@@ -230,7 +230,6 @@ public class ProductListFragment extends Fragment {
                         ArrayList<Product> productList = parseProductListFromResponse(response);
                         if (productList.size() > 0) {
                             // update current page
-                            currentPage += 1;
                             RecyclerView productListView = getView().findViewById(R.id.productListWrapper);
                             GridLayoutManager layout = new GridLayoutManager(getContext(), 2);
                             productListView.setLayoutManager(layout);

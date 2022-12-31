@@ -40,7 +40,7 @@ public class WishlistActivity extends AppCompatActivity {
     private RecyclerView wishlistRecyclerView;
     private LinearLayout wishlistEmptyWrapper, wishlistLoadingWrapper;
     private NestedScrollView wishlistLayout;
-    private ImageButton wishlistBackBtn;
+    private ImageButton wishlistBackBtn, wishlistGoToHomeBtn;
     private MaterialButton wishlistGoToShopBtn;
 
     private Wishlist currentWishlist;
@@ -64,6 +64,7 @@ public class WishlistActivity extends AppCompatActivity {
         wishlistLoadingWrapper = findViewById(R.id.wishlistLoadingWrapper);
         wishlistRecyclerView = findViewById(R.id.wishlistRecyclerView);
         wishlistBackBtn = findViewById(R.id.wishlistBackBtn);
+        wishlistGoToHomeBtn = findViewById(R.id.wishlistGoToHomeBtn);
         wishlistGoToShopBtn = findViewById(R.id.wishlistGoToShopBtn);
     }
 
@@ -72,6 +73,14 @@ public class WishlistActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        wishlistGoToHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WishlistActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -162,7 +171,6 @@ public class WishlistActivity extends AppCompatActivity {
             JSONObject params = new JSONObject();
             // array of product id
             JSONArray wishlist = new JSONArray();
-//            ArrayList<Product> wishlistData = WishlistProvider.getInstance().getItems();
             ArrayList<Product> wishlistData = currentWishlist.getItems();
             for (Product product : wishlistData) {
                 wishlist.put(product.getId());

@@ -38,8 +38,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Order order = orderList.get(position);
-        holder.orderID.setText(order.getId().toString());
-        holder.orderDate.setText(localDateToString(order.getCheckoutDate()));
+        holder.orderID.setText(order.getId());
+        holder.orderDate.setText(order.getCheckoutDate());
         holder.orderTotalPrice.setText(vndFormatPrice(order.getTotalPrice()));
         holder.orderCount.setText(order.getNumItems().toString());
         holder.orderType.setText(order.getType() == 0 ? "Đặt giao hàng" : "Hẹn thử đồ");

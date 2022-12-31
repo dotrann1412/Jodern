@@ -1,7 +1,5 @@
 package com.example.jodernstore.activity;
 
-import static com.example.jodernstore.Utils.localDateToString;
-import static com.example.jodernstore.Utils.stringToDate;
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -26,14 +23,13 @@ import com.example.jodernstore.adapter.OrderDetailAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.model.Order;
-import com.example.jodernstore.model.Product;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class OrderDetailActivity extends AppCompatActivity {
     private RelativeLayout parentView;
@@ -47,7 +43,6 @@ public class OrderDetailActivity extends AppCompatActivity {
     private MaterialButton confirmBtn;
 
     private Order currentOrder;
-    private ArrayList<Product> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +88,44 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void retrieveOrderInfor() {
         Intent intent = getIntent();
         String id = intent.getStringExtra("orderID");
+
+        try {
+            loadingWrapper.setVisibility(View.VISIBLE);
+            String entry = "order-data";
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            JSONObject params = new JSONObject();
+            params.put("orderid", id);
+            String jwt = GeneralProvider.with(this).getJWT();
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            handleResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            loadingWrapper.setVisibility(View.GONE);
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("Access-token", jwt);
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorMsg();
+        }
 
         // TODO: Call API to get order detail information, then get products and show them in recycler view
         // ...
@@ -149,7 +182,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void handleResponse(JSONObject response) {
-        this.products = Product.parseProductListFromResponse(response);
+        currentOrder = Order.parseFullJSON(response);
+//        this.products = Product.parseProductListFromResponse(response);
         loadingWrapper.setVisibility(View.GONE);
         setInfo();
     }
@@ -158,19 +192,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         orderID.setText(currentOrder.getId().toString());
         orderStatus.setText(!currentOrder.getStatus() ? "Chưa nhận hàng" : "Đã nhận hàng");
         orderStatus.setTextColor(!currentOrder.getStatus() ? getResources().getColor(R.color.light_red) : getResources().getColor(R.color.light_green));
-        orderDate.setText(localDateToString(currentOrder.getCheckoutDate()));
+        orderDate.setText(currentOrder.getCheckoutDate());
         orderType.setText(currentOrder.getType() == 0 ? "Đặt giao hàng" : "Hẹn thử đồ");
         orderCount.setText(String.valueOf(currentOrder.getItems().size()));
         orderTotal.setText(vndFormatPrice(currentOrder.getTotalPrice()));
 
-        customerName.setText(currentOrder.getCustomerInfor().get("customerName"));
-        customerEmail.setText(currentOrder.getCustomerInfor().get("customerEmail"));
-        customerPhone.setText(currentOrder.getCustomerInfor().get("customerPhone"));
+        customerName.setText(currentOrder.getCustomerInfo().get("name"));
+        customerEmail.setText(currentOrder.getCustomerInfo().get("email"));
+        customerPhone.setText(currentOrder.getCustomerInfo().get("phone"));
 
         if (currentOrder.getType() == 0) {
             appointmentParent.setVisibility(View.GONE);
             customerAddress.setVisibility(View.VISIBLE);
-            customerAddress.setText(currentOrder.getCustomerInfor().get("customerAddress"));
+            customerAddress.setText(currentOrder.getCustomerInfo().get("address"));
         } else {
             appointmentParent.setVisibility(View.VISIBLE);
             customerAddress.setVisibility(View.GONE);
@@ -190,9 +224,15 @@ public class OrderDetailActivity extends AppCompatActivity {
             subTotal += cartItem.getQuantity() * cartItem.getProduct().getPrice();
         }
 
-        summarySubTotal.setText(vndFormatPrice(subTotal));
-        summaryShipping.setText(vndFormatPrice(30000L));
-        summaryTotal.setText(vndFormatPrice(subTotal + 30000L));
+        if (currentOrder.getType() == 0) {
+            summarySubTotal.setText(vndFormatPrice(subTotal));
+            summaryShipping.setText(vndFormatPrice(30000L));
+            summaryTotal.setText(vndFormatPrice(subTotal + 30000L));
+        } else {
+            summarySubTotal.setVisibility(View.GONE);
+            summaryShipping.setVisibility(View.GONE);
+            summaryTotal.setText(vndFormatPrice(subTotal));
+        }
 
         confirmBtn.setVisibility(currentOrder.getStatus() ? View.GONE : View.VISIBLE);
     }
@@ -212,5 +252,9 @@ public class OrderDetailActivity extends AppCompatActivity {
                 // TODO: Call API to confirm order
             }
         });
+    }
+
+    private void showErrorMsg() {
+        MySnackbar.inforSnackar(this, parentView, getString(R.string.error_message)).show();
     }
 }
