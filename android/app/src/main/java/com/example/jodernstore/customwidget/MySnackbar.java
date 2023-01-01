@@ -8,7 +8,7 @@ import com.example.jodernstore.R;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MySnackbar {
-    public static Snackbar inforSnackar(Context context, View parent, String message) {
+    public static Snackbar inforSnackbar(Context context, View parent, String message) {
         Snackbar snackbar = Snackbar.make(parent, message, Snackbar.LENGTH_SHORT);
         if (context != null) {
             snackbar.setAction(context.getString(R.string.skip_snackbar), new View.OnClickListener() {

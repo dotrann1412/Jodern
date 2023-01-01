@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, MapActivity.class);
                         startActivity(intent);
                     } catch (Exception e) {
-                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackbar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
                     }
                     break;
 
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, CartActivity.class);
                         startActivity(intent);
                     } catch (Exception e) {
-                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackbar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
                     }
                     break;
 

@@ -25,7 +25,6 @@ import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.Product;
 import com.example.jodernstore.model.Wishlist;
 import com.example.jodernstore.provider.GeneralProvider;
-import com.example.jodernstore.provider.WishlistProvider;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
@@ -205,7 +204,7 @@ public class WishlistActivity extends AppCompatActivity {
     }
 
     private void showErrorMsg() {
-        MySnackbar.inforSnackar(this, parentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(this, parentView, getString(R.string.error_message)).show();
     }
 
     private void handleResponse(JSONObject response) {

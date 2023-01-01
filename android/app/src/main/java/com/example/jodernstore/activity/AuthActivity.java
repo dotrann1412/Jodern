@@ -104,7 +104,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    private void handleLoginSucessfully(FirebaseUser user) {
+    private void handleLoginSuccessfully(FirebaseUser user) {
         if (user == null) {
             showErrorMsg();
             return;
@@ -152,7 +152,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void showErrorMsg() {
-        MySnackbar.inforSnackar(this, authParentView, "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé!").show();
+        MySnackbar.inforSnackbar(this, authParentView, "Đăng nhập thất bại. Bạn vui lòng thử lại sau nhé!").show();
     }
 
     private void setupGoogleAuth() {
@@ -196,11 +196,11 @@ public class AuthActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            handleLoginSucessfully(user);
+                            handleLoginSuccessfully(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            handleLoginSucessfully(null);
+                            handleLoginSuccessfully(null);
                         }
                     }
 
@@ -219,12 +219,12 @@ public class AuthActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            handleLoginSucessfully(user);
+                            handleLoginSuccessfully(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             showErrorMsg();
-                            handleLoginSucessfully(null);
+                            handleLoginSuccessfully(null);
                         }
                     }
                 });

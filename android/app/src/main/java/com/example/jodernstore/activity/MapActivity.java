@@ -112,7 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Log.d(TAG, "onResponse: successful");
                 },
                 error -> {
-                    MySnackbar.inforSnackar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
+                    MySnackbar.inforSnackbar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
                     Log.d(TAG, "onErrorResponse: VolleyError: " + error);
                     loadingWrapper.setVisibility(View.GONE);
                 }

@@ -286,7 +286,7 @@ public class ProductListFragment extends Fragment {
 
     private void handleError(VolleyError error) {
         loadingWrapper.setVisibility(View.GONE);
-        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 
     private void handleResponse(JSONObject response) {

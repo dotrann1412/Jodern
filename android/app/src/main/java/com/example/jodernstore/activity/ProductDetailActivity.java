@@ -108,7 +108,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
         ) {
@@ -144,7 +144,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
+                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, getString(R.string.error_message)).show();
                     }
                 }
         );
@@ -271,7 +271,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     int quantity = currentProduct.getInventory(finalI);
                     if (quantity == 0) {
-                        MySnackbar.inforSnackar(ProductDetailActivity.this, parentView, "Sản phẩm này hiện đã hết size " + sizes[finalI] + ". Mong bạn thông cảm nhé").show();
+                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, "Sản phẩm này hiện đã hết size " + sizes[finalI] + ". Mong bạn thông cảm nhé").show();
                         return;
                     }
                     updateCurrentSizeView(false);
@@ -381,7 +381,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         String size = currentSize;
         int inventory = currentProduct.getInventory(currentSize);
         if (quantity > inventory) {
-            MySnackbar.inforSnackar(this, parentView, "Số lượng sản phẩm không đủ").show();
+            MySnackbar.inforSnackbar(this, parentView, "Số lượng sản phẩm không đủ").show();
             return;
         }
 
@@ -558,6 +558,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void showErrorMsg() {
-        MySnackbar.inforSnackar(this, parentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(this, parentView, getString(R.string.error_message)).show();
     }
 }

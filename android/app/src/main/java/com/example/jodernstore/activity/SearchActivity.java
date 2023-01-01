@@ -174,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
                             if (byteArray != null) {
                                 submitImageQuery(byteArray);
                             } else {
-                                MySnackbar.inforSnackar(SearchActivity.this, searchParentView, getString(R.string.error_message)).show();
+                                MySnackbar.inforSnackbar(SearchActivity.this, searchParentView, getString(R.string.error_message)).show();
                             }
                         }
                     }
@@ -184,7 +184,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void submitTextQuery(String query) {
         if (query.length() == 0) {
-            MySnackbar.inforSnackar(SearchActivity.this, searchParentView, "Bạn vui lòng nhập nội dung tìm kiếm nhé!").show();
+            MySnackbar.inforSnackbar(SearchActivity.this, searchParentView, "Bạn vui lòng nhập nội dung tìm kiếm nhé!").show();
             return;
         }
 
@@ -228,7 +228,7 @@ public class SearchActivity extends AppCompatActivity {
         switch (requestCode) {
             case MY_CAMERA_REQUEST_CODE:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào camera!").show();
+                    MySnackbar.inforSnackbar(this, searchParentView, "Không thể truy cập vào camera!").show();
                 } else {
                     runImagePicker();
                 }
@@ -236,14 +236,14 @@ public class SearchActivity extends AppCompatActivity {
             case MY_GALLERY_REQUEST_CODE:
             case MY_WRITE_EXTERNAL_REQUEST_CODE:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào thư viện ảnh!").show();
+                    MySnackbar.inforSnackbar(this, searchParentView, "Không thể truy cập vào thư viện ảnh!").show();
                 } else {
                     runImagePicker();
                 }
                 break;
             case MY_MICRO_REQUEST_CODE:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    MySnackbar.inforSnackar(this, searchParentView, "Không thể truy cập vào microphone!").show();
+                    MySnackbar.inforSnackbar(this, searchParentView, "Không thể truy cập vào microphone!").show();
                 } else {
                     runMicro();
                 }

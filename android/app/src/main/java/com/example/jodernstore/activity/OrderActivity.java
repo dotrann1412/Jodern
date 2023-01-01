@@ -16,7 +16,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
-import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.MyCartFragment;
@@ -97,15 +96,15 @@ public class OrderActivity extends AppCompatActivity {
                     int formValidation = formValidator(customer_name, email, phone, location);
                     switch (formValidation) {
                         case BLANK_INPUT: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Bạn vui lòng cung cấp đầy đủ thông tin nhé").show();
+                            MySnackbar.inforSnackbar(OrderActivity.this, orderParentView, "Bạn vui lòng cung cấp đầy đủ thông tin nhé").show();
                             return;
                         }
                         case EMAIL_INVALID: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Địa chỉ email không hợp lệ. Bạn vui lòng thử lại nhé").show();
+                            MySnackbar.inforSnackbar(OrderActivity.this, orderParentView, "Địa chỉ email không hợp lệ. Bạn vui lòng thử lại nhé").show();
                             return;
                         }
                         case PHONE_INVALID: {
-                            MySnackbar.inforSnackar(OrderActivity.this, orderParentView, "Số điện thoại không hợp lệ. Bạn vui lòng thử lại nhé").show();
+                            MySnackbar.inforSnackbar(OrderActivity.this, orderParentView, "Số điện thoại không hợp lệ. Bạn vui lòng thử lại nhé").show();
                             return;
                         }
                         case FORM_VALIDATED: {
@@ -169,7 +168,7 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
     }
 
     private void handleSuccess(JSONObject response) {
@@ -183,7 +182,7 @@ public class OrderActivity extends AppCompatActivity {
                 intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
                 startActivity(intent);
             } else {
-                MySnackbar.inforSnackar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
+                MySnackbar.inforSnackbar(OrderActivity.this, orderParentView, getString(R.string.error_message)).show();
             }
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();

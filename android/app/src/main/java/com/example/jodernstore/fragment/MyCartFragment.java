@@ -32,7 +32,6 @@ import com.example.jodernstore.activity.OrderActivity;
 import com.example.jodernstore.adapter.CartAdapter;
 import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.Cart;
 import com.example.jodernstore.provider.CartProvider;
 import com.example.jodernstore.provider.GeneralProvider;
@@ -113,7 +112,7 @@ public class MyCartFragment extends Fragment {
         String message = bundle.getString("message");
         if (message == null)
             return;
-        MySnackbar.inforSnackar(getContext(), parentView, message).setAnchorView(R.id.mainNavBarSearchBtn).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, message).setAnchorView(R.id.mainNavBarSearchBtn).show();
     }
 
     private void initViews() {
@@ -248,7 +247,7 @@ public class MyCartFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         cartLoadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
+                        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
                     }
                 }
         ) {
@@ -277,12 +276,7 @@ public class MyCartFragment extends Fragment {
             }
             updateTotalPrice();
 
-            CartAdapter adapter = new CartAdapter(this.getContext(), currentCart, new ChangeNumItemsListener() {
-                @Override
-                public void onChanged() {
-                    updateTotalPrice();
-                }
-            });
+            CartAdapter adapter = new CartAdapter(this.getContext(), currentCart, this::updateTotalPrice);
 
             cartRecyclerView.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -318,6 +312,6 @@ public class MyCartFragment extends Fragment {
     }
 
     private void showErrorMsg() {
-        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 }
