@@ -3,11 +3,12 @@ package com.example.jodernstore.model;
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Cart {
     private Long id;
     private String holderId;
-    private ArrayList<CartItem> items;
+    private List<CartItem> items;
     private Long total;
 
     public Cart() {
@@ -23,7 +24,7 @@ public class Cart {
         setItems(items);
     }
 
-    public ArrayList<CartItem> getItems() {
+    public List<CartItem> getItems() {
         return items;
     }
 
