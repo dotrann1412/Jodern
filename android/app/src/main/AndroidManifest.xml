@@ -39,6 +39,12 @@
         android:theme="@style/Jodern"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.JoinedCartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SharedCartActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -56,6 +62,7 @@
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
+
         <activity
             android:name=".activity.CartActivity"
             android:exported="false" />

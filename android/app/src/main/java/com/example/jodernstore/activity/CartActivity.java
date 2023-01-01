@@ -8,14 +8,17 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jodernstore.R;
+import com.example.jodernstore.fragment.JoinedCartFragment;
 import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.HomeFragment;
+import com.example.jodernstore.fragment.SharedCartFragment;
 
 public class CartActivity extends AppCompatActivity {
     private LinearLayout parentView;
@@ -86,6 +89,9 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 resetBtns();
                 highlightBtn(mySharedCartBtn);
+                Fragment sharedCart = new SharedCartFragment();
+                switchFragment(sharedCart, SharedCartFragment.TAG);
+                Log.d(SharedCartFragment.TAG, "onClick: switching to SharedCartFragment");
                 // TODO: fetch and show my shared cart
             }
         });
@@ -95,6 +101,9 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 resetBtns();
                 highlightBtn(myJoinedCartBtn);
+                Fragment joinedCart = new JoinedCartFragment();
+                switchFragment(joinedCart, JoinedCartFragment.TAG);
+                Log.d(JoinedCartFragment.TAG, "onClick: switching to JoinedCartFragment");
                 // TODO: fetch and show my joined cart
             }
         });
