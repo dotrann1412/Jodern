@@ -52,8 +52,8 @@ public class Cart {
             return;
 
         if (items.size() > position) {
-            items.remove(position);
             total -= items.get(position).getProduct().getPrice() * items.get(position).getQuantity();
+            items.remove(position);
         }
 
         changeNumItemsListener.onChanged();
@@ -61,6 +61,7 @@ public class Cart {
 
     public void clear() {
         items.clear();
+        total = 0L;
     }
 
     public int getNumItems() {

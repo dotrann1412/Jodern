@@ -2,6 +2,7 @@ package com.example.jodernstore.fragment;
 
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,18 +30,27 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
-import com.example.jodernstore.activity.OrderActivity;
+import com.example.jodernstore.activity.OrderFormActivity;
 import com.example.jodernstore.adapter.CartAdapter;
+import com.example.jodernstore.model.BranchInfo;
 import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Cart;
+import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.CartProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +59,9 @@ public class MyCartFragment extends Fragment {
 
     public static final String TAG = "MyCartFragment";
     private FrameLayout parentView;
+
+    private int selectedAppointBranchId = -1;
+    private String selectedAppointDateStr = "";
 
     private Cart currentCart;
     private boolean shouldCallUpdateAPI = false;
@@ -82,7 +96,7 @@ public class MyCartFragment extends Fragment {
         initViews();
         setEvents();
         showInitialMessage();
-//        getAndShowCartItems();    // TODO: uncomment later
+        getAndShowCartItems();
     }
 
     @Override
@@ -187,7 +201,9 @@ public class MyCartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderActivity.class);
+                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderFormActivity.class);
+                intent.putExtra("orderType", 0);
+                // this is self cart, so we don't need to pass cart id
                 startActivity(intent);
             }
         });
@@ -204,39 +220,105 @@ public class MyCartFragment extends Fragment {
         dialog.setContentView(R.layout.dialog_cart_appoint);
 
         // Init views
-        // ...
+        MaterialButton chooseDateBtn = dialog.findViewById(R.id.cartAppointChooseDateBtn);
+        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartAppointCheckoutBtn);
+        TextView selectedDate = dialog.findViewById(R.id.cartAppointSelectedDate);
+        MaterialSpinner spinner = dialog.findViewById(R.id.cartAppointSpinner);
+        LinearLayout dialogParentView = dialog.findViewById(R.id.cartSummaryDialogWrapper);
 
-        // Set data
-        // ...
+        // Set branches
+        ArrayList<BranchInfo> branchInfos = BranchesProvider.getInstance().getBranches();
+        ArrayList<String> branch_names = new ArrayList<>();
+        for (BranchInfo branchInfo : branchInfos) {
+            branch_names.add(branchInfo.getBranchName());
+        }
+        spinner.setItems(branch_names);
+        spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
+            @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
+                selectedAppointBranchId = position;
+            }
+        });
+
+        // Date
+        MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
+        materialDateBuilder.setTitleText("Chọn ngày hẹn");
+        MaterialDatePicker materialDatePicker = materialDateBuilder.build();
+
+        materialDatePicker.addOnPositiveButtonClickListener(
+                new MaterialPickerOnPositiveButtonClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onPositiveButtonClick(Object selection) {
+                        // selection to date object
+                        String dateString = DateFormat.format("dd-MM-yyyy", new Date((Long) selection)).toString();
+                        selectedDate.setText(dateString);
+                        selectedAppointDateStr = dateString;
+                    }
+                });
 
         // Set events
-        // ...
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // validate
+                if (selectedAppointBranchId == -1) {
+                    MySnackbar.inforSnackbar(getContext(), dialog.getWindow().getDecorView(), "Bạn vui lòng chọn chi nhánh nhé!").show();
+                    return;
+                }
+
+                if (selectedAppointDateStr.length() == 0) {
+                    MySnackbar.inforSnackbar(getContext(), dialog.getWindow().getDecorView(), "Bạn vui lòng chọn ngày hẹn nhé!").show();
+                    return;
+                }
+
+                // appoints date must be after current date at least 3 day
+                Date currentDate = new Date();
+                SimpleDateFormat sourceFormat = new SimpleDateFormat("dd-MM-yyyy");
+                try {
+                    Date appointDate = sourceFormat.parse(selectedAppointDateStr);
+                    long diff = appointDate.getTime() - currentDate.getTime();
+                    long diffDays = diff / (24 * 60 * 60 * 1000);
+                    if (diffDays < 1) {
+                        MySnackbar.inforSnackbar(getContext(), dialog.getWindow().getDecorView(), "Ngày hẹn phải cách ngày hiện tại ít nhất\n2 ngày").show();
+                        return;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                dialog.dismiss();
+                Intent intent = new Intent(requireActivity().getApplicationContext(), OrderFormActivity.class);
+                intent.putExtra("orderType", 1);
+                intent.putExtra("branchid", selectedAppointBranchId);
+                intent.putExtra("date", selectedAppointDateStr);
+                // this is self cart, so we don't need to pass cart id
+                startActivity(intent);
+                selectedAppointDateStr = "";
+                selectedAppointBranchId = -1;
+            }
+        });
+
+        chooseDateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                materialDatePicker.show(getParentFragmentManager(), "MATERIAL_DATE_PICKER");
+            }
+        });
 
         dialog.show();
     }
 
     private void getAndShowCartItems() {
         currentCart = CartProvider.getInstance().getMyCart();
-//        if (cartController.getCartList().size() == 0) {
-//            cartEmptyWrapper.setVisibility(View.VISIBLE);
-//            cartLoadingWrapper.setVisibility(View.GONE);
-//            cartLayout.setVisibility(View.GONE);
-//            return;
-//        }
-//
-//        ArrayList<Long> productIds = new ArrayList<>();
-//        for (CartItem cartItem : cartController.getCartList()) {
-//            productIds.add(cartItem.getProductId());
-//        }
         cartLoadingWrapper.setVisibility(View.VISIBLE);
 
         // call API
         String entry = "cart";
         String url = BuildConfig.SERVER_URL + entry + "/";
         String jwt = GeneralProvider.with(getContext()).getJWT();
-        JsonObjectRequest postRequest = new JsonObjectRequest (
+        JsonObjectRequest getRequest = new JsonObjectRequest (
                 url,
-                new JSONObject(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -258,15 +340,63 @@ public class MyCartFragment extends Fragment {
                 return params;
             }
         };
-        GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
     }
 
     public void updateCartData() {
-        // TODO: Update cart data
+        try {
+            String entry = "save-cart";
+            JSONArray cartItemsJson = new JSONArray();
+            for (CartItem item : currentCart.getItems()) {
+                JSONObject cartItem = new JSONObject();
+                cartItem.put("productid", item.getProduct().getId());
+                cartItem.put("quantity", item.getQuantity());
+                cartItem.put("size", item.getSize());
+                cartItemsJson.put(cartItem);
+            }
+            JSONObject params = new JSONObject();
+            params.put("data", cartItemsJson);
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            String jwt = GeneralProvider.with(getContext()).getJWT();
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                System.out.println("Update cart successfully");
+                            } catch (Exception e) {
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("Access-token", jwt);
+                    return params;
+                }
+            };
+            GeneralProvider.with(getContext()).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 
     private void handleResponse(JSONObject response) {
+        shouldCallFetchAPI = false;
         cartLoadingWrapper.setVisibility(View.GONE);
+        currentCart.clear();
+
         try {
             JSONArray items = (JSONArray)response.get("details");
             for (int j = 0; j < items.length(); j++) {
@@ -276,7 +406,11 @@ public class MyCartFragment extends Fragment {
             }
             updateTotalPrice();
 
-            CartAdapter adapter = new CartAdapter(this.getContext(), currentCart, this::updateTotalPrice);
+            CartAdapter adapter = new CartAdapter(this.getContext(), currentCart, () -> {
+                shouldCallUpdateAPI = true;
+                showCartLayout(currentCart.getItems().isEmpty());
+                updateTotalPrice();
+            });
 
             cartRecyclerView.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());

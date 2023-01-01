@@ -15,6 +15,12 @@ public class Utils {
         return localDate;
     }
 
+    public static String dateIsoToString(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(date);
+        return localDate.format(formatter);
+    }
+
     public static String localDateToString(LocalDate date) {
         return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }

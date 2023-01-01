@@ -390,7 +390,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         try {
             String entry = "add-to-cart";
             JSONObject params = new JSONObject();
-            params.put("product_id", currentProduct.getId());
+            params.put("productid", currentProduct.getId());
             params.put("quantity", quantity);
             params.put("sizeid", currentSize);
             String url = BuildConfig.SERVER_URL + entry + "/";

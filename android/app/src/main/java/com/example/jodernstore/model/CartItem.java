@@ -34,7 +34,7 @@ public class CartItem {
             Product product = Product.parseJSON(response.getJSONObject("product"));
             int quantity = response.getInt("quantity");
             String size = response.getString("size");
-            return new com.example.jodernstore.model.CartItem(product, quantity, size);
+            return new CartItem(product, quantity, size);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

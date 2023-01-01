@@ -27,7 +27,6 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 
 public class MainActivity extends AppCompatActivity {
     private ImageButton homeBtn, mapBtn, cartBtn, userBtn;
-    private ImageButton selectingBtn;
     private FloatingActionButton searchBtn;
     private HomeFragment homeFragment;
     private UserFragment userFragment;
@@ -55,10 +54,8 @@ public class MainActivity extends AppCompatActivity {
         String currentFragment = GeneralProvider.with(this).getCurrentFragment();
         if (currentFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
-            selectingBtn = homeBtn;
         } else if (currentFragment.equals(UserFragment.TAG)) {
             userBtn.setImageResource(R.drawable.ic_user_filled);
-            selectingBtn = userBtn;
         }
     }
 
@@ -70,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         cartBtn = findViewById(R.id.mainNavBarCartBtn);
         userBtn = findViewById(R.id.mainNavBarUserBtn);
         searchBtn = findViewById(R.id.mainNavBarSearchBtn);
-        selectingBtn = homeBtn;
 
         homeFragment = new HomeFragment(homeBtn);
         userFragment = new UserFragment(userBtn);
@@ -207,21 +203,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             int viewId = view.getId();
-            // check selecting btn
-            if (viewId == selectingBtn.getId()) {
-                return;
-            }
-
             resetNavbarBtns();
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
-                    selectingBtn = homeBtn;
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
                     homeFragment = new HomeFragment(homeBtn);
                     switchFragment(homeFragment, HomeFragment.TAG);
                     break;
                 case R.id.mainNavBarMapBtn:
-                    selectingBtn = mapBtn;
                     mapBtn.setImageResource(R.drawable.ic_map_filled);
                     try {
                         Intent intent = new Intent(MainActivity.this, MapActivity.class);
@@ -232,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.mainNavBarCartBtn:
-                    selectingBtn = cartBtn;
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
                     try {
                         Intent intent = new Intent(MainActivity.this, CartActivity.class);
@@ -243,9 +231,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.mainNavBarUserBtn:
-                    selectingBtn = userBtn;
                     userBtn.setImageResource(R.drawable.ic_user_filled);
                     switchFragment(userFragment, UserFragment.TAG);
+                    break;
+
+                default:
                     break;
             }
         }

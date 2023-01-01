@@ -173,10 +173,10 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         ArrayList<Product> trendingProducts = Product.parseProductListFromResponse(response);
-                        for (Product product : trendingProducts) {
-                            System.out.println(product.getId());
-                            System.out.println(product.getName());
-                        }
+//                        for (Product product : trendingProducts) {
+//                            System.out.println(product.getId());
+//                            System.out.println(product.getName());
+//                        }
                         setupTrendingProducts(trendingProducts);
                     }
                 },

@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.fragment.JoinedCartFragment;
 import com.example.jodernstore.fragment.MyCartFragment;
@@ -23,7 +24,7 @@ import com.example.jodernstore.fragment.SharedCartFragment;
 public class CartActivity extends AppCompatActivity {
     private LinearLayout parentView;
     private LinearLayout myCartBtn, mySharedCartBtn, myJoinedCartBtn;
-    private ImageButton backBtn;
+    private ImageButton backBtn, goToHomeBtn;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -42,6 +43,7 @@ public class CartActivity extends AppCompatActivity {
         mySharedCartBtn = findViewById(R.id.cartMySharedCartBtn);
         myJoinedCartBtn = findViewById(R.id.cartMyJoinedCartBtn);
         backBtn = findViewById(R.id.cartBackBtn);
+        goToHomeBtn = findViewById(R.id.cartGoToHomeBtn);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -70,6 +72,14 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 onBackPressed();
                 finish();
+            }
+        });
+
+        goToHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 

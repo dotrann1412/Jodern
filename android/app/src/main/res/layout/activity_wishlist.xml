@@ -47,6 +47,18 @@
                 android:textColor="@color/text"
                 android:textSize="24sp"
                 android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/wishlistGoToHomeBtn"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/card_image_shape"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_home"
+                app:tint="@color/primary_dark" />
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView

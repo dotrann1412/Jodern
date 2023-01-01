@@ -85,7 +85,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.OrderActivity"
+            android:name=".activity.OrderFormActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity

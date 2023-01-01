@@ -17,23 +17,32 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.OrderListAdapter;
+import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Order;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrderListActivity extends AppCompatActivity {
     private RelativeLayout parentView;
     private LinearLayout loadingWrapper, emptyWrapper;
-    private ImageButton backBtn;
+    private ImageButton backBtn, goToHomeBtn;
     private LinearLayout allBtn, deliveryBtn, appointBtn;
-    private TextView currentType;
     private NestedScrollView scrollView;
     private RecyclerView recyclerView;
 
-    private FirebaseAuth mAuth;
 
     private ArrayList<Order> allOrders;
     private ArrayList<Order> shownOrders;
@@ -42,8 +51,6 @@ public class OrderListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_list);
-
-        mAuth = FirebaseAuth.getInstance();
 
         initViews();
         setEvents();
@@ -55,6 +62,7 @@ public class OrderListActivity extends AppCompatActivity {
         loadingWrapper = findViewById(R.id.orderListLoadingWrapper);
         emptyWrapper = findViewById(R.id.orderListEmptyWrapper);
         backBtn = findViewById(R.id.orderListBackBtn);
+        goToHomeBtn = findViewById(R.id.orderListGoToHomeBtn);
         allBtn = findViewById(R.id.orderListAllBtn);
         deliveryBtn = findViewById(R.id.orderListDeliveryBtn);
         appointBtn = findViewById(R.id.orderListAppointBtn);
@@ -88,6 +96,13 @@ public class OrderListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 onBackPressed();
                 finish();
+            }
+        });
+
+        goToHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
 
@@ -134,26 +149,51 @@ public class OrderListActivity extends AppCompatActivity {
 
 
     private void handleAPICall() {
-        // TODO: get all orders
-
         loadingWrapper.setVisibility(View.VISIBLE);
+        String entry = "order-data";
+        String url = BuildConfig.SERVER_URL + entry + "/";
+        String jwt = GeneralProvider.with(this).getJWT();
+        JsonObjectRequest getRequest = new JsonObjectRequest (
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        handleResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loadingWrapper.setVisibility(View.GONE);
+                        MySnackbar.inforSnackbar(OrderListActivity.this, parentView, getString(R.string.error_message)).show();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Access-token", jwt);
+                return params;
+            }
+        };
+        GeneralProvider.with(this).addToRequestQueue(getRequest);
+    }
 
-        new Handler().postDelayed((Runnable) () -> {
-            // just demo
+    private void handleResponse(JSONObject response) {
+        try {
+            JSONArray orders = (JSONArray)response.get("orders");
             allOrders = new ArrayList<>();
-            allOrders.add(new Order(1L, 0, 2, 1000000L, stringToDate("10/12/2022"), true));
-            allOrders.add(new Order(2L, 0, 1, 300000L, stringToDate("12/12/2022"), false));
-            allOrders.add(new Order(3L, 1, 1, 500000L, stringToDate("16/12/2022"), true));
-            allOrders.add(new Order(4L, 0, 3, 2000000L, stringToDate("20/12/2022"), false));
-            allOrders.add(new Order(5L, 0, 2, 1000000L, stringToDate("21/12/2022"), false));
-            allOrders.add(new Order(6L, 1, 1, 860000L, stringToDate("31/12/2022"), false));
-
+            for (int i = 0; i < orders.length(); i++) {
+                JSONObject json = orders.getJSONObject(i);
+                Order order = Order.parseBasicJSON(json);
+                allOrders.add(order);
+            }
             shownOrders = allOrders;
             showOrderList();
-
             loadingWrapper.setVisibility(View.GONE);
-        }, 1000);
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showOrderList() {
