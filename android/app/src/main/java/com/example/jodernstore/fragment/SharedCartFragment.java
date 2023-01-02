@@ -1,6 +1,7 @@
 package com.example.jodernstore.fragment;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
@@ -51,9 +53,18 @@ public class SharedCartFragment extends Fragment {
 
     private FloatingActionButton addCartFloatBtn;
 
+    private LinearLayout navbarBtn;
+
     public SharedCartFragment() {
         // Required empty public constructor
         super(R.layout.fragment_shared_cart);
+        Log.d(TAG, "constructed");
+    }
+
+    public SharedCartFragment(LinearLayout navbarBtn) {
+        // Required empty public constructor
+        super(R.layout.fragment_shared_cart);
+        this.navbarBtn = navbarBtn;
         Log.d(TAG, "constructed");
     }
 
@@ -79,6 +90,24 @@ public class SharedCartFragment extends Fragment {
         showInitialMessage();
 //        getAndShowSharedCarts();    // TODO: uncomment later
         handleResponse(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_selected));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.primary));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.BOLD);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_shape));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.text));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.NORMAL);
     }
 
     private void initViews() {
@@ -123,7 +152,7 @@ public class SharedCartFragment extends Fragment {
         String message = bundle.getString("message");
         if (message == null)
             return;
-        MySnackbar.inforSnackbar(getContext(), parentView, message).setAnchorView(R.id.mainNavBarSearchBtn).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, message).show();
     }
 
     @SuppressWarnings("deprecation")
@@ -140,7 +169,7 @@ public class SharedCartFragment extends Fragment {
                 this::handleResponse,
                 error -> {
                     cartLoadingWrapper.setVisibility(View.GONE);
-                    MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
+                    MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
                 }
         ) {
             @NonNull

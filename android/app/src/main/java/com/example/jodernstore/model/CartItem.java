@@ -33,7 +33,11 @@ public class CartItem {
         try {
             Product product = Product.parseJSON(response.getJSONObject("product"));
             int quantity = response.getInt("quantity");
-            String size = response.getString("size");
+            String size = null;
+            if (response.has("size")) {
+                size = response.getString("size");
+            } else
+                size = response.getString("sizeid");
             return new CartItem(product, quantity, size);
         } catch (Exception e) {
             e.printStackTrace();

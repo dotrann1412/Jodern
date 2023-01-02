@@ -2,7 +2,6 @@ package com.example.jodernstore.activity;
 
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,21 +23,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SharedCartActivity extends AppCompatActivity {
 
@@ -51,6 +44,7 @@ public class SharedCartActivity extends AppCompatActivity {
     private TextView sharedCartSubTotalText;
     private LinearLayout sharedCartEmptyWrapper;
     private MaterialButton sharedCartGoToShop;
+    private ImageButton sharedCartBackBtn;
     private LinearLayout sharedCartLoadingWrapper;
     private LinearLayout sharedCartInfoParentView;
     private LinearLayout sharedCartLayout;
@@ -77,6 +71,7 @@ public class SharedCartActivity extends AppCompatActivity {
         cartInfoQuantity = findViewById(R.id.cartInfoQuantity);
         cartInfoNoMembers = findViewById(R.id.cartInfoNoMembers);
         sharedCartSummaryWrapper = findViewById(R.id.sharedCartSummaryWrapper);
+        sharedCartBackBtn = findViewById(R.id.sharedCartBackBtn);
         sharedCartOrderBtn = findViewById(R.id.sharedCartOrderBtn);
         sharedCartAppointBtn = findViewById(R.id.sharedCartAppointBtn);
         sharedCartSubTotalText = findViewById(R.id.sharedCartSubTotalText);
@@ -89,6 +84,14 @@ public class SharedCartActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
+        sharedCartBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+                finish();
+            }
+        });
+
         sharedCartOrderBtn.setOnClickListener(view -> {
             // TODO
         });
@@ -98,7 +101,20 @@ public class SharedCartActivity extends AppCompatActivity {
         });
 
         sharedCartGoToShop.setOnClickListener(view -> {
-            // TODO
+            // Back pressed handling
+            Intent searchIntent = new Intent(SharedCartActivity.this, ProductListFragment.class);
+            searchIntent.putExtra("entry", "product-list");
+            searchIntent.putExtra("sex", "nam");
+            searchIntent.putExtra("categoryName", "Thời trang nam");
+            GeneralProvider.with(SharedCartActivity.this).setSearchIntent(searchIntent);
+
+            // Go to product list fragment of main activity
+            Intent intent = new Intent(SharedCartActivity.this, MainActivity.class);
+            intent.putExtra("nextFragment", ProductListFragment.TAG);
+            intent.putExtra("entry", "product-list");
+            intent.putExtra("sex", "nam");
+            intent.putExtra("categoryName", "Thời trang nam");
+            startActivity(intent);
         });
 
         shareCartBtn.setOnClickListener(view -> {
@@ -149,7 +165,7 @@ public class SharedCartActivity extends AppCompatActivity {
         long subTotal = intent.getLongExtra("sub-total", 0);
 
         if (sharedCartIdx == -1) {
-            MySnackbar.inforSnackbar(this, sharedCartInfoParentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
+            MySnackbar.inforSnackbar(this, sharedCartInfoParentView, getString(R.string.error_message)).show();
             sharedCartLoadingWrapper.setVisibility(View.GONE);
             return;
         }

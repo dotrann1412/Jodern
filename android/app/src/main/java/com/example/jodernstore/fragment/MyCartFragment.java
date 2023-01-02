@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
@@ -72,10 +73,16 @@ public class MyCartFragment extends Fragment {
     private TextView subTotalText;
     private String subTotalStr, shippingStr, totalStr;
     private MaterialButton cartOrderBtn, cartAppointBtn, cartGoToShop;
+    private LinearLayout navbarBtn;
 
     public MyCartFragment() {
         // Required empty public constructor
         super(R.layout.fragment_my_cart);
+    }
+
+    public MyCartFragment(LinearLayout navbarBtn) {
+        super(R.layout.fragment_my_cart);
+        this.navbarBtn = navbarBtn;
     }
 
     @Override
@@ -102,6 +109,11 @@ public class MyCartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_selected));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.primary));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.BOLD);
+
         if (shouldCallFetchAPI) {
             getAndShowCartItems();
         }
@@ -110,6 +122,10 @@ public class MyCartFragment extends Fragment {
     @Override
     public void onStop() {
         shouldCallFetchAPI = true;
+
+        navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_shape));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.text));
+        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.NORMAL);
 
         // Call API to update wishlist data (if necessary)
         if (shouldCallUpdateAPI) {
@@ -126,7 +142,7 @@ public class MyCartFragment extends Fragment {
         String message = bundle.getString("message");
         if (message == null)
             return;
-        MySnackbar.inforSnackbar(getContext(), parentView, message).setAnchorView(R.id.mainNavBarSearchBtn).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, message).show();
     }
 
     private void initViews() {
@@ -235,7 +251,8 @@ public class MyCartFragment extends Fragment {
         spinner.setItems(branch_names);
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-                selectedAppointBranchId = position;
+                selectedAppointBranchId = position + 1;
+                System.out.println("selected branch id: " + selectedAppointBranchId);
             }
         });
 
@@ -290,7 +307,7 @@ public class MyCartFragment extends Fragment {
                 dialog.dismiss();
                 Intent intent = new Intent(requireActivity().getApplicationContext(), OrderFormActivity.class);
                 intent.putExtra("orderType", 1);
-                intent.putExtra("branchid", selectedAppointBranchId);
+                intent.putExtra("branchId", selectedAppointBranchId);
                 intent.putExtra("date", selectedAppointDateStr);
                 // this is self cart, so we don't need to pass cart id
                 startActivity(intent);
@@ -329,7 +346,7 @@ public class MyCartFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         cartLoadingWrapper.setVisibility(View.GONE);
-                        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
+                        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
                     }
                 }
         ) {

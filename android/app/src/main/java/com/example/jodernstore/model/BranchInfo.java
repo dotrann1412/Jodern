@@ -15,6 +15,7 @@ public class BranchInfo {
     private double latitude;
     private double longitude;
     private String branchName;
+    private String branchAddress;
     private int branchId;
 
     public BranchInfo() {
@@ -37,15 +38,20 @@ public class BranchInfo {
         this.branchId = branchId;
     }
 
-    public BranchInfo(double latitude, double longitude, String branchName, int branchId) {
+    public BranchInfo(double latitude, double longitude, String branchName, int branchId, String branchAddress) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.branchName = branchName;
         this.branchId = branchId;
+        this.branchAddress = branchAddress;
     }
 
     public int getBranchId() {
         return branchId;
+    }
+
+    public String getBranchAddress() {
+        return branchAddress;
     }
 
     public double getLatitude() {
@@ -75,7 +81,8 @@ public class BranchInfo {
             JSONArray coordinate = (JSONArray) response.get("coordinate");
             Double latitude = coordinate.getDouble(0);
             Double longitude = coordinate.getDouble(1);
-            return new BranchInfo(latitude, longitude, name, id);
+            String address = response.getString("address");
+            return new BranchInfo(latitude, longitude, name, id, address);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

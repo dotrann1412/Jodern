@@ -104,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new ProductListFragment();
                 bundle = retrieveBundleForProductListFragment(intent);
             }
-            else if (nextFragment.equals(MyCartFragment.TAG)) {
-                fragment = new MyCartFragment();
-            }
             else if (nextFragment.equals(UserFragment.TAG)) {
                 fragment = new UserFragment();
                 bundle = new Bundle();

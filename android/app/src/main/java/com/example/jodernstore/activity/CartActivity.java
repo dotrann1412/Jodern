@@ -70,7 +70,6 @@ public class CartActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
                 finish();
             }
         });
@@ -88,9 +87,8 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 resetBtns();
                 highlightBtn(myCartBtn);
-                Fragment myCart = new MyCartFragment();
+                Fragment myCart = new MyCartFragment(myCartBtn);
                 switchFragment(myCart, MyCartFragment.TAG);
-                // TODO: fetch and show my cart
             }
         });
 
@@ -99,10 +97,9 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 resetBtns();
                 highlightBtn(mySharedCartBtn);
-                Fragment sharedCart = new SharedCartFragment();
+                Fragment sharedCart = new SharedCartFragment(mySharedCartBtn);
                 switchFragment(sharedCart, SharedCartFragment.TAG);
                 Log.d(SharedCartFragment.TAG, "onClick: switching to SharedCartFragment");
-                // TODO: fetch and show my shared cart
             }
         });
 
@@ -111,10 +108,9 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 resetBtns();
                 highlightBtn(myJoinedCartBtn);
-                Fragment joinedCart = new JoinedCartFragment();
+                Fragment joinedCart = new JoinedCartFragment(myJoinedCartBtn);
                 switchFragment(joinedCart, JoinedCartFragment.TAG);
                 Log.d(JoinedCartFragment.TAG, "onClick: switching to JoinedCartFragment");
-                // TODO: fetch and show my joined cart
             }
         });
     }
@@ -132,10 +128,14 @@ public class CartActivity extends AppCompatActivity {
             Fragment fragment = null;
             Bundle bundle = null;
             if (nextFragment.equals(MyCartFragment.TAG)) {
-                fragment = new MyCartFragment();
+                fragment = new MyCartFragment(myCartBtn);
                 highlightBtn(myCartBtn);
-            } else {
-                // TODO: other fragments
+            } else if (nextFragment.equals(SharedCartFragment.TAG)) {
+                fragment = new SharedCartFragment(mySharedCartBtn);
+                highlightBtn(mySharedCartBtn);
+            } else if (nextFragment.equals(JoinedCartFragment.TAG)) {
+                fragment = new JoinedCartFragment(myJoinedCartBtn);
+                highlightBtn(myJoinedCartBtn);
             }
 
             if (fragment == null)
@@ -155,14 +155,19 @@ public class CartActivity extends AppCompatActivity {
             prevFragment = MyCartFragment.TAG;
         }
         Fragment fragment = null;
+        resetBtns();
         if (prevFragment.equals(MyCartFragment.TAG)) {
-            resetBtns();
             highlightBtn(myCartBtn);
-            fragment = new MyCartFragment();
-        } else {
-            // TODO: other fragments
+            fragment = new MyCartFragment(myCartBtn);
+        } else if (prevFragment.equals(SharedCartFragment.TAG)) {
+            highlightBtn(mySharedCartBtn);
+            fragment = new SharedCartFragment(mySharedCartBtn);
+        } else if (prevFragment.equals(JoinedCartFragment.TAG)) {
+            highlightBtn(myJoinedCartBtn);
+            fragment = new JoinedCartFragment(myJoinedCartBtn);
         }
-
+        if (fragment == null)
+            return;
         switchFragmentWithoutPushingToBackStack(fragment);
     }
 

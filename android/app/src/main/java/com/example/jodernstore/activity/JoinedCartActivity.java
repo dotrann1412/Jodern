@@ -10,13 +10,18 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
+import com.example.jodernstore.fragment.MyCartFragment;
+import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.model.SharedCart;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
 
@@ -32,6 +37,7 @@ public class JoinedCartActivity extends AppCompatActivity {
     private TextView joinedCartSubTotalText;
     private LinearLayout joinedCartEmptyWrapper;
     private MaterialButton joinedCartGoToShop;
+    private ImageButton joinedCartBackBtn;
     private LinearLayout joinedCartLoadingWrapper;
     private LinearLayout joinedCartInfoParentView;
     private LinearLayout joinedCartLayout;
@@ -56,6 +62,7 @@ public class JoinedCartActivity extends AppCompatActivity {
         cartInfoQuantity = findViewById(R.id.cartInfoQuantity);
         cartInfoNoMembers = findViewById(R.id.cartInfoNoMembers);
         joinedCartSummaryWrapper = findViewById(R.id.joinedCartSummaryWrapper);
+        joinedCartBackBtn = findViewById(R.id.joinedCartBackBtn);
         joinedCartOrderBtn = findViewById(R.id.joinedCartOrderBtn);
         joinedCartAppointBtn = findViewById(R.id.joinedCartAppointBtn);
         joinedCartSubTotalText = findViewById(R.id.joinedCartSubTotalText);
@@ -67,6 +74,14 @@ public class JoinedCartActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
+        joinedCartBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+                finish();
+            }
+        });
+
         joinedCartOrderBtn.setOnClickListener(view -> {
             // TODO
         });
@@ -76,7 +91,20 @@ public class JoinedCartActivity extends AppCompatActivity {
         });
 
         joinedCartGoToShop.setOnClickListener(view -> {
-            // TODO
+            // Back pressed handling
+            Intent searchIntent = new Intent(JoinedCartActivity.this, ProductListFragment.class);
+            searchIntent.putExtra("entry", "product-list");
+            searchIntent.putExtra("sex", "nam");
+            searchIntent.putExtra("categoryName", "Thời trang nam");
+            GeneralProvider.with(JoinedCartActivity.this).setSearchIntent(searchIntent);
+
+            // Go to product list fragment of main activity
+            Intent intent = new Intent(JoinedCartActivity.this, MainActivity.class);
+            intent.putExtra("nextFragment", ProductListFragment.TAG);
+            intent.putExtra("entry", "product-list");
+            intent.putExtra("sex", "nam");
+            intent.putExtra("categoryName", "Thời trang nam");
+            startActivity(intent);
         });
     }
 
@@ -92,7 +120,7 @@ public class JoinedCartActivity extends AppCompatActivity {
         long subTotal = intent.getLongExtra("sub-total", 0);
 
         if (joinedCartIdx == -1) {
-            MySnackbar.inforSnackbar(this, joinedCartInfoParentView, getString(R.string.error_message)).setAnchorView(R.id.mainNavBarSearchBtn).show();
+            MySnackbar.inforSnackbar(this, joinedCartInfoParentView, getString(R.string.error_message)).show();
             joinedCartLoadingWrapper.setVisibility(View.GONE);
             return;
         }

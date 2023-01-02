@@ -24,6 +24,8 @@ public class Order {
         this.totalPrice = totalPrice;
         this.checkoutDate = checkoutDate;
         this.status = status;
+        this.cartItems = new ArrayList<>();
+        this.customerInfo = new HashMap<>();
     }
 
     public Order(String id, int type, Integer numItems, Long totalPrice, String checkoutDate, boolean status, HashMap<String, String> customerInfor, ArrayList<CartItem> items) {
@@ -52,31 +54,56 @@ public class Order {
         }
     }
 
-    public static Order parseFullJSON(JSONObject response) {
+    public static Order parseBasicJSON(JSONObject response, String id) {
         try {
-            Order order = parseBasicJSON(response);
+            int type = response.getInt("ordertype");
+            Integer numItems = 10;
+            if (response.has("totalitems")) {
+                numItems = response.getInt("totalitems");
+            }
+            Long totalPrice = response.getLong("totalprice");
+            String checkoutDate = response.getString("createdat");
+            boolean status = response.getBoolean("deliverstatus");
+            return new Order(id, type, numItems, totalPrice, checkoutDate, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
+    public static Order parseFullJSON(JSONObject response, String id) {
+        try {
+            System.out.println(response.toString());
+            Order order = parseBasicJSON(response, id);
+
+            int numItems = 0;
             JSONArray items = (JSONArray)response.get("details");
             for (int j = 0; j < items.length(); j++) {
                 CartItem item = CartItem.parseJSON((JSONObject)items.get(j));
                 if (item != null) {
                     order.cartItems.add(item);
+                    numItems += item.getQuantity();
                 }
             }
+            order.numItems = numItems;
 
             HashMap<String, String> infor = new HashMap<>();
-            JSONObject inforJson = (JSONObject)response.get("order-info");
+            JSONObject inforJson = null;
+            if (response.has("infor"))
+                inforJson = response.getJSONArray("infor").getJSONObject(0);
+            else
+                inforJson = response.getJSONObject("customer");
             infor.put("name", inforJson.getString("customer_name"));
             infor.put("phone", inforJson.getString("phone_number"));
             infor.put("email", inforJson.getString("email"));
             if (order.type == 0) {
                 infor.put("address", inforJson.getString("location"));
             } else {
-                infor.put("appointmentDate", inforJson.getString("date"));
+                infor.put("appointmentDate", response.getString("date"));
             }
 
             BranchInfo branch = null;
-            if (response.getJSONObject("branch") != null) {
+            if (response.has("branch")) {
                 branch = BranchInfo.parseJSON((JSONObject)response.get("branch"));
             }
 
@@ -123,11 +150,11 @@ public class Order {
         return cartItems;
     }
 
-    public void setCustomerInfo(HashMap<String, String> customerInfo) {
-        this.customerInfo = customerInfo;
-    }
-
     public void setItems(ArrayList<CartItem> items) {
         this.cartItems = items;
+    }
+
+    public BranchInfo getBranchInfo() {
+        return branchInfo;
     }
 }
