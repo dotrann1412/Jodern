@@ -46,6 +46,8 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
+
+
     <LinearLayout
         android:gravity="center_vertical"
         android:layout_width="match_parent"
@@ -156,6 +158,39 @@
                 android:textColor="@color/primary"
                 android:textStyle="bold" />
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/titleSharedCartDetail">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Danh sách sản phẩm"
+            android:textColor="@color/text"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/joinedCartHistoryBtn"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/card_image_shape"
+            android:padding="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/history"
+            android:tooltipText="Xem lịch sử của giỏ hàng"
+            app:tint="@color/primary_dark" />
     </LinearLayout>
 
     <LinearLayout

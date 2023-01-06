@@ -24,7 +24,7 @@ import com.example.jodernstore.fragment.SharedCartFragment;
 public class CartActivity extends AppCompatActivity {
     private LinearLayout parentView;
     private LinearLayout myCartBtn, mySharedCartBtn, myJoinedCartBtn;
-    private ImageButton backBtn, goToHomeBtn;
+    private ImageButton backBtn;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -43,7 +43,6 @@ public class CartActivity extends AppCompatActivity {
         mySharedCartBtn = findViewById(R.id.cartMySharedCartBtn);
         myJoinedCartBtn = findViewById(R.id.cartMyJoinedCartBtn);
         backBtn = findViewById(R.id.cartBackBtn);
-        goToHomeBtn = findViewById(R.id.cartGoToHomeBtn);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -67,51 +66,29 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
+        backBtn.setOnClickListener(view -> finish());
+
+        myCartBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(myCartBtn);
+            Fragment myCart = new MyCartFragment(myCartBtn);
+            switchFragment(myCart, MyCartFragment.TAG);
         });
 
-        goToHomeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CartActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        mySharedCartBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(mySharedCartBtn);
+            Fragment sharedCart = new SharedCartFragment(mySharedCartBtn);
+            switchFragment(sharedCart, SharedCartFragment.TAG);
+            Log.d(SharedCartFragment.TAG, "onClick: switching to SharedCartFragment");
         });
 
-        myCartBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(myCartBtn);
-                Fragment myCart = new MyCartFragment(myCartBtn);
-                switchFragment(myCart, MyCartFragment.TAG);
-            }
-        });
-
-        mySharedCartBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(mySharedCartBtn);
-                Fragment sharedCart = new SharedCartFragment(mySharedCartBtn);
-                switchFragment(sharedCart, SharedCartFragment.TAG);
-                Log.d(SharedCartFragment.TAG, "onClick: switching to SharedCartFragment");
-            }
-        });
-
-        myJoinedCartBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(myJoinedCartBtn);
-                Fragment joinedCart = new JoinedCartFragment(myJoinedCartBtn);
-                switchFragment(joinedCart, JoinedCartFragment.TAG);
-                Log.d(JoinedCartFragment.TAG, "onClick: switching to JoinedCartFragment");
-            }
+        myJoinedCartBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(myJoinedCartBtn);
+            Fragment joinedCart = new JoinedCartFragment(myJoinedCartBtn);
+            switchFragment(joinedCart, JoinedCartFragment.TAG);
+            Log.d(JoinedCartFragment.TAG, "onClick: switching to JoinedCartFragment");
         });
     }
 
