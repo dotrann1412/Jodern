@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Order {
+    private HashMap<String, String> customerInfo;
     private String id;
     private int type;   // 0: delivery, 1: appointment
     private Integer numItems;
     private Long totalPrice;
     private String checkoutDate;
     private boolean status;
-    private ArrayList<CartItem> cartItems;
-    private HashMap<String, String> customerInfo;
     private BranchInfo branchInfo;
+    private ArrayList<CartItem> cartItems;
 
     public Order(String id, int type, Integer numItems, Long totalPrice, String checkoutDate, boolean status) {
         this.id = id;
@@ -28,14 +28,14 @@ public class Order {
         this.customerInfo = new HashMap<>();
     }
 
-    public Order(String id, int type, Integer numItems, Long totalPrice, String checkoutDate, boolean status, HashMap<String, String> customerInfor, ArrayList<CartItem> items) {
+    public Order(String id, int type, Integer numItems, Long totalPrice, String checkoutDate, boolean status, HashMap<String, String> customerInfo, ArrayList<CartItem> items) {
         this.id = id;
         this.type = type;
         this.numItems = numItems;
         this.totalPrice = totalPrice;
         this.checkoutDate = checkoutDate;
         this.status = status;
-        this.customerInfo = customerInfor;
+        this.customerInfo = customerInfo;
         this.cartItems = items;
     }
 
@@ -57,7 +57,7 @@ public class Order {
     public static Order parseBasicJSON(JSONObject response, String id) {
         try {
             int type = response.getInt("ordertype");
-            Integer numItems = 10;
+            int numItems = 10;
             if (response.has("totalitems")) {
                 numItems = response.getInt("totalitems");
             }
@@ -75,6 +75,9 @@ public class Order {
         try {
             System.out.println(response.toString());
             Order order = parseBasicJSON(response, id);
+            if (order == null) {
+                throw new Exception("Parsed order is null");
+            }
 
             int numItems = 0;
             JSONArray items = (JSONArray)response.get("details");
@@ -148,6 +151,18 @@ public class Order {
 
     public ArrayList<CartItem> getItems() {
         return cartItems;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public void setBranchInfo(BranchInfo branchInfo) {
+        this.branchInfo = branchInfo;
+    }
+
+    public void setCustomerInfo(HashMap<String, String> customerInfo) {
+        this.customerInfo = customerInfo;
     }
 
     public void setItems(ArrayList<CartItem> items) {
