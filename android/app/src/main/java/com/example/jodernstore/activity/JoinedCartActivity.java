@@ -2,6 +2,7 @@ package com.example.jodernstore.activity;
 
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,23 +20,25 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
-import com.example.jodernstore.adapter.CartAdapter;
+import com.example.jodernstore.adapter.SharedCartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
-import com.example.jodernstore.model.CartItem;
-import com.example.jodernstore.model.Product;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.GeneralProvider;
-import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
 import com.makeramen.roundedimageview.RoundedImageView;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JoinedCartActivity extends AppCompatActivity {
 
@@ -43,7 +46,8 @@ public class JoinedCartActivity extends AppCompatActivity {
 
     private static final long SHIPPING_FEE = 30000;
     private RecyclerView joinedCartInfoRecyclerView;
-    private TextView cartInfoName, cartInfoQuantity, cartInfoNoMembers;
+    private LinearLayout joinedCartLayoutParentView;
+    private TextView joinedCartName, joinedCartNumItems, joinedCartNumMembers;
     private TextView joinedCartSubTotalText;
     private LinearLayout joinedCartEmptyWrapper;
     private MaterialButton joinedCartGoToShop;
@@ -61,6 +65,8 @@ public class JoinedCartActivity extends AppCompatActivity {
 
     private List<String> logs;
 
+    private boolean shouldFetchData = false;    // prevent fetching data twice when activity is started
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,15 +74,15 @@ public class JoinedCartActivity extends AppCompatActivity {
 
         initViews();
         setEvents();
-
-        getAndShowSharedCartInfo();
+        getAndShowJoinedCarts();
     }
 
     private void initViews() {
         joinedCartInfoRecyclerView = findViewById(R.id.joinedCartInfoRecyclerView);
-        cartInfoName = findViewById(R.id.cartInfoName);
-        cartInfoQuantity = findViewById(R.id.cartInfoQuantity);
-        cartInfoNoMembers = findViewById(R.id.cartInfoNoMembers);
+        joinedCartLayoutParentView = findViewById(R.id.joinedCartLayoutParentView);
+        joinedCartName = findViewById(R.id.joinedCartName);
+        joinedCartNumItems = findViewById(R.id.joinedCartNumItems);
+        joinedCartNumMembers = findViewById(R.id.joinedCartNumMembers);
         joinedCartBackBtn = findViewById(R.id.joinedCartBackBtn);
         joinedCartSubTotalText = findViewById(R.id.joinedCartSubTotalText);
         joinedCartEmptyWrapper = findViewById(R.id.joinedCartEmptyWrapper);
@@ -87,6 +93,17 @@ public class JoinedCartActivity extends AppCompatActivity {
         joinedCartHolderAvatar = findViewById(R.id.joinedCartHolderAvatar);
         joinedCartHolderName = findViewById(R.id.joinedCartHolderName);
         joinedCartHistoryBtn = findViewById(R.id.joinedCartHistoryBtn);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!shouldFetchData) {
+            shouldFetchData = true;
+            return;
+        }
+        getAndShowJoinedCarts();
     }
 
     private void setEvents() {
@@ -139,70 +156,82 @@ public class JoinedCartActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void getAndShowSharedCartInfo() {
+    private void getAndShowJoinedCarts() {
+        joinedCartLayoutParentView.setVisibility(View.GONE);
         joinedCartLoadingWrapper.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
         String cartId = intent.getStringExtra("cartId");
 
-        // TODO: call API
-        // ...
-
-        List<Long> pseudoId = new ArrayList<>();
-        pseudoId.add(123L);
-        pseudoId.add(125L);
-
-        Log.d(TAG, "handleResponse: check point 2");
-
-        ArrayList<String> urls = new ArrayList<>();
-        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
-        Product pseudoProd = new Product(
-                141L,
-                "Đầm Bé Gái In Thỏ Cột Nơ",
-                urls,
-                174300L,
-                "",
-                "vay-nu",
-                "vay-nu",
-                new Integer[]{1, 1, 2, 2, 1}
-        );
-        Log.d(TAG, "handleResponse: check point 3");
-
-        List<CartItem> items = new ArrayList<>();
-        items.add(new CartItem(pseudoProd, 1, "XL"));
-        items.add(new CartItem(pseudoProd, 2, "L"));
-        items.add(new CartItem(pseudoProd, 2, "XL"));
-        items.add(new CartItem(pseudoProd, 1, "M"));
-        items.add(new CartItem(pseudoProd, 1, "S"));
-
-        ArrayList<String> history = new ArrayList<>();
-        history.add("Member 1 thêm sản phẩm 1");
-        history.add("Member 2 thêm sản phẩm 1");
-        history.add("Member 3 thêm sản phẩm 1");
-
-        joinedCart = new SharedCart("asd123", "Joined Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
-
-        // TODO: set holder name and avatar
-        joinedCartHolderName.setText(joinedCart.getHolderName());
-        Glide.with(this).load(joinedCart.getHolderAvatar()).into(joinedCartHolderAvatar);
-
-        CartAdapter adapter = new CartAdapter(this, joinedCart, this::updateTotalPrice);
-        joinedCartInfoRecyclerView.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        joinedCartInfoRecyclerView.setLayoutManager(layoutManager);
-        showCartLayout(joinedCart.getItems().isEmpty());
-
-        joinedCartLoadingWrapper.setVisibility(View.GONE);
+        try {
+            String entry = "shared-cart";
+            JSONObject params = new JSONObject();
+            params.put("cartid", cartId);
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            String jwt = GeneralProvider.with(JoinedCartActivity.this).getJWT();
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    params,
+                    this::handleResponse,
+                    error -> {
+                        joinedCartLayoutParentView.setVisibility(View.VISIBLE);
+                        joinedCartLoadingWrapper.setVisibility(View.GONE);
+                        showCartLayout(joinedCart.getItems().isEmpty());
+                        MySnackbar.inforSnackbar(JoinedCartActivity.this, joinedCartInfoParentView, getString(R.string.error_message)).show();
+                    }
+            ) {
+                @NonNull
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Access-token", jwt);
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            MySnackbar.inforSnackbar(JoinedCartActivity.this, joinedCartInfoParentView, getString(R.string.error_message)).show();
+        }
     }
 
-    private void updateTotalPrice() {
-        Long subTotal = joinedCart.getTotal();
-        subTotalStr = vndFormatPrice(subTotal);
+    @SuppressLint("SetTextI18n")
+    private void handleResponse(JSONObject response) {
+        try {
+            joinedCart = SharedCart.parseFullJson(response);
 
-        joinedCartSubTotalText.setText(subTotalStr);
+            // basic infor
+            joinedCartName.setText(joinedCart.getName());
+            joinedCartNumItems.setText(String.valueOf(joinedCart.getNumItems()));
+            joinedCartNumMembers.setText(String.valueOf(joinedCart.getNumMembers()));
 
-        if (subTotal.equals(0L)) {
-            showCartLayout(true);
+            // holder
+            String avatar = joinedCart.getHolderAvatar();
+            if (avatar != null && !avatar.equals("")) {
+                Glide.with(this).load(avatar).into(joinedCartHolderAvatar);
+            }
+            joinedCartHolderName.setText(joinedCart.getHolderName());
+
+            // items
+            SharedCartAdapter adapter = new SharedCartAdapter(this, joinedCart, new ChangeNumItemsListener() {
+                @Override
+                public void onChanged() {
+                    getAndShowJoinedCarts();
+                }
+            });
+            joinedCartInfoRecyclerView.setAdapter(adapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            joinedCartInfoRecyclerView.setLayoutManager(layoutManager);
+            showCartLayout(joinedCart.getItems().isEmpty());
+
+            // summary
+            joinedCartSubTotalText.setText(vndFormatPrice(joinedCart.getTotal()));
+
+            joinedCartLayoutParentView.setVisibility(View.VISIBLE);
+            joinedCartLoadingWrapper.setVisibility(View.GONE);
+        } catch (Exception e) {
+            joinedCartLayoutParentView.setVisibility(View.VISIBLE);
+            joinedCartLoadingWrapper.setVisibility(View.GONE);
+            MySnackbar.inforSnackbar(JoinedCartActivity.this, joinedCartInfoParentView, getString(R.string.error_message)).show();
         }
     }
 

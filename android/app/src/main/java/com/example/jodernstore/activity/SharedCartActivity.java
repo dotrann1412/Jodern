@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -23,37 +22,27 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.bumptech.glide.Glide;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
-import com.example.jodernstore.adapter.CartAdapter;
+import com.example.jodernstore.adapter.SharedCartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.BranchInfo;
-import com.example.jodernstore.model.Cart;
-import com.example.jodernstore.model.CartItem;
-import com.example.jodernstore.model.Product;
 import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.GeneralProvider;
-import com.example.jodernstore.provider.SharedCartProvider;
-import com.google.android.gms.common.internal.BaseGmsClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.makeramen.roundedimageview.RoundedImageView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
@@ -61,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SharedCartActivity extends AppCompatActivity {
@@ -69,7 +57,8 @@ public class SharedCartActivity extends AppCompatActivity {
     private static final String TAG = "SharedCartActivity";
     private static final long SHIPPING_FEE = 30000;
     private RecyclerView sharedCartInfoRecyclerView;
-    private TextView cartInfoName, cartInfoQuantity, cartInfoNoMembers;
+    private LinearLayout sharedCartLayoutParentView;
+    private TextView sharedCartName, sharedCartNumItems, sharedCartNumMembers;
     private LinearLayout sharedCartSummaryWrapper;
     private MaterialButton sharedCartOrderBtn, sharedCartAppointBtn;
     private TextView sharedCartSubTotalText;
@@ -89,23 +78,34 @@ public class SharedCartActivity extends AppCompatActivity {
     private int selectedAppointBranchId = -1;
     private String selectedAppointDateStr = "";
 
+    private boolean shouldFetchData = false;    // prevent fetching data twice when activity is started
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_cart);
 
         initViews();
-
         getAndShowSharedCartInfo();
-
         setEvents();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!shouldFetchData) {
+            shouldFetchData = true;
+            return;
+        }
+        getAndShowSharedCartInfo();
     }
 
     private void initViews() {
         sharedCartInfoRecyclerView = findViewById(R.id.sharedCartInfoRecyclerView);
-        cartInfoName = findViewById(R.id.cartInfoName);
-        cartInfoQuantity = findViewById(R.id.cartInfoQuantity);
-        cartInfoNoMembers = findViewById(R.id.cartInfoNoMembers);
+        sharedCartLayoutParentView = findViewById(R.id.sharedCartLayoutParentView);
+        sharedCartName = findViewById(R.id.sharedCartName);
+        sharedCartNumItems = findViewById(R.id.sharedCartNumItems);
+        sharedCartNumMembers = findViewById(R.id.sharedCartNumMembers);
         sharedCartSummaryWrapper = findViewById(R.id.sharedCartSummaryWrapper);
         sharedCartBackBtn = findViewById(R.id.sharedCartBackBtn);
         sharedCartOrderBtn = findViewById(R.id.sharedCartOrderBtn);
@@ -248,52 +248,16 @@ public class SharedCartActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void getAndShowSharedCartInfo() {
+        sharedCartLayoutParentView.setVisibility(View.GONE);
         sharedCartLoadingWrapper.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
         String cartId = intent.getStringExtra("cartId");
 
-        // TODO: call API
-        // ...
-
-//        List<Long> pseudoId = new ArrayList<>();
-//        pseudoId.add(123L);
-//        pseudoId.add(125L);
-//
-//        Log.d(TAG, "handleResponse: check point 2");
-//
-//        ArrayList<String> urls = new ArrayList<>();
-//        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
-//        Product pseudoProd = new Product(
-//                141L,
-//                "Đầm Bé Gái In Thỏ Cột Nơ",
-//                urls,
-//                174300L,
-//                "",
-//                "vay-nu",
-//                "vay-nu",
-//                new Integer[]{1, 1, 2, 2, 1}
-//        );
-//        Log.d(TAG, "handleResponse: check point 3");
-//
-//        List<CartItem> items = new ArrayList<>();
-//        items.add(new CartItem(pseudoProd, 1, "XL"));
-//        items.add(new CartItem(pseudoProd, 2, "L"));
-//        items.add(new CartItem(pseudoProd, 2, "XL"));
-//        items.add(new CartItem(pseudoProd, 1, "M"));
-//        items.add(new CartItem(pseudoProd, 1, "S"));
-//
-//        ArrayList<String> history = new ArrayList<>();
-//        history.add("Member 1 thêm sản phẩm 1");
-//        history.add("Member 2 thêm sản phẩm 1");
-//        history.add("Member 3 thêm sản phẩm 1");
-//
-//        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
         try {
             String entry = "shared-cart";
             JSONObject params = new JSONObject();
             params.put("cartid", cartId);
-            Log.d(TAG, "getAndShowSharedCartInfo: " + cartId);
             String url = BuildConfig.SERVER_URL + entry + "/";
             String jwt = GeneralProvider.with(SharedCartActivity.this).getJWT();
             JsonObjectRequest postRequest = new JsonObjectRequest(
@@ -301,6 +265,7 @@ public class SharedCartActivity extends AppCompatActivity {
                     params,
                     this::handleResponse,
                     error -> {
+                        sharedCartLayoutParentView.setVisibility(View.VISIBLE);
                         sharedCartLoadingWrapper.setVisibility(View.GONE);
                         MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
                     }
@@ -314,64 +279,50 @@ public class SharedCartActivity extends AppCompatActivity {
                 }
             };
             GeneralProvider.with(this).addToRequestQueue(postRequest);
-            Log.d(TAG, "getAndShowSharedCartInfo: postRequest: " + postRequest);
         } catch (Exception e) {
-            Log.e(TAG, "getAndShowSharedCartInfo: " + e.getMessage());
             MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
         }
 
     }
 
     private void handleResponse(JSONObject response) {
-        Log.d(TAG, "handleResponse: " + response.toString());
-
         try {
-            JSONObject info = (JSONObject) response.get("info");
-            sharedCart = SharedCart.parseBasicJson(info);
-            JSONArray itemsJson = (JSONArray) response.get("items");
-            ArrayList<CartItem> items = new ArrayList<>();
-            for (int i = 0; i < itemsJson.length(); ++i) {
-                CartItem item = CartItem.parseJSON((JSONObject) itemsJson.get(i));
-                items.add(item);
+            sharedCart = SharedCart.parseFullJson(response);
+
+            // basic infor
+            sharedCartName.setText(sharedCart.getName());
+            sharedCartNumItems.setText(String.valueOf(sharedCart.getNumItems()));
+            sharedCartNumMembers.setText(String.valueOf(sharedCart.getNumMembers()));
+
+            // holder
+            String avatar = sharedCart.getHolderAvatar();
+            if (avatar != null && !avatar.equals("")) {
+                Glide.with(this).load(avatar).into(sharedCartHolderAvatar);
             }
-            sharedCart.setItems(items);
+            sharedCartHolderName.setText(sharedCart.getHolderName());
 
-            List<String> logs = new ArrayList<>();
-            JSONArray logsJson = (JSONArray) response.get("logs");
-            for (int i = 0; i < logsJson.length(); ++i) {
-                String log = logsJson.getString(i);
-                logs.add(log);
-            }
-            sharedCart.setHistory(logs);
+            // items
+            SharedCartAdapter adapter = new SharedCartAdapter(this, sharedCart, new ChangeNumItemsListener() {
+                @Override
+                public void onChanged() {
+                    getAndShowSharedCartInfo();
+                }
+            });
 
-            sharedCartHolderAvatar.setImageURI(Uri.parse(((JSONObject) info.get("cartholder")).getString("avatar")));
-            sharedCartHolderName.setText(((JSONObject) info.get("cartholder")).getString("name"));
-
-            CartAdapter adapter = new CartAdapter(this, sharedCart, this::updateTotalPrice);
             sharedCartInfoRecyclerView.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             sharedCartInfoRecyclerView.setLayoutManager(layoutManager);
             showCartLayout(sharedCart.getItems().isEmpty());
 
-            sharedCartLoadingWrapper.setVisibility(View.GONE);
+            // summary
+            sharedCartSubTotalText.setText(vndFormatPrice(sharedCart.getTotal()));
 
+            sharedCartLayoutParentView.setVisibility(View.VISIBLE);
+            sharedCartLoadingWrapper.setVisibility(View.GONE);
         } catch (Exception e) {
-            Log.e(TAG, "handleResponse: " + e.getMessage());
+            sharedCartLayoutParentView.setVisibility(View.VISIBLE);
             sharedCartLoadingWrapper.setVisibility(View.GONE);
             MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
-        }
-    }
-
-    private void updateTotalPrice() {
-        Long subTotal = sharedCart.getTotal();
-        subTotalStr = vndFormatPrice(subTotal);
-        totalStr = vndFormatPrice(subTotal + SHIPPING_FEE);
-        shippingStr = vndFormatPrice(SHIPPING_FEE);
-
-        sharedCartSubTotalText.setText(subTotalStr);
-
-        if (subTotal.equals(0L)) {
-            showCartLayout(true);
         }
     }
 
@@ -409,7 +360,6 @@ public class SharedCartActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 selectedAppointBranchId = position + 1;
-                System.out.println("selected branch id: " + selectedAppointBranchId);
             }
         });
 

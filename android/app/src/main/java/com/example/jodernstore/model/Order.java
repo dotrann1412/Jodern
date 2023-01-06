@@ -73,7 +73,6 @@ public class Order {
 
     public static Order parseFullJSON(JSONObject response, String id) {
         try {
-            System.out.println(response.toString());
             Order order = parseBasicJSON(response, id);
             if (order == null) {
                 throw new Exception("Parsed order is null");

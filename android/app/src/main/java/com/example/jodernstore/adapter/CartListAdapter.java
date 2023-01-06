@@ -48,7 +48,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
         SharedCart sharedCart = sharedCartList.get(position);
         holder.cartName.setText(sharedCart.getName());
         holder.cartQuantity.setText(Integer.toString(sharedCart.getNumItems()));
-        holder.cartMembers.setText(Integer.toString(sharedCart.getNoMembers()));
+        holder.cartMembers.setText(Integer.toString(sharedCart.getNumMembers()));
         holder.cartTotal.setText(vndFormatPrice(sharedCart.getTotal()));
 
         holder.cartWrapper.setOnClickListener(view -> {

@@ -49,7 +49,6 @@ public class SharedCartFragment extends Fragment {
     public static final String TAG = "SharedCartFragment";
 
     private List<SharedCart> sharedCartList;
-    private boolean shouldCallUpdateAPI = false;
     private boolean shouldCallFetchAPI = false;
 
     private FrameLayout parentView;
@@ -60,8 +59,6 @@ public class SharedCartFragment extends Fragment {
     private FloatingActionButton addCartFloatBtn;
 
     private LinearLayout navbarBtn;
-
-//    private ArrayList<SharedCart> allSharedCarts;
 
     public SharedCartFragment() {
         // Required empty public constructor
@@ -85,20 +82,16 @@ public class SharedCartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView: ");
         return inflater.inflate(R.layout.fragment_shared_cart, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated: ");
-        sharedCartList = new ArrayList<>();
         initViews();
         setEvents();
         showInitialMessage();
         getAndShowSharedCarts();
-//        handleGetSharedCartsResponse(null);
     }
 
     @Override
@@ -108,6 +101,13 @@ public class SharedCartFragment extends Fragment {
         navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_selected));
         ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.primary));
         ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.BOLD);
+
+        if (!shouldCallFetchAPI) {
+            shouldCallFetchAPI = true;
+            return;
+        }
+
+        getAndShowSharedCarts();
     }
 
     @Override
@@ -248,6 +248,7 @@ public class SharedCartFragment extends Fragment {
 
     @SuppressWarnings("deprecation")
     private void getAndShowSharedCarts() {
+        sharedCartList = new ArrayList<>();
         cartLoadingWrapper.setVisibility(View.VISIBLE);
         String entry = "shared-carts";
         String url = BuildConfig.SERVER_URL + entry;
@@ -273,7 +274,6 @@ public class SharedCartFragment extends Fragment {
     }
 
     private void handleGetSharedCartsResponse(JSONObject response) {
-        Log.d(TAG, "handleResponse: ");
         cartLoadingWrapper.setVisibility(View.GONE);
         try {
             JSONArray sharedCarts = response.getJSONArray("shared-carts");
@@ -290,7 +290,6 @@ public class SharedCartFragment extends Fragment {
         }
         catch (Exception e) {
             MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
-            Log.e(TAG, "handleResponse: " + e.getMessage());
             cartRecyclerView.setAdapter(null);
         }
     }

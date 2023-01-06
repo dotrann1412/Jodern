@@ -126,6 +126,7 @@ public class SharedCartAdapter extends RecyclerView.Adapter<SharedCartAdapter.Vi
                             public void onResponse(JSONObject response) {
                                 try {
                                     changeNumItemsListener.onChanged();
+                                    notifyDataSetChanged();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

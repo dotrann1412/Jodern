@@ -141,7 +141,6 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void handleResponse(JSONObject response) {
-        Log.d(TAG, "handleResponse: " + response.toString());
         currentOrder = Order.parseFullJSON(response, getIntent().getStringExtra("orderID"));
         loadingWrapper.setVisibility(View.GONE);
         setInfo();

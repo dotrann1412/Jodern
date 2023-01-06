@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,10 +20,6 @@ public class SharedCart extends Cart {
     private String holderAvatar;
     private List<CartItem> items;
     private List<String> history;
-
-    public SharedCart() {
-
-    }
 
     public SharedCart(String id, String name, Long total, int numItems, int numMember) {
         this.id = id;
@@ -51,13 +48,39 @@ public class SharedCart extends Cart {
         String name = response.optString("cartname");
         Long total = response.optLong("totalprice");
         int numItems = response.optInt("totalitems");
-        int numMember = response.optInt("numbersOfMembers");
+        int numMember = response.optInt("members");
         return new SharedCart(id, name, total, numItems, numMember);
     }
 
     public static SharedCart parseFullJson(JSONObject response) {
-        // TODO: parse full info of shared cart
-        return null;
+        try {
+            JSONObject info = (JSONObject) response.get("info");
+            SharedCart sharedCart = SharedCart.parseBasicJson(info);
+
+            JSONObject holder = (JSONObject) info.get("cartholder");
+            sharedCart.holderName = holder.optString("name");
+            sharedCart.holderAvatar = holder.optString("avatar");
+
+            JSONArray itemsJson = (JSONArray) response.get("items");
+            ArrayList<CartItem> items = new ArrayList<>();
+            for (int i = 0; i < itemsJson.length(); ++i) {
+                CartItem item = CartItem.parseJSON((JSONObject) itemsJson.get(i));
+                items.add(item);
+            }
+            sharedCart.items = items;
+
+            List<String> logs = new ArrayList<>();
+            JSONArray logsJson = (JSONArray) response.get("logs");
+            for (int i = 0; i < logsJson.length(); ++i) {
+                String log = logsJson.getString(i);
+                logs.add(log);
+            }
+            sharedCart.setHistory(logs);
+
+            return sharedCart;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public List<CartItem> getItems() {
@@ -102,10 +125,10 @@ public class SharedCart extends Cart {
     public int getNumItems() {
         if (items == null)
             return -1;
-        return items.size();
+        return numItems;
     }
 
-    public int getNoMembers() { return numMember; }
+    public int getNumMembers() { return numMember; }
 
     public Long getTotal() {
         return total;

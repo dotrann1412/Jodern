@@ -46,257 +46,263 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-
-
     <LinearLayout
-        android:gravity="center_vertical"
+        android:id="@+id/joinedCartLayoutParentView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/card_image_shape"
-        android:orientation="horizontal"
-        android:paddingTop="16dp"
-        android:paddingBottom="12dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/titleSharedCartDetail"
-        android:id="@+id/joinedCartInfoWrapper">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <LinearLayout
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="@drawable/card_image_shape"
+            android:orientation="horizontal"
+            android:paddingTop="16dp"
+            android:paddingBottom="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_margin="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/titleSharedCartDetail"
+            android:id="@+id/joinedCartInfoWrapper">
 
             <LinearLayout
-                android:layout_marginBottom="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tên giỏ hàng: "
-                    android:textColor="@color/text"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/cartInfoName"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tên giỏ hàng: "
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/joinedCartName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hehehehehehehe"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hehehehehehehe"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số sản phẩm: "
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/joinedCartNumItems"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số thành viên: "
+                        android:textColor="@color/text"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/joinedCartNumMembers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/joinedCartHolderAvatar"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/logo"
+                    app:riv_mutate_background="true"
+                    app:riv_oval="true" />
 
                 <TextView
+                    android:id="@+id/joinedCartHolderName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Số sản phẩm: "
-                    android:textColor="@color/text"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/cartInfoQuantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Số thành viên: "
-                    android:textColor="@color/text"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/cartInfoNoMembers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5"
+                    android:text="Hoàng Trọng Vũ"
+                    android:textAlignment="center"
                     android:textColor="@color/primary"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <com.makeramen.roundedimageview.RoundedImageView
-                android:id="@+id/joinedCartHolderAvatar"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/logo"
-                app:riv_mutate_background="true"
-                app:riv_oval="true" />
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/titleSharedCartDetail">
 
             <TextView
-                android:id="@+id/joinedCartHolderName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hoàng Trọng Vũ"
-                android:textAlignment="center"
-                android:textColor="@color/primary"
+                android:text="Danh sách sản phẩm"
+                android:textColor="@color/text"
                 android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/joinedCartHistoryBtn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/card_image_shape"
+                android:padding="5dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/history"
+                android:tooltipText="Xem lịch sử của giỏ hàng"
+                app:tint="@color/primary_dark" />
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/titleSharedCartDetail">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Danh sách sản phẩm"
-            android:textColor="@color/text"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/joinedCartHistoryBtn"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/card_image_shape"
-            android:padding="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/history"
-            android:tooltipText="Xem lịch sử của giỏ hàng"
-            app:tint="@color/primary_dark" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginTop="0dp"
-        android:paddingTop="0dp"
-        android:id="@+id/joinedCartLayout">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/joinedCartInfoRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="20dp"
-            android:paddingTop="0dp"
-            android:layout_marginBottom="20dp"
-            android:layout_weight="1"
-            android:paddingBottom="5dp" />
 
         <LinearLayout
-            android:id="@+id/joinedCartSummaryWrapper"
+            android:id="@+id/joinedCartLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/shape_cart_sum_container"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:paddingTop="14dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="14dp">
+            android:layout_marginTop="0dp"
+            android:paddingTop="0dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/joinedCartInfoRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="20dp"
+                android:paddingTop="0dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:paddingBottom="5dp" />
+
+            <LinearLayout
+                android:id="@+id/joinedCartSummaryWrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/shape_cart_sum_container"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingTop="14dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sub_total"
+                        android:textColor="@color/text"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/joinedCartSubTotalText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="70.000 VNĐ"
+                        android:textAlignment="viewEnd"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/joinedCartEmptyWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="80dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="100dp"
+                android:layout_marginBottom="8dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/sub_total"
-                    android:textColor="@color/text"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/joinedCartSubTotalText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="70.000 VNĐ"
-                    android:textAlignment="viewEnd"
-                    android:textColor="@color/primary_dark"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/empty_cart" />
             </LinearLayout>
 
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/joinedCartEmptyWrapper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="80dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@drawable/empty_cart" />
+                android:layout_gravity="center"
+                android:text="Giỏ hàng của bạn đang trống"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/joinedCartGoToShop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary"
+                android:layout_marginTop="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Đi mua thôi!"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="16dp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Giỏ hàng của bạn đang trống"
-            android:textColor="@color/primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/joinedCartGoToShop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary"
-            android:layout_marginTop="4dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="Đi mua thôi!"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            app:cornerRadius="16dp" />
     </LinearLayout>
 
     <LinearLayout

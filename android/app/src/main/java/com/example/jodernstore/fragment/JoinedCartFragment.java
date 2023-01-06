@@ -64,14 +64,12 @@ public class JoinedCartFragment extends Fragment {
     public JoinedCartFragment() {
         // Required empty public constructor
         super(R.layout.fragment_joined_cart);
-        Log.d(TAG, "constructed");
     }
 
     public JoinedCartFragment(LinearLayout navbarBtn) {
         // Required empty public constructor
         super(R.layout.fragment_joined_cart);
         this.navbarBtn = navbarBtn;
-        Log.d(TAG, "constructed");
     }
 
     @Override
@@ -83,20 +81,16 @@ public class JoinedCartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView: ");
         return inflater.inflate(R.layout.fragment_joined_cart, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated: ");
-        joinedCartList = new ArrayList<>();
         initViews();
         setEvents();
         showInitialMessage();
         getAndShowJoinedCarts();
-//        handleResponse(null);
     }
 
     @Override
@@ -104,8 +98,15 @@ public class JoinedCartFragment extends Fragment {
         super.onResume();
 
         navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_selected));
-        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.primary));
-        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.BOLD);
+        ((TextView) navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.primary));
+        ((TextView) navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.BOLD);
+
+        if (!shouldCallFetchAPI) {
+            shouldCallFetchAPI = true;
+            return;
+        }
+
+        getAndShowJoinedCarts();
     }
 
     @Override
@@ -113,8 +114,8 @@ public class JoinedCartFragment extends Fragment {
         super.onStop();
 
         navbarBtn.findViewWithTag("image").setBackground(getContext().getDrawable(R.drawable.card_image_shape));
-        ((TextView)navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.text));
-        ((TextView)navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.NORMAL);
+        ((TextView) navbarBtn.findViewWithTag("text")).setTextColor(getContext().getColor(R.color.text));
+        ((TextView) navbarBtn.findViewWithTag("text")).setTypeface(null, Typeface.NORMAL);
     }
 
     private void initViews() {
@@ -147,7 +148,6 @@ public class JoinedCartFragment extends Fragment {
         });
 
         joinedCartFloatBtn.setOnClickListener(view -> {
-            // TODO: show dialog to add new cart
             showJoinCartDialog();
         });
     }
@@ -198,7 +198,7 @@ public class JoinedCartFragment extends Fragment {
                     ) {
                         @Override
                         public Map<String, String> getHeaders() {
-                            Map<String, String>  params = new HashMap<String, String>();
+                            Map<String, String> params = new HashMap<String, String>();
                             params.put("Access-token", jwt);
                             return params;
                         }
@@ -246,6 +246,8 @@ public class JoinedCartFragment extends Fragment {
 
     @SuppressWarnings("deprecation")
     private void getAndShowJoinedCarts() {
+        joinedCartList = new ArrayList<>();
+
         cartLoadingWrapper.setVisibility(View.VISIBLE);
 
         String entry = "joined-carts";
