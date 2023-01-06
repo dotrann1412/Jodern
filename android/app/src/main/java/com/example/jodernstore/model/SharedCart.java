@@ -20,6 +20,10 @@ public class SharedCart extends Cart {
     private List<CartItem> items;
     private List<String> history;
 
+    public SharedCart() {
+
+    }
+
     public SharedCart(String id, String name, Long total, int numItems, int numMember) {
         this.id = id;
         this.name = name;
@@ -47,7 +51,7 @@ public class SharedCart extends Cart {
         String name = response.optString("cartname");
         Long total = response.optLong("totalprice");
         int numItems = response.optInt("totalitems");
-        int numMember = response.optInt("members");
+        int numMember = response.optInt("numbersOfMembers");
         return new SharedCart(id, name, total, numItems, numMember);
     }
 
@@ -155,5 +159,9 @@ public class SharedCart extends Cart {
 
     public String getShareCode() {
         return id;
+    }
+
+    public void setHistory(List<String> logs) {
+        this.history = logs;
     }
 }
