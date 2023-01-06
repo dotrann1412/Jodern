@@ -91,59 +91,44 @@ public class OrderListActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-                finish();
-            }
+        backBtn.setOnClickListener(view -> {
+            onBackPressed();
+            finish();
         });
 
-        goToHomeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
+        goToHomeBtn.setOnClickListener(view -> {
+            onBackPressed();
         });
 
-        allBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(allBtn);
-                shownOrders = allOrders;
-                showOrderList();
-            }
+        allBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(allBtn);
+            shownOrders = allOrders;
+            showOrderList();
         });
 
-        deliveryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(deliveryBtn);
-                shownOrders = new ArrayList<>();
-                for (Order order : allOrders) {
-                    if (order.getType() == 0) {
-                        shownOrders.add(order);
-                    }
+        deliveryBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(deliveryBtn);
+            shownOrders = new ArrayList<>();
+            for (Order order : allOrders) {
+                if (order.getType() == 0) {
+                    shownOrders.add(order);
                 }
-                showOrderList();
             }
+            showOrderList();
         });
 
-        appointBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetBtns();
-                highlightBtn(appointBtn);
-                shownOrders = new ArrayList<>();
-                for (Order order : allOrders) {
-                    if (order.getType() == 1) {
-                        shownOrders.add(order);
-                    }
+        appointBtn.setOnClickListener(view -> {
+            resetBtns();
+            highlightBtn(appointBtn);
+            shownOrders = new ArrayList<>();
+            for (Order order : allOrders) {
+                if (order.getType() == 1) {
+                    shownOrders.add(order);
                 }
-                showOrderList();
             }
+            showOrderList();
         });
     }
 

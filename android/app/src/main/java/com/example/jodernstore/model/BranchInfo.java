@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -103,10 +104,14 @@ public class BranchInfo {
         return centerLocation;
     }
 
-    public static LatLng toLatLng(BranchInfo branchInfo) {
+    @NonNull
+    @Contract("_ -> new")
+    public static LatLng toLatLng(@NonNull BranchInfo branchInfo) {
         return new LatLng(branchInfo.getLatitude(), branchInfo.getLongitude());
     }
 
+    @NonNull
+    @Contract("_ -> new")
     public static BranchInfo fromLocation(@NonNull Location location) {
         return new BranchInfo(location.getLatitude(), location.getLongitude());
     }

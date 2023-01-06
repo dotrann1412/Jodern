@@ -67,6 +67,9 @@ public class SharedCartActivity extends AppCompatActivity {
     private SharedCart sharedCart;
     private String subTotalStr, shippingStr, totalStr;
 
+    private int selectedAppointBranchId = -1;
+    private String selectedAppointDateStr = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +114,7 @@ public class SharedCartActivity extends AppCompatActivity {
         });
 
         sharedCartAppointBtn.setOnClickListener(view -> {
-            // TODO
+            showAppointDialog();
         });
 
         sharedCartGoToShop.setOnClickListener(view -> {
@@ -277,6 +280,91 @@ public class SharedCartActivity extends AppCompatActivity {
             sharedCartEmptyWrapper.setVisibility(View.GONE);
             sharedCartLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showAppointDialog() {
+        final Dialog dialog = new Dialog(SharedCartActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_cart_appoint);
+
+        // Init views
+        MaterialButton chooseDateBtn = dialog.findViewById(R.id.cartAppointChooseDateBtn);
+        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartAppointCheckoutBtn);
+        TextView selectedDate = dialog.findViewById(R.id.cartAppointSelectedDate);
+        MaterialSpinner spinner = dialog.findViewById(R.id.cartAppointSpinner);
+        LinearLayout dialogParentView = dialog.findViewById(R.id.cartSummaryDialogWrapper);
+
+        // Set branches
+        ArrayList<BranchInfo> branchInfos = BranchesProvider.getInstance().getBranches();
+        ArrayList<String> branch_names = new ArrayList<>();
+        for (BranchInfo branchInfo : branchInfos) {
+            branch_names.add(branchInfo.getBranchName());
+        }
+        spinner.setItems(branch_names);
+        spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
+            @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
+                selectedAppointBranchId = position + 1;
+                System.out.println("selected branch id: " + selectedAppointBranchId);
+            }
+        });
+
+        // Date
+        MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
+        materialDateBuilder.setTitleText("Chọn ngày hẹn");
+        MaterialDatePicker materialDatePicker = materialDateBuilder.build();
+
+        materialDatePicker.addOnPositiveButtonClickListener(selection -> {
+            // selection to date object
+            String dateString = DateFormat.format("dd-MM-yyyy", new Date((Long) selection)).toString();
+            selectedDate.setText(dateString);
+            selectedAppointDateStr = dateString;
+        });
+
+        // Set events
+        checkoutBtn.setOnClickListener(v -> {
+            // validate
+            if (selectedAppointBranchId == -1) {
+                MySnackbar.inforSnackbar(SharedCartActivity.this, dialog.getWindow().getDecorView(), "Bạn vui lòng chọn chi nhánh nhé!").show();
+                return;
+            }
+
+            if (selectedAppointDateStr.length() == 0) {
+                MySnackbar.inforSnackbar(SharedCartActivity.this, dialog.getWindow().getDecorView(), "Bạn vui lòng chọn ngày hẹn nhé!").show();
+                return;
+            }
+
+            // appoints date must be after current date at least 3 day
+            Date currentDate = new Date();
+            SimpleDateFormat sourceFormat = new SimpleDateFormat("dd-MM-yyyy");
+            try {
+                Date appointDate = sourceFormat.parse(selectedAppointDateStr);
+                long diff = appointDate.getTime() - currentDate.getTime();
+                long diffDays = diff / (24 * 60 * 60 * 1000);
+                if (diffDays < 1) {
+                    MySnackbar.inforSnackbar(SharedCartActivity.this, dialog.getWindow().getDecorView(), "Ngày hẹn phải cách ngày hiện tại ít nhất\n2 ngày").show();
+                    return;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            dialog.dismiss();
+            Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
+            intent.putExtra("orderType", 1);
+            intent.putExtra("branchId", selectedAppointBranchId);
+            intent.putExtra("date", selectedAppointDateStr);
+            // this is self cart, so we don't need to pass cart id
+            startActivity(intent);
+            selectedAppointDateStr = "";
+            selectedAppointBranchId = -1;
+        });
+
+        chooseDateBtn.setOnClickListener(v -> materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER"));
+
+        dialog.show();
     }
 
 }
