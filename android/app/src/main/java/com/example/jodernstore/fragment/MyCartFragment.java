@@ -129,7 +129,6 @@ public class MyCartFragment extends Fragment {
 
         // Call API to update wishlist data (if necessary)
         if (shouldCallUpdateAPI) {
-            System.out.println("updating cart");
             updateCartData();
         }
         super.onStop();
@@ -252,7 +251,6 @@ public class MyCartFragment extends Fragment {
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 selectedAppointBranchId = position + 1;
-                System.out.println("selected branch id: " + selectedAppointBranchId);
             }
         });
 

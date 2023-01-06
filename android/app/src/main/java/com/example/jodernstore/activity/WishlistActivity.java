@@ -118,7 +118,6 @@ public class WishlistActivity extends AppCompatActivity {
 
         // Call API to update wishlist data (if necessary)
         if (shouldCallUpdateAPI) {
-            System.out.println("updating wishlist");
             updateWishlistData();
         }
         super.onStop();

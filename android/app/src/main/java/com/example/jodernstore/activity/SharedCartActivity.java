@@ -38,6 +38,7 @@ import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
+import com.google.android.gms.common.internal.BaseGmsClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -341,7 +342,6 @@ public class SharedCartActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
             @Override public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
                 selectedAppointBranchId = position + 1;
-                System.out.println("selected branch id: " + selectedAppointBranchId);
             }
         });
 

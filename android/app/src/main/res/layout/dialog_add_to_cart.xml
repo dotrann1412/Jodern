@@ -43,13 +43,15 @@
             android:orientation="vertical">
 
             <CheckBox
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:id="@+id/myCartCheckbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left|center"
                 android:layoutDirection="rtl"
                 android:text="Giỏ hàng cá nhân"
-                android:textColor="@color/text"
+                android:textColor="@color/primary"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -61,15 +63,15 @@
                 android:orientation="vertical">
 
                 <CheckBox
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:id="@+id/mySharedCartCheckAll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left|center"
                     android:layoutDirection="rtl"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
                     android:text="Giỏ hàng chia sẻ:"
-                    android:textColor="@color/text"
+                    android:textColor="@color/primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -86,7 +88,6 @@
                 android:id="@+id/myJoinedCartsLayoutWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:orientation="vertical">
 
@@ -99,7 +100,7 @@
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:text="Đang tham gia:"
-                    android:textColor="@color/text"
+                    android:textColor="@color/primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
