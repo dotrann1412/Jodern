@@ -43,8 +43,12 @@ public class SharedCart extends Cart {
     }
 
     public static SharedCart parseBasicJson(JSONObject response) {
-        // TODO: parse shared cart item (in a list)
-        return null;
+        String id = response.optString("id");
+        String name = response.optString("cartname");
+        Long total = response.optLong("totalprice");
+        int numItems = response.optInt("totalitems");
+        int numMember = response.optInt("members");
+        return new SharedCart(id, name, total, numItems, numMember);
     }
 
     public static SharedCart parseFullJson(JSONObject response) {

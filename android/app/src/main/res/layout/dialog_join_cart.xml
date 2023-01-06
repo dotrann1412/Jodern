@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:padding="16dp"
+    android:background="@drawable/shape_cart_sum_container"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="Tham gia giỏ hàng chung"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/text"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:hint="Mã giỏ hàng"
+        android:textColorHint="@color/dark_gray"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusTopStart="16dp"
+        app:endIconMode="clear_text"
+        app:startIconContentDescription="Mã giỏ hàng">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/joinedCartDialogInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:paddingStart="15dp"
+            android:textAlignment="textStart"
+            android:textColor="@color/dark_gray" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_marginTop="4dp"
+        android:id="@+id/joinedCartDialogSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:backgroundTint="@color/primary_dark"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
+        android:text="Tham gia"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
+
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center">-->
+<!--        <TextView-->
+<!--            android:id="@+id/shareCodeText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="ABCDEF"-->
+<!--            android:textColor="@color/primary"-->
+<!--            android:textSize="24sp"-->
+<!--            android:textStyle="bold"/>-->
+<!--        <ImageButton-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:scaleType="fitXY"-->
+<!--            android:background="@drawable/card_image_shape"-->
+<!--            android:padding="10dp"-->
+<!--            android:src="@drawable/clipboard"-->
+<!--            app:tint="@color/primary_dark"-->
+<!--            android:id="@+id/copyToClipboardBtn"-->
+<!--            android:contentDescription="Copy to clipboard"/>-->
+<!--    </LinearLayout>-->
+    </LinearLayout>
+</RelativeLayout>

@@ -1,7 +1,10 @@
 package com.example.jodernstore.fragment;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,24 +17,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartListAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.model.CartItem;
-import com.example.jodernstore.model.Product;
 import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.GeneralProvider;
-import com.example.jodernstore.provider.SharedCartProvider;
+import com.facebook.share.Share;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -91,8 +97,8 @@ public class SharedCartFragment extends Fragment {
         initViews();
         setEvents();
         showInitialMessage();
-//        getAndShowSharedCarts();    // TODO: uncomment later
-        handleResponse(null);
+        getAndShowSharedCarts();
+//        handleGetSharedCartsResponse(null);
     }
 
     @Override
@@ -144,7 +150,89 @@ public class SharedCartFragment extends Fragment {
 
         addCartFloatBtn.setOnClickListener(view -> {
             // TODO: show dialog to add new cart
+            showDialogCreateSharedCart();
         });
+    }
+
+    private void showDialogCreateSharedCart() {
+        final Dialog dialog = new Dialog(requireActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_shared_cart_create);
+
+        // Init views
+        TextInputEditText nameInput = dialog.findViewById(R.id.sharedCartNameInput);
+        MaterialButton createBtn = dialog.findViewById(R.id.sharedCartCreateBtn);
+
+        // Set events
+        createBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+                // Call API
+                cartLoadingWrapper.setVisibility(View.VISIBLE);
+                try {
+                    String entry = "make-shared-cart";
+                    String url = BuildConfig.SERVER_URL + entry + "/";
+                    JSONObject params = new JSONObject();
+                    params.put("name", nameInput.getText());
+                    String jwt = GeneralProvider.with(getContext()).getJWT();
+                    JsonObjectRequest postRequest = new JsonObjectRequest(
+                            url,
+                            params,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    cartLoadingWrapper.setVisibility(View.GONE);
+                                    handleCreateResponse(response);
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    System.out.println(error.toString());
+                                    cartLoadingWrapper.setVisibility(View.GONE);
+                                    showErrorMsg();
+                                }
+                            }
+                    ) {
+                        @Override
+                        public Map<String, String> getHeaders() {
+                            Map<String, String>  params = new HashMap<String, String>();
+                            params.put("Access-token", jwt);
+                            return params;
+                        }
+                    };
+                    GeneralProvider.with(getContext()).addToRequestQueue(postRequest);
+                } catch (Exception e) {
+                    showErrorMsg();
+                }
+
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void handleCreateResponse(JSONObject response) {
+        try {
+            JSONObject info = response.getJSONObject("info");
+            SharedCart newItem = SharedCart.parseBasicJson(info);
+            sharedCartList.add(newItem);
+            CartListAdapter adapter = new CartListAdapter(this.getContext(), sharedCartList, false);
+            cartRecyclerView.setAdapter(adapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+            cartRecyclerView.setLayoutManager(layoutManager);
+            showCartLayout(this.sharedCartList.isEmpty());
+        } catch (Exception e) {
+            showErrorMsg();
+        }
+    }
+
+    private void showErrorMsg() {
+        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 
     private void showInitialMessage() {
@@ -161,15 +249,12 @@ public class SharedCartFragment extends Fragment {
     @SuppressWarnings("deprecation")
     private void getAndShowSharedCarts() {
         cartLoadingWrapper.setVisibility(View.VISIBLE);
-
-        // TODO: call shared cart API
-        String entry = "";
+        String entry = "shared-carts";
         String url = BuildConfig.SERVER_URL + entry;
         String jwt = GeneralProvider.with(getContext()).getJWT();
-        JsonObjectRequest postRequest = new JsonObjectRequest(
+        JsonObjectRequest getRequest = new JsonObjectRequest(
                 url,
-                new JSONObject(),
-                this::handleResponse,
+                this::handleGetSharedCartsResponse,
                 error -> {
                     cartLoadingWrapper.setVisibility(View.GONE);
                     MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
@@ -184,63 +269,26 @@ public class SharedCartFragment extends Fragment {
             }
         };
 
-//        GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
     }
 
-    private void handleResponse(JSONObject response) {
+    private void handleGetSharedCartsResponse(JSONObject response) {
         Log.d(TAG, "handleResponse: ");
         cartLoadingWrapper.setVisibility(View.GONE);
         try {
-            Log.d(TAG, "handleResponse: in try-catch block");
-//            JSONArray sharedCarts = (JSONArray) response.get("carts");
-
-//            // TODO: extra steps to init `sharedCartList`
-//            List<SharedCart> parsedSharedCartList = new ArrayList<>();
-//            // parsing...
-//            Log.d(TAG, "handleResponse: check point 1");
-//
-//            List<Long> pseudoId = new ArrayList<>();
-//            pseudoId.add(123L); pseudoId.add(125L);
-//
-//            Log.d(TAG, "handleResponse: check point 2");
-//
-//            ArrayList<String> urls = new ArrayList<>();
-//            urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
-//            Product pseudoProd = new Product(
-//                    141L,
-//                    "Đầm Bé Gái In Thỏ Cột Nơ",
-//                    urls,
-//                    174300L,
-//                    "",
-//                    "vay-nu",
-//                    "vay-nu",
-//                    new Integer[] { 1, 1, 2, 2, 1}
-//                    );
-//            Log.d(TAG, "handleResponse: check point 3");
-//
-//            List<CartItem> items = new ArrayList<>();
-//            items.add(new CartItem(pseudoProd, 1, "XL"));
-//            items.add(new CartItem(pseudoProd, 2, "L"));
-//            items.add(new CartItem(pseudoProd, 2, "XL"));
-//            items.add(new CartItem(pseudoProd, 1, "M"));
-//            items.add(new CartItem(pseudoProd, 1, "S"));
-
-//            Log.d(TAG, "handleResponse: " + new SharedCart(0L, "holder1", items, "Cart 1", pseudoId));
-            // pseudo
-            for (int i = 0; i < 10; i++) {
-                sharedCartList.add(new SharedCart("ID" + i, "Shared cart " + i, 100000L, 5, 5));
+            JSONArray sharedCarts = response.getJSONArray("shared-carts");
+            for (int i = 0; i < sharedCarts.length(); i++) {
+                JSONObject item = sharedCarts.getJSONObject(i);
+                SharedCart sharedCart = SharedCart.parseBasicJson(item);
+                sharedCartList.add(sharedCart);
             }
-
-            Log.d(TAG, "handleResponse: " + sharedCartList);
-
-            Log.d(TAG, "handleResponse: parsed successfully, initializing recycler view");
             CartListAdapter adapter = new CartListAdapter(this.getContext(), sharedCartList, false);
             cartRecyclerView.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
             cartRecyclerView.setLayoutManager(layoutManager);
             showCartLayout(this.sharedCartList.isEmpty());
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
             Log.e(TAG, "handleResponse: " + e.getMessage());
             cartRecyclerView.setAdapter(null);

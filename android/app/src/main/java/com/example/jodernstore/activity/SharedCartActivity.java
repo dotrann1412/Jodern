@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
@@ -40,6 +41,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,6 +65,8 @@ public class SharedCartActivity extends AppCompatActivity {
     private LinearLayout sharedCartInfoParentView;
     private LinearLayout sharedCartLayout;
     private ImageButton shareCartBtn;
+    private RoundedImageView sharedCartHolderAvatar;
+    private TextView sharedCartHolderName;
 
     private SharedCart sharedCart;
     private String subTotalStr, shippingStr, totalStr;
@@ -98,6 +102,8 @@ public class SharedCartActivity extends AppCompatActivity {
         sharedCartInfoParentView = findViewById(R.id.sharedCartInfoParentView);
         sharedCartLayout = findViewById(R.id.sharedCartLayout);
         shareCartBtn = findViewById(R.id.shareCartBtn);
+        sharedCartHolderAvatar = findViewById(R.id.sharedCartHolderAvatar);
+        sharedCartHolderName = findViewById(R.id.sharedCartHolderName);
     }
 
     private void setEvents() {
@@ -246,9 +252,11 @@ public class SharedCartActivity extends AppCompatActivity {
         history.add("Member 2 thêm sản phẩm 1");
         history.add("Member 3 thêm sản phẩm 1");
 
-        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
+        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Vũ Vũ Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
 
         // TODO: set holder name and avatar
+        sharedCartHolderName.setText(sharedCart.getHolderName());
+        Glide.with(this).load(sharedCart.getHolderAvatar()).into(sharedCartHolderAvatar);
 
         CartAdapter adapter = new CartAdapter(this, sharedCart, this::updateTotalPrice);
         sharedCartInfoRecyclerView.setAdapter(adapter);
@@ -354,6 +362,7 @@ public class SharedCartActivity extends AppCompatActivity {
             dialog.dismiss();
             Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
             intent.putExtra("orderType", 1);
+            intent.putExtra("cartId", sharedCart.getId());
             intent.putExtra("branchId", selectedAppointBranchId);
             intent.putExtra("date", selectedAppointDateStr);
             // this is self cart, so we don't need to pass cart id

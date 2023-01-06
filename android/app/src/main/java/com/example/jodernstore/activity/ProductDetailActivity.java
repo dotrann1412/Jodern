@@ -393,9 +393,10 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // TODO: Show dialog of carts
         // demo below
-        final Dialog dialog = new Dialog(this);
+        final Dialog dialog = new Dialog(ProductDetailActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(R.layout.dialog_add_to_cart);
 
@@ -457,9 +458,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 try {
                     String entry = "add-to-cart";
                     JSONObject params = new JSONObject();
-//                    params.put("productid", currentProduct.getId());
-//                    params.put("quantity", quantity);
-//                    params.put("sizeid", currentSize);
+                    params.put("productid", currentProduct.getId());
+                    params.put("quantity", quantity);
+                    params.put("sizeid", currentSize);
+                    // selected carts
                     String url = BuildConfig.SERVER_URL + entry + "/";
                     JsonObjectRequest postRequest = new JsonObjectRequest(
                             url,
@@ -468,7 +470,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
-                                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, "Sản phẩm đã được thêm vào giỏ hàng").show();
+                                        MySnackbar.inforSnackbar(ProductDetailActivity.this, dialog.getWindow().getDecorView(), "Sản phẩm đã được thêm vào các giỏ hàng").show();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         showErrorMsg();
@@ -490,11 +492,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                             return params;
                         }
                     };
-                    GeneralProvider.with(ProductDetailActivity.this).addToRequestQueue(postRequest);
+//                    GeneralProvider.with(ProductDetailActivity.this).addToRequestQueue(postRequest);
                 } catch (Exception e) {
                     e.printStackTrace();
                     showErrorMsg();
                 }
+                dialog.dismiss();
             }
         });
 

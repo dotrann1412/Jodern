@@ -165,18 +165,13 @@ public class HomeFragment extends Fragment {
         String entry = "trending";
         String params = "8";
         String url = BuildConfig.SERVER_URL + entry + "/" + params;
-        JsonObjectRequest postRequest = new JsonObjectRequest (
-                Request.Method.GET,
+        JsonObjectRequest getRequest = new JsonObjectRequest (
                 url,
-                null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        System.out.println("handle trending response");
                         ArrayList<Product> trendingProducts = Product.parseProductListFromResponse(response);
-//                        for (Product product : trendingProducts) {
-//                            System.out.println(product.getId());
-//                            System.out.println(product.getName());
-//                        }
                         setupTrendingProducts(trendingProducts);
                     }
                 },
@@ -187,7 +182,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
         );
-        GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
     }
 
     private void setupTrendingProducts(ArrayList<Product> trendingProducts) {
