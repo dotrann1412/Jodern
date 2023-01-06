@@ -188,7 +188,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "setBranchMarker: setting markers for (" + branchInfo.getLatitude() + ", " + branchInfo.getLongitude() + ")");
         MarkerOptions options = new MarkerOptions()
                 .position(BranchInfo.toLatLng(branchInfo))
-                .title("Jodern")
+                .title(branchInfo.getBranchName())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 //                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_logo_icon));
 
