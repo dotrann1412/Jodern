@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,7 +25,8 @@ import com.example.jodernstore.adapter.MapMarkerInfoAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 
 import com.example.jodernstore.helper.DirectionsJSONParser;
-import com.example.jodernstore.model.BranchLocation;
+import com.example.jodernstore.model.BranchInfo;
+import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -62,8 +64,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Boolean locationPermissionGranted = false;
     private GoogleMap googleMap;
 
-    private BranchLocation nearestBranch;
-    private BranchLocation currentLocation;
+    private BranchInfo nearestBranch;
+    private BranchInfo currentLocation;
 
     private LinearLayout mapParentView;
     private LinearLayout loadingWrapper;
@@ -78,7 +80,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapParentView = findViewById(R.id.mapParentView);
         loadingWrapper = findViewById(R.id.mapLoadingWrapper);
         loadingWrapper.setVisibility(View.VISIBLE);
-
 
         getLocationPermission();
     }
@@ -122,31 +123,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void parseLocationJSON(JSONObject response) {
         try {
-            JSONArray locations = response.getJSONArray("location");
-            for (int i = 0; i < locations.length(); ++i) {
-                JSONArray latLng = (JSONArray) locations.get(i);
-                BranchLocation location = new BranchLocation((double) latLng.get(0), (double) latLng.get(1));
-
+            JSONArray branches = response.getJSONArray("branchs");
+            for (int i = 0; i < branches.length(); ++i) {
+                JSONObject branch = (JSONObject) branches.get(i);
+                JSONArray latLng = (JSONArray) branch.get("coordinate");
+                BranchInfo location = new BranchInfo((double) latLng.get(0), (double) latLng.get(1));
                 setBranchMarker(location);
-
                 if (i == 0) {
                     Log.d(TAG, "parseLocationJSON: initialize nearest branch " + location);
                     nearestBranch = location;
                 } else {
-                    if (calculationByDistance(BranchLocation.toLatLng(nearestBranch), BranchLocation.toLatLng(currentLocation))
-                            > calculationByDistance(BranchLocation.toLatLng(location), BranchLocation.toLatLng(currentLocation))) {
+                    if (calculationByDistance(BranchInfo.toLatLng(nearestBranch), BranchInfo.toLatLng(currentLocation))
+                            > calculationByDistance(BranchInfo.toLatLng(location), BranchInfo.toLatLng(currentLocation))) {
                         Log.d(TAG, "parseLocationJSON: modify nearest branch " + location);
                         nearestBranch = location;
                     }
                 }
             }
-            moveCamera(BranchLocation.toLatLng(nearestBranch));
-            Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
+            moveCamera(BranchInfo.toLatLng(nearestBranch));
+//            Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
 //            getPathToLocation(new LatLng(10.7314940, 106.6966400));
         } catch (Exception e) {
             Log.d(TAG, "parseLocationJSON: " + e.getMessage());
         } finally {
             loadingWrapper.setVisibility(View.GONE);
+
+            // Get Intent from OrderDetailActivity to draw the path
+            Intent intent = getIntent();
+            boolean drawPath = intent.getBooleanExtra("order", false);
+            if (drawPath) {
+                double lat = intent.getDoubleExtra("lat", 0.f);
+                double lng = intent.getDoubleExtra("lng", 0.f);
+                Log.d(TAG, "parseLocationJSON: drawing the path to the branch location (" + lat + ", " + lng + ")");
+                getPathToLocation(new LatLng(lat, lng));
+            }
         }
     }
 
@@ -174,15 +184,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return Radius * c;
     }
 
-    private void setBranchMarker(@NonNull BranchLocation branchLocation) {
-        Log.d(TAG, "setBranchMarker: setting markers for (" + branchLocation.getLatitude() + ", " + branchLocation.getLongitude() + ")");
+    private void setBranchMarker(@NonNull BranchInfo branchInfo) {
+        Log.d(TAG, "setBranchMarker: setting markers for (" + branchInfo.getLatitude() + ", " + branchInfo.getLongitude() + ")");
         MarkerOptions options = new MarkerOptions()
-                .position(BranchLocation.toLatLng(branchLocation))
+                .position(BranchInfo.toLatLng(branchInfo))
                 .title("Jodern")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 //                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_logo_icon));
 
-        Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchLocation);
+        Objects.requireNonNull(googleMap.addMarker(options)).setTag(branchInfo);
     }
 
     private void getLocationPermission() {
@@ -219,7 +229,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
     }
 
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+    @NonNull
+    private String getDirectionsUrl(@NonNull LatLng origin, @NonNull LatLng dest) {
         Log.d(TAG, "getDirectionUrl: origin = " + origin + ", destination = " + dest);
         String originStr = origin.longitude + "," + origin.latitude;
         String destStr = dest.longitude + "," + dest.latitude;
@@ -228,7 +239,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void getPathToLocation(LatLng destination) {
         Log.d(TAG, "getPathToLocation: getting path to location " + destination);
-        String url = getDirectionsUrl(BranchLocation.toLatLng(currentLocation), destination);
+        String url = getDirectionsUrl(BranchInfo.toLatLng(currentLocation), destination);
         Log.d(TAG, "getPathToLocation: direction URL is " + url);
         DownloadTask downloadTask = new DownloadTask();
         downloadTask.execute(url);
@@ -243,10 +254,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 @SuppressLint("MissingPermission") Task<Location> location = fusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        currentLocation = BranchLocation.fromLocation((Location) task.getResult());
+                        currentLocation = BranchInfo.fromLocation((Location) task.getResult());
                         Log.d(TAG, "onComplete: current location " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-                        moveCamera(BranchLocation.toLatLng(currentLocation));
-                        retrieveBranchLocation();
+                        moveCamera(BranchInfo.toLatLng(currentLocation));
+//                        retrieveBranchLocation();
+                        getBranchLocation();
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
                     }
@@ -257,6 +269,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } catch (Exception e) {
             Log.e(TAG, "getDeviceLocation: Exception");
             e.printStackTrace();
+        }
+    }
+
+    private void getBranchLocation() {
+        ArrayList<BranchInfo> branchInfoArrayList = BranchesProvider.getInstance().getBranches();
+        for (int i = 0; i < branchInfoArrayList.size(); ++i) {
+            BranchInfo location = branchInfoArrayList.get(i);
+            setBranchMarker(location);
+            if (i == 0) {
+                Log.d(TAG, "getBranchLocation: initialize nearest branch " + location);
+                nearestBranch = location;
+            } else {
+                if (calculationByDistance(BranchInfo.toLatLng(nearestBranch), BranchInfo.toLatLng(currentLocation))
+                        > calculationByDistance(BranchInfo.toLatLng(location), BranchInfo.toLatLng(currentLocation))) {
+                    Log.d(TAG, "getBranchLocation: modify nearest branch " + location);
+                    nearestBranch = location;
+                }
+            }
+        }
+        moveCamera(BranchInfo.toLatLng(nearestBranch));
+
+        loadingWrapper.setVisibility(View.GONE);
+
+        // Get Intent from OrderDetailActivity to draw the path
+        Intent intent = getIntent();
+        boolean drawPath = intent.getBooleanExtra("order", false);
+        if (drawPath) {
+            double lat = intent.getDoubleExtra("lat", 0.f);
+            double lng = intent.getDoubleExtra("lng", 0.f);
+            Log.d(TAG, "parseLocationJSON: drawing the path to the branch location (" + lat + ", " + lng + ")");
+            getPathToLocation(new LatLng(lat, lng));
         }
     }
 
