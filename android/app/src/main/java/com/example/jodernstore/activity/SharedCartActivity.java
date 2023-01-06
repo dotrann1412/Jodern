@@ -2,6 +2,7 @@ package com.example.jodernstore.activity;
 
 import static com.example.jodernstore.Utils.vndFormatPrice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jodernstore.BuildConfig;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
@@ -42,11 +47,15 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SharedCartActivity extends AppCompatActivity {
 
@@ -105,12 +114,9 @@ public class SharedCartActivity extends AppCompatActivity {
     }
 
     private void setEvents() {
-        sharedCartBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-                finish();
-            }
+        sharedCartBackBtn.setOnClickListener(view -> {
+            onBackPressed();
+            finish();
         });
 
         sharedCartOrderBtn.setOnClickListener(view -> {
@@ -241,39 +247,74 @@ public class SharedCartActivity extends AppCompatActivity {
         // TODO: call API
         // ...
 
-        List<Long> pseudoId = new ArrayList<>();
-        pseudoId.add(123L);
-        pseudoId.add(125L);
+//        List<Long> pseudoId = new ArrayList<>();
+//        pseudoId.add(123L);
+//        pseudoId.add(125L);
+//
+//        Log.d(TAG, "handleResponse: check point 2");
+//
+//        ArrayList<String> urls = new ArrayList<>();
+//        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
+//        Product pseudoProd = new Product(
+//                141L,
+//                "Đầm Bé Gái In Thỏ Cột Nơ",
+//                urls,
+//                174300L,
+//                "",
+//                "vay-nu",
+//                "vay-nu",
+//                new Integer[]{1, 1, 2, 2, 1}
+//        );
+//        Log.d(TAG, "handleResponse: check point 3");
+//
+//        List<CartItem> items = new ArrayList<>();
+//        items.add(new CartItem(pseudoProd, 1, "XL"));
+//        items.add(new CartItem(pseudoProd, 2, "L"));
+//        items.add(new CartItem(pseudoProd, 2, "XL"));
+//        items.add(new CartItem(pseudoProd, 1, "M"));
+//        items.add(new CartItem(pseudoProd, 1, "S"));
+//
+//        ArrayList<String> history = new ArrayList<>();
+//        history.add("Member 1 thêm sản phẩm 1");
+//        history.add("Member 2 thêm sản phẩm 1");
+//        history.add("Member 3 thêm sản phẩm 1");
+//
+//        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
+        try {
+            String entry = "shared-cart";
+            JSONObject params = new JSONObject();
+            params.put("cartid", cartId);
+            Log.d(TAG, "getAndShowSharedCartInfo: " + cartId);
+            String url = BuildConfig.SERVER_URL + entry;
+            String jwt = GeneralProvider.with(SharedCartActivity.this).getJWT();
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    url,
+                    new JSONObject(),
+                    this::handleResponse,
+                    error -> {
+                        sharedCartLoadingWrapper.setVisibility(View.GONE);
+                        MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
+                    }
+            ) {
+                @NonNull
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Access-token", jwt);
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(postRequest);
+        } catch (Exception e) {
+            Log.e(TAG, "getAndShowSharedCartInfo: " + e.getMessage());
+            MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
+        }
 
-        Log.d(TAG, "handleResponse: check point 2");
+    }
 
-        ArrayList<String> urls = new ArrayList<>();
-        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
-        Product pseudoProd = new Product(
-                141L,
-                "Đầm Bé Gái In Thỏ Cột Nơ",
-                urls,
-                174300L,
-                "",
-                "vay-nu",
-                "vay-nu",
-                new Integer[]{1, 1, 2, 2, 1}
-        );
-        Log.d(TAG, "handleResponse: check point 3");
-
-        List<CartItem> items = new ArrayList<>();
-        items.add(new CartItem(pseudoProd, 1, "XL"));
-        items.add(new CartItem(pseudoProd, 2, "L"));
-        items.add(new CartItem(pseudoProd, 2, "XL"));
-        items.add(new CartItem(pseudoProd, 1, "M"));
-        items.add(new CartItem(pseudoProd, 1, "S"));
-
-        ArrayList<String> history = new ArrayList<>();
-        history.add("Member 1 thêm sản phẩm 1");
-        history.add("Member 2 thêm sản phẩm 1");
-        history.add("Member 3 thêm sản phẩm 1");
-
-        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
+    private void handleResponse(JSONObject response) {
+        Log.d(TAG, "handleResponse: " + response.toString());
+        sharedCart = null; // assign sharedCart
 
         // TODO: set holder name and avatar
 
