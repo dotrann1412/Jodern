@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cartSummaryDialogWrapper"
@@ -9,8 +9,14 @@
     android:layout_marginTop="180dp"
     android:layout_marginBottom="180dp"
     android:background="@drawable/shape_cart_sum_container"
-    android:orientation="vertical"
-    android:paddingTop="12dp">
+    android:paddingTop="8dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
@@ -37,13 +43,15 @@
             android:orientation="vertical">
 
             <CheckBox
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:id="@+id/myCartCheckbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left|center"
                 android:layoutDirection="rtl"
                 android:text="Giỏ hàng cá nhân"
-                android:textColor="@color/text"
+                android:textColor="@color/primary"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -55,15 +63,15 @@
                 android:orientation="vertical">
 
                 <CheckBox
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:id="@+id/mySharedCartCheckAll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left|center"
                     android:layoutDirection="rtl"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
                     android:text="Giỏ hàng chia sẻ:"
-                    android:textColor="@color/text"
+                    android:textColor="@color/primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -80,7 +88,6 @@
                 android:id="@+id/myJoinedCartsLayoutWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:orientation="vertical">
 
@@ -93,7 +100,7 @@
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:text="Đang tham gia:"
-                    android:textColor="@color/text"
+                    android:textColor="@color/primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -125,5 +132,7 @@
         android:textAllCaps="false"
         android:textSize="16sp"
         app:cornerRadius="16dp" />
-</LinearLayout>
+
+    </LinearLayout>
+    </RelativeLayout>
 

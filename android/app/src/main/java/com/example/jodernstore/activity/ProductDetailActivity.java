@@ -47,6 +47,7 @@ import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnima
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -120,7 +121,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         ) {
             @Override
             public Map<String, String> getHeaders() {
-                Map<String, String>  params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<String, String>();
                 params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
                 return params;
             }
@@ -161,8 +162,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         try {
             currentProduct = Product.parseJSON(response);
             isInWishlist = response.optBoolean("isInWishList", false);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -175,7 +175,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         detailDescription.setText(currentProduct.getDescription());
 
         currentQuantity = 1;
-        buyQuantityText.setText("1" );
+        buyQuantityText.setText("1");
 
         // image slider
         ArrayList<String> images = currentProduct.getImages();
@@ -211,7 +211,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             addWishlistBtn.setImageResource(R.drawable.ic_wishlist_filled_full);
         } else {
             addWishlistBtn.setImageResource(R.drawable.ic_wishlist);
-        };
+        }
+        ;
     }
 
     private void setSizeStatus(LinearLayout detailSize, boolean isEnabled) {
@@ -391,46 +392,73 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: Show dialog of carts
-        // demo below
-        final Dialog dialog = new Dialog(this);
+        // Call API
+        try {
+            String entry = "shared-summary";
+            String url = BuildConfig.SERVER_URL + entry + "/";
+            String jwt = GeneralProvider.with(this).getJWT();
+            JsonObjectRequest getRequest = new JsonObjectRequest(
+                    url,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray sharedItems = response.getJSONArray("shared");
+                                JSONArray joinedItems = response.getJSONArray("joined");
+                                ArrayList<HashMap<String, String>> sharedCarts = parseCartItems(sharedItems);
+                                ArrayList<HashMap<String, String>> joinedCarts = parseCartItems(joinedItems);
+                                showChooseCartDialog(sharedCarts, joinedCarts);
+                            } catch (Exception e) {
+                                showErrorMsg();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            showErrorMsg();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Access-token", jwt);
+                    return params;
+                }
+            };
+            GeneralProvider.with(this).addToRequestQueue(getRequest);
+        } catch (Exception e) {
+            showErrorMsg();
+        }
+    }
+
+    private void showChooseCartDialog(ArrayList<HashMap<String, String>> sharedCarts, ArrayList<HashMap<String, String>> joinedCarts) {
+        final Dialog dialog = new Dialog(ProductDetailActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(R.layout.dialog_add_to_cart);
-
-        HashMap<String, Boolean> storeOptions = new HashMap<>(); // store checked options
-
-        // Cart list
-        ArrayList<HashMap<String, String>> sharedCarts = new ArrayList<>();
-        ArrayList<HashMap<String, String>> joinedCarts = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            int finalI = i;
-            sharedCarts.add(new HashMap<String, String>() {{
-                put("name", "My Shared Cart " + String.valueOf(finalI));
-                put("id", String.valueOf("shared_cart_" + String.valueOf(finalI)));
-            }});
-            joinedCarts.add(new HashMap<String, String>() {{
-                put("name", "My Joined Cart " + String.valueOf(finalI));
-                put("id", String.valueOf("joined_cart_" + String.valueOf(finalI)));
-            }});
-        }
 
         LinearLayout sharedCartsLayoutWrapper = dialog.findViewById(R.id.mySharedCartsLayoutWrapper);
         LinearLayout sharedCartsLayout = dialog.findViewById(R.id.mySharedCartsLayout);
         LinearLayout joinedCartsLayoutWrapper = dialog.findViewById(R.id.myJoinedCartsLayoutWrapper);
         LinearLayout joinedCartsLayout = dialog.findViewById(R.id.myJoinedCartsLayout);
         MaterialButton saveBtn = dialog.findViewById(R.id.saveBtn);
-
         CheckBox myCartCheckBox = dialog.findViewById(R.id.myCartCheckbox);
         CheckBox mySharedCartCheckAll = dialog.findViewById(R.id.mySharedCartCheckAll);
         CheckBox myJoinedCartCheckAll = dialog.findViewById(R.id.myJoinedCartCheckAll);
+
+
+        HashMap<String, Boolean> storeOptions = new HashMap<>(); // store checked options
 
         myCartCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (myCartCheckBox.isChecked()) {
-                    storeOptions.put("myCart", true);
+                    storeOptions.put("*", true);
                 } else {
                     storeOptions.remove("myCart");
                 }
@@ -447,19 +475,26 @@ public class ProductDetailActivity extends AppCompatActivity {
                     MySnackbar.inforSnackbar(ProductDetailActivity.this, dialog.getWindow().getDecorView(), "Bạn vui lòng chọn giỏ hàng nhé!").show();
                     return;
                 }
-                // print option
-                for (Map.Entry<String, Boolean> entry : storeOptions.entrySet()) {
-                    System.out.println(entry.getKey() + " : " + entry.getValue());
-                }
-                System.out.println("====================================");
 
-                // TODO: Call API to add product to carts
+                dialog.dismiss();
+
                 try {
                     String entry = "add-to-cart";
                     JSONObject params = new JSONObject();
-//                    params.put("productid", currentProduct.getId());
-//                    params.put("quantity", quantity);
-//                    params.put("sizeid", currentSize);
+                    params.put("productid", currentProduct.getId());
+                    params.put("quantity", currentQuantity);
+                    params.put("sizeid", currentSize);
+                    JSONArray cartIds = new JSONArray();
+                    for (Map.Entry<String, Boolean> set: storeOptions.entrySet()) {
+                        String id = set.getKey();
+                        boolean status = set.getValue();
+                        if (status)
+                            cartIds.put(id);
+                    }
+                    params.put("cartids", cartIds);
+                    System.out.println(params);
+
+                    // selected carts
                     String url = BuildConfig.SERVER_URL + entry + "/";
                     JsonObjectRequest postRequest = new JsonObjectRequest(
                             url,
@@ -468,7 +503,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
-                                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, "Sản phẩm đã được thêm vào giỏ hàng").show();
+                                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, "Sản phẩm đã được thêm vào các giỏ hàng").show();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         showErrorMsg();
@@ -485,7 +520,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     ) {
                         @Override
                         public Map<String, String> getHeaders() {
-                            Map<String, String>  params = new HashMap<String, String>();
+                            Map<String, String> params = new HashMap<String, String>();
                             params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
                             return params;
                         }
@@ -501,14 +536,29 @@ public class ProductDetailActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private ArrayList<HashMap<String, String>> parseCartItems(JSONArray json) {
+        ArrayList<HashMap<String, String>> cartItems = new ArrayList<>();
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                JSONObject item = json.getJSONObject(i);
+                HashMap<String, String> hm = new HashMap<>();
+                hm.put("cartid", item.getString("cartid"));
+                hm.put("cartname", item.getString("cartname"));
+                cartItems.add(hm);
+            } catch (Exception ignored) {
+            }
+        }
+        return cartItems;
+    }
+
 
     private void setupCheckboxGroup(LinearLayout cartsLayoutWrapper, LinearLayout cartsLayout, CheckBox checkAll, ArrayList<HashMap<String, String>> cartList, HashMap<String, Boolean> storeOptions) {
         if (cartList.size() > 0) {
             cartsLayoutWrapper.setVisibility(View.VISIBLE);
             for (HashMap<String, String> cart : cartList) {
                 CheckBox checkbox = (CheckBox) getLayoutInflater().inflate(R.layout.checkbox_item, null);
-                checkbox.setText(cart.get("name"));
-                checkbox.setTag(cart.get("id"));
+                checkbox.setText(cart.get("cartname"));
+                checkbox.setTag(cart.get("cartid"));
                 checkbox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -597,7 +647,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             ) {
                 @Override
                 public Map<String, String> getHeaders() {
-                    Map<String, String>  params = new HashMap<String, String>();
+                    Map<String, String> params = new HashMap<String, String>();
                     params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
                     return params;
                 }
@@ -652,7 +702,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             ) {
                 @Override
                 public Map<String, String> getHeaders() {
-                    Map<String, String>  params = new HashMap<String, String>();
+                    Map<String, String> params = new HashMap<String, String>();
                     params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
                     return params;
                 }

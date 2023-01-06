@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
@@ -31,6 +32,7 @@ import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,8 @@ public class JoinedCartActivity extends AppCompatActivity {
     private LinearLayout joinedCartLoadingWrapper;
     private LinearLayout joinedCartInfoParentView;
     private LinearLayout joinedCartLayout;
+    private RoundedImageView joinedCartHolderAvatar;
+    private TextView joinedCartHolderName;
 
     private ImageButton joinedCartHistoryBtn;
 
@@ -80,6 +84,8 @@ public class JoinedCartActivity extends AppCompatActivity {
         joinedCartLoadingWrapper = findViewById(R.id.joinedCartLoadingWrapper);
         joinedCartInfoParentView = findViewById(R.id.joinedCartInfoParentView);
         joinedCartLayout = findViewById(R.id.joinedCartLayout);
+        joinedCartHolderAvatar = findViewById(R.id.joinedCartHolderAvatar);
+        joinedCartHolderName = findViewById(R.id.joinedCartHolderName);
         joinedCartHistoryBtn = findViewById(R.id.joinedCartHistoryBtn);
     }
 
@@ -177,6 +183,8 @@ public class JoinedCartActivity extends AppCompatActivity {
         joinedCart = new SharedCart("asd123", "Joined Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
 
         // TODO: set holder name and avatar
+        joinedCartHolderName.setText(joinedCart.getHolderName());
+        Glide.with(this).load(joinedCart.getHolderAvatar()).into(joinedCartHolderAvatar);
 
         CartAdapter adapter = new CartAdapter(this, joinedCart, this::updateTotalPrice);
         joinedCartInfoRecyclerView.setAdapter(adapter);

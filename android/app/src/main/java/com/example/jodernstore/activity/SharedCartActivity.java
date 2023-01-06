@@ -30,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
+import com.bumptech.glide.Glide;
 import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
@@ -42,10 +43,12 @@ import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
+import com.google.android.gms.common.internal.BaseGmsClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONObject;
 
@@ -73,6 +76,8 @@ public class SharedCartActivity extends AppCompatActivity {
     private LinearLayout sharedCartInfoParentView;
     private LinearLayout sharedCartLayout;
     private ImageButton shareCartBtn, sharedCartHistoryBtn;
+    private RoundedImageView sharedCartHolderAvatar;
+    private TextView sharedCartHolderName;
 
     private SharedCart sharedCart;
     private String subTotalStr, shippingStr, totalStr;
@@ -110,6 +115,8 @@ public class SharedCartActivity extends AppCompatActivity {
         sharedCartInfoParentView = findViewById(R.id.sharedCartInfoParentView);
         sharedCartLayout = findViewById(R.id.sharedCartLayout);
         shareCartBtn = findViewById(R.id.shareCartBtn);
+        sharedCartHolderAvatar = findViewById(R.id.sharedCartHolderAvatar);
+        sharedCartHolderName = findViewById(R.id.sharedCartHolderName);
         sharedCartHistoryBtn = findViewById(R.id.sharedCartHistoryBtn);
     }
 
@@ -422,6 +429,7 @@ public class SharedCartActivity extends AppCompatActivity {
             dialog.dismiss();
             Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
             intent.putExtra("orderType", 1);
+            intent.putExtra("cartId", sharedCart.getId());
             intent.putExtra("branchId", selectedAppointBranchId);
             intent.putExtra("date", selectedAppointDateStr);
             // this is self cart, so we don't need to pass cart id

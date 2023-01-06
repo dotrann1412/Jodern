@@ -279,7 +279,6 @@ public class ProductListFragment extends Fragment {
         for (String key : params.keySet()) {
             url.append(key).append("=").append(params.get(key)).append("&");
         }
-        System.out.println(url.toString());
         return url.substring(0, url.length() - 1);
     }
 
