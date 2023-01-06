@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,13 +63,15 @@ public class SharedCartActivity extends AppCompatActivity {
     private LinearLayout sharedCartLoadingWrapper;
     private LinearLayout sharedCartInfoParentView;
     private LinearLayout sharedCartLayout;
-    private ImageButton shareCartBtn;
+    private ImageButton shareCartBtn, sharedCartHistoryBtn;
 
     private SharedCart sharedCart;
     private String subTotalStr, shippingStr, totalStr;
 
     private int selectedAppointBranchId = -1;
     private String selectedAppointDateStr = "";
+
+    private List<String> logs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,7 @@ public class SharedCartActivity extends AppCompatActivity {
         sharedCartInfoParentView = findViewById(R.id.sharedCartInfoParentView);
         sharedCartLayout = findViewById(R.id.sharedCartLayout);
         shareCartBtn = findViewById(R.id.shareCartBtn);
+        sharedCartHistoryBtn = findViewById(R.id.sharedCartHistoryBtn);
     }
 
     private void setEvents() {
@@ -165,6 +169,29 @@ public class SharedCartActivity extends AppCompatActivity {
             });
 
             Log.d(TAG, "setEvents: 3");
+
+            dialog.show();
+        });
+
+        sharedCartHistoryBtn.setOnClickListener(view -> {
+            Log.d(TAG, "setEvents: sharedCartHistoryBtn");
+            final Dialog dialog = new Dialog(SharedCartActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCancelable(true);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.setContentView(R.layout.dialog_cart_history);
+
+            // Init views
+            LinearLayout cartHistoryLayoutWrapper = dialog.findViewById(R.id.cartHistoryLayoutWrapper);
+
+            // TODO history
+
+            for (int i = 0; i < 30; ++i) {
+                TextView tv = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                tv.setText("Log " + i);
+                cartHistoryLayoutWrapper.addView(tv);
+            }
+
 
             dialog.show();
         });
