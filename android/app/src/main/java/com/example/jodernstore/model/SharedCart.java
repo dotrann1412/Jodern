@@ -4,33 +4,57 @@ import androidx.annotation.NonNull;
 
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SharedCart extends Cart {
-    private Long id;
-    private String holderId;
-    private List<CartItem> items;
-    private Long total;
-    private List<Long> memberId;
+    private String id;
     private String name;
+    private Long total;
+    private int numItems;
+    private int numMember;
+    private String holderName;
+    private String holderAvatar;
+    private List<CartItem> items;
+    private List<String> history;
 
-    public SharedCart() {
-        holderId = "";
-        name = "";
+    public SharedCart(String id, String name, Long total, int numItems, int numMember) {
+        this.id = id;
+        this.name = name;
+        this.total = total;
+        this.numItems = numItems;
+        this.numMember = numMember;
+        this.items = new ArrayList<>();
+        this.history = new ArrayList<>();
     }
 
-    public SharedCart(Long id, String holderId, List<CartItem> items, String name, List<Long> memberId) {
+    public SharedCart(String id, String name, Long total, int numItems, int numMember, String holderName, String holderAvatar, List<CartItem> items, List<String> history) {
         this.id = id;
-        this.holderId = holderId;
-        setItems(items);
         this.name = name;
-        this.memberId = memberId;
+        this.total = total;
+        this.numItems = numItems;
+        this.numMember = numMember;
+        this.holderName = holderName;
+        this.holderAvatar = holderAvatar;
+        this.items = items;
+        this.history = history;
+    }
+
+    public static SharedCart parseBasicJson(JSONObject response) {
+        // TODO: parse shared cart item (in a list)
+        return null;
+    }
+
+    public static SharedCart parseFullJson(JSONObject response) {
+        // TODO: parse full info of shared cart
+        return null;
     }
 
     public List<CartItem> getItems() {
         return items;
     }
-
 
     void setItems(@NonNull List<CartItem> items) {
         this.items = items;
@@ -73,7 +97,7 @@ public class SharedCart extends Cart {
         return items.size();
     }
 
-    public int getNoMembers() { return memberId.size(); }
+    public int getNoMembers() { return numMember; }
 
     public Long getTotal() {
         return total;
@@ -105,20 +129,16 @@ public class SharedCart extends Cart {
         changeNumItemsListener.onChanged();
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getHolderName() {
+        return holderName;
     }
 
-    public String getHolderId() {
-        return holderId;
-    }
-
-    public void setHolderId(String holderId) {
-        this.holderId = holderId;
+    public String getHolderAvatar() {
+        return holderAvatar;
     }
 
     public String getName() {
@@ -130,6 +150,6 @@ public class SharedCart extends Cart {
     }
 
     public String getShareCode() {
-        return "NEED SHARE CODE"; // TODO
+        return id;
     }
 }

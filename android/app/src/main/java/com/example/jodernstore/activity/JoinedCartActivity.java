@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,10 +21,15 @@ import com.example.jodernstore.adapter.CartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.model.CartItem;
+import com.example.jodernstore.model.Product;
 import com.example.jodernstore.model.SharedCart;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JoinedCartActivity extends AppCompatActivity {
 
@@ -32,8 +38,6 @@ public class JoinedCartActivity extends AppCompatActivity {
     private static final long SHIPPING_FEE = 30000;
     private RecyclerView joinedCartInfoRecyclerView;
     private TextView cartInfoName, cartInfoQuantity, cartInfoNoMembers;
-    private LinearLayout joinedCartSummaryWrapper;
-    private MaterialButton joinedCartOrderBtn, joinedCartAppointBtn;
     private TextView joinedCartSubTotalText;
     private LinearLayout joinedCartEmptyWrapper;
     private MaterialButton joinedCartGoToShop;
@@ -43,7 +47,7 @@ public class JoinedCartActivity extends AppCompatActivity {
     private LinearLayout joinedCartLayout;
 
     private SharedCart joinedCart;
-    private String subTotalStr, shippingStr, totalStr;
+    private String subTotalStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +65,7 @@ public class JoinedCartActivity extends AppCompatActivity {
         cartInfoName = findViewById(R.id.cartInfoName);
         cartInfoQuantity = findViewById(R.id.cartInfoQuantity);
         cartInfoNoMembers = findViewById(R.id.cartInfoNoMembers);
-        joinedCartSummaryWrapper = findViewById(R.id.joinedCartSummaryWrapper);
         joinedCartBackBtn = findViewById(R.id.joinedCartBackBtn);
-        joinedCartOrderBtn = findViewById(R.id.joinedCartOrderBtn);
-        joinedCartAppointBtn = findViewById(R.id.joinedCartAppointBtn);
         joinedCartSubTotalText = findViewById(R.id.joinedCartSubTotalText);
         joinedCartEmptyWrapper = findViewById(R.id.joinedCartEmptyWrapper);
         joinedCartGoToShop = findViewById(R.id.joinedCartGoToShop);
@@ -80,14 +81,6 @@ public class JoinedCartActivity extends AppCompatActivity {
                 onBackPressed();
                 finish();
             }
-        });
-
-        joinedCartOrderBtn.setOnClickListener(view -> {
-            // TODO
-        });
-
-        joinedCartAppointBtn.setOnClickListener(view -> {
-            // TODO
         });
 
         joinedCartGoToShop.setOnClickListener(view -> {
@@ -113,24 +106,46 @@ public class JoinedCartActivity extends AppCompatActivity {
         joinedCartLoadingWrapper.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
-        int joinedCartIdx = intent.getIntExtra("index", -1);
-        String cartName = intent.getStringExtra("cart-name");
-        int nMembers = intent.getIntExtra("no-members", 0);
-        int nItems = intent.getIntExtra("no-items", 0);
-        long subTotal = intent.getLongExtra("sub-total", 0);
+        String cartId = intent.getStringExtra("cartId");
 
-        if (joinedCartIdx == -1) {
-            MySnackbar.inforSnackbar(this, joinedCartInfoParentView, getString(R.string.error_message)).show();
-            joinedCartLoadingWrapper.setVisibility(View.GONE);
-            return;
-        }
+        // TODO: call API
+        // ...
 
-        cartInfoName.setText(cartName);
-        cartInfoQuantity.setText(Integer.toString(nItems));
-        cartInfoNoMembers.setText(Integer.toString(nMembers));
-        joinedCartSubTotalText.setText(vndFormatPrice(subTotal));
+        List<Long> pseudoId = new ArrayList<>();
+        pseudoId.add(123L);
+        pseudoId.add(125L);
 
-        joinedCart = SharedCartProvider.getInstance().getSharedCartItem(joinedCartIdx);
+        Log.d(TAG, "handleResponse: check point 2");
+
+        ArrayList<String> urls = new ArrayList<>();
+        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
+        Product pseudoProd = new Product(
+                141L,
+                "Đầm Bé Gái In Thỏ Cột Nơ",
+                urls,
+                174300L,
+                "",
+                "vay-nu",
+                "vay-nu",
+                new Integer[]{1, 1, 2, 2, 1}
+        );
+        Log.d(TAG, "handleResponse: check point 3");
+
+        List<CartItem> items = new ArrayList<>();
+        items.add(new CartItem(pseudoProd, 1, "XL"));
+        items.add(new CartItem(pseudoProd, 2, "L"));
+        items.add(new CartItem(pseudoProd, 2, "XL"));
+        items.add(new CartItem(pseudoProd, 1, "M"));
+        items.add(new CartItem(pseudoProd, 1, "S"));
+
+        ArrayList<String> history = new ArrayList<>();
+        history.add("Member 1 thêm sản phẩm 1");
+        history.add("Member 2 thêm sản phẩm 1");
+        history.add("Member 3 thêm sản phẩm 1");
+
+        joinedCart = new SharedCart("asd123", "Joined Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
+
+        // TODO: set holder name and avatar
 
         CartAdapter adapter = new CartAdapter(this, joinedCart, this::updateTotalPrice);
         joinedCartInfoRecyclerView.setAdapter(adapter);
@@ -144,8 +159,6 @@ public class JoinedCartActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         Long subTotal = joinedCart.getTotal();
         subTotalStr = vndFormatPrice(subTotal);
-        totalStr = vndFormatPrice(subTotal + SHIPPING_FEE);
-        shippingStr = vndFormatPrice(SHIPPING_FEE);
 
         joinedCartSubTotalText.setText(subTotalStr);
 

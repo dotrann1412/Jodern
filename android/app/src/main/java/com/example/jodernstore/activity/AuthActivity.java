@@ -117,6 +117,14 @@ public class AuthActivity extends AppCompatActivity {
             params.put("userid", user.getUid());
             params.put("email", user.getEmail() != null ? user.getEmail() : "");
             params.put("fullname", user.getDisplayName());
+            // avatar
+            String avatar = "";
+            if (AccessToken.getCurrentAccessToken() != null) {
+                avatar = user.getPhotoUrl() + "?access_token=" + AccessToken.getCurrentAccessToken().getToken() + "&type=large";
+            } else
+                avatar = user.getPhotoUrl() + "?type=large";
+            params.put("avatar", avatar);
+
             String url = BuildConfig.SERVER_URL + entry + "/";
             JsonObjectRequest postRequest = new JsonObjectRequest(
                     url,

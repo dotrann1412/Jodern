@@ -331,7 +331,7 @@ public class MyCartFragment extends Fragment {
         cartLoadingWrapper.setVisibility(View.VISIBLE);
 
         // call API
-        String entry = "cart";
+        String entry = "my-cart";
         String url = BuildConfig.SERVER_URL + entry + "/";
         String jwt = GeneralProvider.with(getContext()).getJWT();
         JsonObjectRequest getRequest = new JsonObjectRequest (

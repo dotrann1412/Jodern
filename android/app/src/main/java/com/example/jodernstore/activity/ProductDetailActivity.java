@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 
 import com.bumptech.glide.request.FutureTarget;
@@ -23,12 +24,17 @@ import com.example.jodernstore.model.Product;
 import com.example.jodernstore.provider.GeneralProvider;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -385,59 +391,160 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-//        CartController.with(this).addToCart(new CartItem(productId, quantity, size));
-        // call API
-        try {
-            String entry = "add-to-cart";
-            JSONObject params = new JSONObject();
-            params.put("productid", currentProduct.getId());
-            params.put("quantity", quantity);
-            params.put("sizeid", currentSize);
-            String url = BuildConfig.SERVER_URL + entry + "/";
-            JsonObjectRequest postRequest = new JsonObjectRequest(
-                    url,
-                    params,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                Snackbar snackbar = Snackbar.make(parentView, "Sản phẩm đã được thêm vào giỏ hàng", Snackbar.LENGTH_SHORT);
-                                snackbar.setAction(getString(R.string.go_to_cart), new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent(ProductDetailActivity.this, CartActivity.class);
-                                        startActivity(intent);
+        // TODO: Show dialog of carts
+        // demo below
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_add_to_cart);
+
+        HashMap<String, Boolean> storeOptions = new HashMap<>(); // store checked options
+
+        // Cart list
+        ArrayList<HashMap<String, String>> sharedCarts = new ArrayList<>();
+        ArrayList<HashMap<String, String>> joinedCarts = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int finalI = i;
+            sharedCarts.add(new HashMap<String, String>() {{
+                put("name", "My Shared Cart " + String.valueOf(finalI));
+                put("id", String.valueOf("shared_cart_" + String.valueOf(finalI)));
+            }});
+            joinedCarts.add(new HashMap<String, String>() {{
+                put("name", "My Joined Cart " + String.valueOf(finalI));
+                put("id", String.valueOf("joined_cart_" + String.valueOf(finalI)));
+            }});
+        }
+
+        LinearLayout sharedCartsLayoutWrapper = dialog.findViewById(R.id.mySharedCartsLayoutWrapper);
+        LinearLayout sharedCartsLayout = dialog.findViewById(R.id.mySharedCartsLayout);
+        LinearLayout joinedCartsLayoutWrapper = dialog.findViewById(R.id.myJoinedCartsLayoutWrapper);
+        LinearLayout joinedCartsLayout = dialog.findViewById(R.id.myJoinedCartsLayout);
+        MaterialButton saveBtn = dialog.findViewById(R.id.saveBtn);
+
+        CheckBox myCartCheckBox = dialog.findViewById(R.id.myCartCheckbox);
+        CheckBox mySharedCartCheckAll = dialog.findViewById(R.id.mySharedCartCheckAll);
+        CheckBox myJoinedCartCheckAll = dialog.findViewById(R.id.myJoinedCartCheckAll);
+
+        myCartCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myCartCheckBox.isChecked()) {
+                    storeOptions.put("myCart", true);
+                } else {
+                    storeOptions.remove("myCart");
+                }
+            }
+        });
+
+        setupCheckboxGroup(sharedCartsLayoutWrapper, sharedCartsLayout, mySharedCartCheckAll, sharedCarts, storeOptions);
+        setupCheckboxGroup(joinedCartsLayoutWrapper, joinedCartsLayout, myJoinedCartCheckAll, joinedCarts, storeOptions);
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (storeOptions.size() == 0) {
+                    MySnackbar.inforSnackbar(ProductDetailActivity.this, dialog.getWindow().getDecorView(), "Bạn vui lòng chọn giỏ hàng nhé!").show();
+                    return;
+                }
+                // print option
+                for (Map.Entry<String, Boolean> entry : storeOptions.entrySet()) {
+                    System.out.println(entry.getKey() + " : " + entry.getValue());
+                }
+                System.out.println("====================================");
+
+                // TODO: Call API to add product to carts
+                try {
+                    String entry = "add-to-cart";
+                    JSONObject params = new JSONObject();
+//                    params.put("productid", currentProduct.getId());
+//                    params.put("quantity", quantity);
+//                    params.put("sizeid", currentSize);
+                    String url = BuildConfig.SERVER_URL + entry + "/";
+                    JsonObjectRequest postRequest = new JsonObjectRequest(
+                            url,
+                            params,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        MySnackbar.inforSnackbar(ProductDetailActivity.this, parentView, "Sản phẩm đã được thêm vào giỏ hàng").show();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        showErrorMsg();
                                     }
-                                });
-                                TextView textView = (TextView) snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
-                                textView.setAllCaps(false);
-                                snackbar.show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                showErrorMsg();
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    System.out.println(error.toString());
+                                    showErrorMsg();
+                                }
                             }
-                        }
-                    },
-                    new Response.ErrorListener() {
+                    ) {
                         @Override
-                        public void onErrorResponse(VolleyError error) {
-                            System.out.println(error.toString());
-                            showErrorMsg();
+                        public Map<String, String> getHeaders() {
+                            Map<String, String>  params = new HashMap<String, String>();
+                            params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
+                            return params;
+                        }
+                    };
+                    GeneralProvider.with(ProductDetailActivity.this).addToRequestQueue(postRequest);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showErrorMsg();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    private void setupCheckboxGroup(LinearLayout cartsLayoutWrapper, LinearLayout cartsLayout, CheckBox checkAll, ArrayList<HashMap<String, String>> cartList, HashMap<String, Boolean> storeOptions) {
+        if (cartList.size() > 0) {
+            cartsLayoutWrapper.setVisibility(View.VISIBLE);
+            for (HashMap<String, String> cart : cartList) {
+                CheckBox checkbox = (CheckBox) getLayoutInflater().inflate(R.layout.checkbox_item, null);
+                checkbox.setText(cart.get("name"));
+                checkbox.setTag(cart.get("id"));
+                checkbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (checkbox.isChecked()) {
+                            storeOptions.put(checkbox.getTag().toString(), true);
+                        } else {
+                            storeOptions.remove(checkbox.getTag().toString());
+                            checkAll.setChecked(false);
                         }
                     }
-            ) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String>  params = new HashMap<String, String>();
-                    params.put("Access-token", GeneralProvider.with(ProductDetailActivity.this).getJWT());
-                    return params;
-                }
-            };
-            GeneralProvider.with(this).addToRequestQueue(postRequest);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showErrorMsg();
+                });
+                cartsLayout.addView(checkbox);
+            }
+        } else {
+            cartsLayoutWrapper.setVisibility(View.GONE);
+            return;
         }
+
+        checkAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkAll.isChecked()) {
+                    for (int i = 0; i < cartsLayout.getChildCount(); i++) {
+                        CheckBox checkBox = (CheckBox) cartsLayout.getChildAt(i);
+                        checkBox.setChecked(true);
+                        storeOptions.put(checkBox.getTag().toString(), true);
+                    }
+                } else {
+                    for (int i = 0; i < cartsLayout.getChildCount(); i++) {
+                        CheckBox checkBox = (CheckBox) cartsLayout.getChildAt(i);
+                        checkBox.setChecked(false);
+                        storeOptions.remove(checkBox.getTag().toString());
+                    }
+                }
+            }
+        });
     }
 
     public void onDetailAddToWishlistBtnClicked(View view) {

@@ -59,11 +59,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
             } else {
                 intent = new Intent(context, JoinedCartActivity.class);
             }
-            intent.putExtra("index", position);
-            intent.putExtra("cart-name", sharedCartList.get(position).getName());
-            intent.putExtra("no-members", sharedCartList.get(position).getNoMembers());
-            intent.putExtra("no-items", sharedCartList.get(position).getNumItems());
-            intent.putExtra("sub-total", sharedCartList.get(position).getTotal());
+            intent.putExtra("cartId", sharedCart.getId());
             context.startActivity(intent);
         });
     }

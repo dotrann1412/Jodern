@@ -55,6 +55,8 @@ public class SharedCartFragment extends Fragment {
 
     private LinearLayout navbarBtn;
 
+//    private ArrayList<SharedCart> allSharedCarts;
+
     public SharedCartFragment() {
         // Required empty public constructor
         super(R.layout.fragment_shared_cart);
@@ -85,6 +87,7 @@ public class SharedCartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated: ");
+        sharedCartList = new ArrayList<>();
         initViews();
         setEvents();
         showInitialMessage();
@@ -191,49 +194,44 @@ public class SharedCartFragment extends Fragment {
             Log.d(TAG, "handleResponse: in try-catch block");
 //            JSONArray sharedCarts = (JSONArray) response.get("carts");
 
-            // TODO: extra steps to init `sharedCartList`
-            List<SharedCart> parsedSharedCartList = new ArrayList<>();
-            // parsing...
-            Log.d(TAG, "handleResponse: check point 1");
+//            // TODO: extra steps to init `sharedCartList`
+//            List<SharedCart> parsedSharedCartList = new ArrayList<>();
+//            // parsing...
+//            Log.d(TAG, "handleResponse: check point 1");
+//
+//            List<Long> pseudoId = new ArrayList<>();
+//            pseudoId.add(123L); pseudoId.add(125L);
+//
+//            Log.d(TAG, "handleResponse: check point 2");
+//
+//            ArrayList<String> urls = new ArrayList<>();
+//            urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
+//            Product pseudoProd = new Product(
+//                    141L,
+//                    "Đầm Bé Gái In Thỏ Cột Nơ",
+//                    urls,
+//                    174300L,
+//                    "",
+//                    "vay-nu",
+//                    "vay-nu",
+//                    new Integer[] { 1, 1, 2, 2, 1}
+//                    );
+//            Log.d(TAG, "handleResponse: check point 3");
+//
+//            List<CartItem> items = new ArrayList<>();
+//            items.add(new CartItem(pseudoProd, 1, "XL"));
+//            items.add(new CartItem(pseudoProd, 2, "L"));
+//            items.add(new CartItem(pseudoProd, 2, "XL"));
+//            items.add(new CartItem(pseudoProd, 1, "M"));
+//            items.add(new CartItem(pseudoProd, 1, "S"));
 
-            List<Long> pseudoId = new ArrayList<>();
-            pseudoId.add(123L); pseudoId.add(125L);
-
-            Log.d(TAG, "handleResponse: check point 2");
-
-            ArrayList<String> urls = new ArrayList<>();
-            urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
-            Product pseudoProd = new Product(
-                    141L,
-                    "Đầm Bé Gái In Thỏ Cột Nơ",
-                    urls,
-                    174300L,
-                    "",
-                    "vay-nu",
-                    "vay-nu",
-                    new Integer[] { 1, 1, 2, 2, 1}
-                    );
-            Log.d(TAG, "handleResponse: check point 3");
-
-            List<CartItem> items = new ArrayList<>();
-            items.add(new CartItem(pseudoProd, 1, "XL"));
-            items.add(new CartItem(pseudoProd, 2, "L"));
-            items.add(new CartItem(pseudoProd, 2, "XL"));
-            items.add(new CartItem(pseudoProd, 1, "M"));
-            items.add(new CartItem(pseudoProd, 1, "S"));
-
-            Log.d(TAG, "handleResponse: " + new SharedCart(0L, "holder1", items, "Cart 1", pseudoId));
+//            Log.d(TAG, "handleResponse: " + new SharedCart(0L, "holder1", items, "Cart 1", pseudoId));
             // pseudo
-            parsedSharedCartList.add(new SharedCart(0L, "holder1", items, "Cart 1", pseudoId));
-            parsedSharedCartList.add(new SharedCart(1L, "holder2", items, "Cart 2", pseudoId));
-            parsedSharedCartList.add(new SharedCart(2L, "holder3", items, "Cart 3", pseudoId));
-            parsedSharedCartList.add(new SharedCart(3L, "holder4", items, "Cart 4", pseudoId));
-            parsedSharedCartList.add(new SharedCart(4L, "holder5", items, "Cart 5", pseudoId));
-            parsedSharedCartList.add(new SharedCart(5L, "holder6", items, "Cart 6", pseudoId));
+            for (int i = 0; i < 10; i++) {
+                sharedCartList.add(new SharedCart("ID" + i, "Shared cart " + i, 100000L, 5, 5));
+            }
 
-            Log.d(TAG, "handleResponse: " + parsedSharedCartList);
-            SharedCartProvider.getInstance().setSharedCartList(parsedSharedCartList);
-            sharedCartList = SharedCartProvider.getInstance().getSharedCartList();
+            Log.d(TAG, "handleResponse: " + sharedCartList);
 
             Log.d(TAG, "handleResponse: parsed successfully, initializing recycler view");
             CartListAdapter adapter = new CartListAdapter(this.getContext(), sharedCartList, false);

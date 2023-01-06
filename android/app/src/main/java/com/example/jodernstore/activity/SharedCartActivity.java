@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,10 +29,23 @@ import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.CartAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.fragment.ProductListFragment;
+import com.example.jodernstore.model.BranchInfo;
+import com.example.jodernstore.model.CartItem;
+import com.example.jodernstore.model.Product;
 import com.example.jodernstore.model.SharedCart;
+import com.example.jodernstore.provider.BranchesProvider;
 import com.example.jodernstore.provider.GeneralProvider;
 import com.example.jodernstore.provider.SharedCartProvider;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.jaredrummler.materialspinner.MaterialSpinner;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class SharedCartActivity extends AppCompatActivity {
 
@@ -93,7 +107,7 @@ public class SharedCartActivity extends AppCompatActivity {
         });
 
         sharedCartOrderBtn.setOnClickListener(view -> {
-            // TODO
+            showSummaryDialog();
         });
 
         sharedCartAppointBtn.setOnClickListener(view -> {
@@ -153,29 +167,85 @@ public class SharedCartActivity extends AppCompatActivity {
         });
     }
 
+    private void showSummaryDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_cart_summary);
+
+        // Init views
+        TextView subTotalText = dialog.findViewById(R.id.cartSummarySubTotalText);
+        TextView shippingText = dialog.findViewById(R.id.cartSummaryShippingText);
+        TextView totalText = dialog.findViewById(R.id.cartSummaryTotalText);
+        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartSummaryCheckoutBtn);
+
+        // Set text
+        subTotalText.setText(subTotalStr);
+        shippingText.setText(shippingStr);
+        totalText.setText(totalStr);
+
+        // Set events
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
+                intent.putExtra("orderType", 0);
+                intent.putExtra("cartId", sharedCart.getId());
+                // this is self cart, so we don't need to pass cart id
+                startActivity(intent);
+            }
+        });
+
+        dialog.show();
+    }
+
     @SuppressLint("SetTextI18n")
     private void getAndShowSharedCartInfo() {
         sharedCartLoadingWrapper.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
-        int sharedCartIdx = intent.getIntExtra("index", -1);
-        String cartName = intent.getStringExtra("cart-name");
-        int nMembers = intent.getIntExtra("no-members", 0);
-        int nItems = intent.getIntExtra("no-items", 0);
-        long subTotal = intent.getLongExtra("sub-total", 0);
+        String cartId = intent.getStringExtra("cartId");
 
-        if (sharedCartIdx == -1) {
-            MySnackbar.inforSnackbar(this, sharedCartInfoParentView, getString(R.string.error_message)).show();
-            sharedCartLoadingWrapper.setVisibility(View.GONE);
-            return;
-        }
+        // TODO: call API
+        // ...
 
-        cartInfoName.setText(cartName);
-        cartInfoQuantity.setText(Integer.toString(nItems));
-        cartInfoNoMembers.setText(Integer.toString(nMembers));
-        sharedCartSubTotalText.setText(vndFormatPrice(subTotal));
+        List<Long> pseudoId = new ArrayList<>();
+        pseudoId.add(123L);
+        pseudoId.add(125L);
 
-        sharedCart = SharedCartProvider.getInstance().getSharedCartItem(sharedCartIdx);
+        Log.d(TAG, "handleResponse: check point 2");
+
+        ArrayList<String> urls = new ArrayList<>();
+        urls.add("https://bizweb.sapocdn.net/100/438/408/products/vnk5274-hog-5.jpg?v=1663816469000");
+        Product pseudoProd = new Product(
+                141L,
+                "Đầm Bé Gái In Thỏ Cột Nơ",
+                urls,
+                174300L,
+                "",
+                "vay-nu",
+                "vay-nu",
+                new Integer[]{1, 1, 2, 2, 1}
+        );
+        Log.d(TAG, "handleResponse: check point 3");
+
+        List<CartItem> items = new ArrayList<>();
+        items.add(new CartItem(pseudoProd, 1, "XL"));
+        items.add(new CartItem(pseudoProd, 2, "L"));
+        items.add(new CartItem(pseudoProd, 2, "XL"));
+        items.add(new CartItem(pseudoProd, 1, "M"));
+        items.add(new CartItem(pseudoProd, 1, "S"));
+
+        ArrayList<String> history = new ArrayList<>();
+        history.add("Member 1 thêm sản phẩm 1");
+        history.add("Member 2 thêm sản phẩm 1");
+        history.add("Member 3 thêm sản phẩm 1");
+
+        sharedCart = new SharedCart("asd123", "Shared Cart 1", 100000L, items.size(), 5, "Hoàng Trọng Vũ", "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg", items, history);
+
+        // TODO: set holder name and avatar
 
         CartAdapter adapter = new CartAdapter(this, sharedCart, this::updateTotalPrice);
         sharedCartInfoRecyclerView.setAdapter(adapter);

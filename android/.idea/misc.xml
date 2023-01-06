@@ -10,14 +10,17 @@
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/drawable/product_detail_overlay.xml" value="0.228" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/drawable/shape_navbar_container.xml" value="0.1925" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_cart.xml" value="0.25677083333333334" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_joined_cart.xml" value="0.264" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_order.xml" value="0.2" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_order_detail.xml" value="0.25677083333333334" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_order_list.xml" value="0.264" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_product_detail.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_product_detail.xml" value="0.264" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_search.xml" value="0.2109375" />
-        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_shared_cart.xml" value="0.25833333333333336" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_shared_cart.xml" value="0.264" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_splash.xml" value="0.25677083333333334" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/activity_wishlist.xml" value="0.3692708333333333" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/checkbox_item.xml" value="0.25677083333333334" />
+        <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/dialog_add_to_cart.xml" value="0.25677083333333334" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/dialog_cart_appoint.xml" value="0.18229166666666666" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/dialog_cart_summary.xml" value="0.25677083333333334" />
         <entry key="..\:/HCMUS Journey/Semesters/5 - 2022/Mobile Development/Final/Jodern/android/app/src/main/res/layout/fragment_home.xml" value="0.3692708333333333" />
