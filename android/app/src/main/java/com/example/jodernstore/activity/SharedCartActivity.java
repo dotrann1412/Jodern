@@ -230,40 +230,6 @@ public class SharedCartActivity extends AppCompatActivity {
         });
     }
 
-    private void showSummaryDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setContentView(R.layout.dialog_cart_summary);
-
-        // Init views
-        TextView subTotalText = dialog.findViewById(R.id.cartSummarySubTotalText);
-        TextView shippingText = dialog.findViewById(R.id.cartSummaryShippingText);
-        TextView totalText = dialog.findViewById(R.id.cartSummaryTotalText);
-        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartSummaryCheckoutBtn);
-
-        // Set text
-        subTotalText.setText(subTotalStr);
-        shippingText.setText(shippingStr);
-        totalText.setText(totalStr);
-
-        // Set events
-        checkoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
-                intent.putExtra("orderType", 0);
-                intent.putExtra("cartId", sharedCart.getId());
-                // this is self cart, so we don't need to pass cart id
-                startActivity(intent);
-            }
-        });
-
-        dialog.show();
-    }
-
     @SuppressLint("SetTextI18n")
     private void getAndShowSharedCartInfo() {
         sharedCartLayoutParentView.setVisibility(View.GONE);
@@ -335,6 +301,10 @@ public class SharedCartActivity extends AppCompatActivity {
 
             // summary
             sharedCartSubTotalText.setText(vndFormatPrice(sharedCart.getTotal()));
+
+            subTotalStr = vndFormatPrice(sharedCart.getTotal());
+            shippingStr = vndFormatPrice(30000L);
+            totalStr = vndFormatPrice(sharedCart.getTotal() + 30000L);
 
             sharedCartLayoutParentView.setVisibility(View.VISIBLE);
             sharedCartLoadingWrapper.setVisibility(View.GONE);
@@ -436,6 +406,41 @@ public class SharedCartActivity extends AppCompatActivity {
         });
 
         chooseDateBtn.setOnClickListener(v -> materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER"));
+
+        dialog.show();
+    }
+
+
+    private void showSummaryDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_cart_summary);
+
+        // Init views
+        TextView subTotalText = dialog.findViewById(R.id.cartSummarySubTotalText);
+        TextView shippingText = dialog.findViewById(R.id.cartSummaryShippingText);
+        TextView totalText = dialog.findViewById(R.id.cartSummaryTotalText);
+        MaterialButton checkoutBtn = dialog.findViewById(R.id.cartSummaryCheckoutBtn);
+
+        // Set text
+        subTotalText.setText(subTotalStr);
+        shippingText.setText(shippingStr);
+        totalText.setText(totalStr);
+
+        // Set events
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(SharedCartActivity.this, OrderFormActivity.class);
+                intent.putExtra("orderType", 0);
+                intent.putExtra("cartId", sharedCart.getId());
+                // this is self cart, so we don't need to pass cart id
+                startActivity(intent);
+            }
+        });
 
         dialog.show();
     }

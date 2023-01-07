@@ -80,7 +80,6 @@ public class CartActivity extends AppCompatActivity {
             highlightBtn(mySharedCartBtn);
             Fragment sharedCart = new SharedCartFragment(mySharedCartBtn);
             switchFragment(sharedCart, SharedCartFragment.TAG);
-            Log.d(SharedCartFragment.TAG, "onClick: switching to SharedCartFragment");
         });
 
         myJoinedCartBtn.setOnClickListener(view -> {
@@ -88,7 +87,6 @@ public class CartActivity extends AppCompatActivity {
             highlightBtn(myJoinedCartBtn);
             Fragment joinedCart = new JoinedCartFragment(myJoinedCartBtn);
             switchFragment(joinedCart, JoinedCartFragment.TAG);
-            Log.d(JoinedCartFragment.TAG, "onClick: switching to JoinedCartFragment");
         });
     }
 

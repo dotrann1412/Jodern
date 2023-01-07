@@ -47,6 +47,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     private LinearLayout customerAddressParent;
     private LinearLayout summarySubTotalParent;
     private LinearLayout summaryShippingParent;
+    private LinearLayout sharedCartParent;
+    private TextView sharedCartName;
 
     // Appointment information
     private MaterialButton mapBtn;
@@ -61,7 +63,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         initViews();
         loadingWrapper.setVisibility(View.VISIBLE);
-        retrieveOrderInfor();
+        getAndShowOrderInfor();
         setEvents();
     }
 
@@ -101,12 +103,15 @@ public class OrderDetailActivity extends AppCompatActivity {
         orderDetailAppointBranch = findViewById(R.id.orderDetailAppointBranch);
         orderDetailAppointDate = findViewById(R.id.orderDetailAppointDate);
         mapBtn = findViewById(R.id.orderDetailAppointMapBtn);
+
+        sharedCartParent = findViewById(R.id.orderDetailSharedCartParent);
+        sharedCartName = findViewById(R.id.orderDetailCartName);
     }
 
-    private void retrieveOrderInfor() {
-        Log.d(TAG, "retrieveOrderInfor: start");
+    private void getAndShowOrderInfor() {
         Intent intent = getIntent();
         String id = intent.getStringExtra("orderID");
+        System.out.println("ORDER ID: " + id);
 
         try {
             loadingWrapper.setVisibility(View.VISIBLE);
@@ -144,19 +149,23 @@ public class OrderDetailActivity extends AppCompatActivity {
         currentOrder = Order.parseFullJSON(response, getIntent().getStringExtra("orderID"));
         loadingWrapper.setVisibility(View.GONE);
         setInfo();
+
+        if (response.has("cartname")) {
+            sharedCartParent.setVisibility(View.VISIBLE);
+            sharedCartName.setText(response.optString("cartname"));
+        } else {
+            sharedCartParent.setVisibility(View.GONE);
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private void setInfo() {
-        Log.d(TAG, "setInfo: running");
-        Log.d(TAG, "setInfo: currentOrderItems: " + currentOrder.getItems());
         orderID.setText(currentOrder.getId());
         orderStatus.setText(!currentOrder.getStatus() ? "Chưa nhận hàng" : "Đã nhận hàng");
         orderStatus.setTextColor(!currentOrder.getStatus() ? getResources().getColor(R.color.light_red) : getResources().getColor(R.color.light_green));
         orderDate.setText(currentOrder.getCheckoutDate());
         orderType.setText(currentOrder.getType() == 0 ? "Đặt giao hàng" : "Hẹn thử đồ");
-        orderCount.setText(String.valueOf(currentOrder.getItems().size())); // TODO: change later
-        Log.d(TAG, "setInfo: " + currentOrder.getId() + " with type " + currentOrder.getType());
+        orderCount.setText(String.valueOf(currentOrder.getItems().size()));
         orderCount.setText(String.valueOf(currentOrder.getItems().size()));
         orderTotal.setText(vndFormatPrice(currentOrder.getTotalPrice()));
 
@@ -165,12 +174,10 @@ public class OrderDetailActivity extends AppCompatActivity {
         customerPhone.setText(currentOrder.getCustomerInfo().get("phone"));
 
         if (currentOrder.getType() == 0) {
-            Log.d(TAG, "setInfo: setting info for a shipping order " + currentOrder.getId());
             appointmentParent.setVisibility(View.GONE);
             customerAddressParent.setVisibility(View.VISIBLE);
             customerAddress.setText(currentOrder.getCustomerInfo().get("address"));
         } else {
-            Log.d(TAG, "setInfo: setting info for an appointment order " + currentOrder.getId());
             appointmentParent.setVisibility(View.VISIBLE);
             customerAddressParent.setVisibility(View.GONE);
 
@@ -180,12 +187,9 @@ public class OrderDetailActivity extends AppCompatActivity {
                 Log.e(TAG, "setInfo: branchInfo is null");
                 return;
             }
-            Log.d(TAG, "setInfo: branchInfo: " + branchInfo);
-            Log.d(TAG, "setInfo: branchInfo: " + branchInfo.getBranchId());
-            // TODO: set information for appointment order
-            // init order detail information
+
             orderDetailAppointBranch.setText(branchInfo.getBranchName());
-            orderDetailAppointDate.setText("hehehehehe");
+            orderDetailAppointDate.setText(currentOrder.getCustomerInfo().get("appointmentDate"));
         }
 
         Log.d(TAG, "setInfo: setting adapter");
@@ -212,10 +216,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         } else {
             summarySubTotalParent.setVisibility(View.GONE);
             summaryShippingParent.setVisibility(View.GONE);
-            confirmBtn.setVisibility(View.GONE);
+//            confirmBtn.setVisibility(View.GONE);
             summaryTotal.setText(vndFormatPrice(subTotal));
         }
-
     }
 
     private void setEvents() {
@@ -225,7 +228,34 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
 
         confirmBtn.setOnClickListener(view -> {
-            // TODO: Call API to confirm order
+            try {
+                String entry = "mark-as-delivered";
+                String url = BuildConfig.SERVER_URL + entry + "/";
+                JSONObject params = new JSONObject();
+                params.put("orderid", currentOrder.getId());
+                String jwt = GeneralProvider.with(this).getJWT();
+                JsonObjectRequest postRequest = new JsonObjectRequest(
+                        url,
+                        params,
+                        this::handleConfirmResponse,
+                        error -> {
+                            System.out.println(error.toString());
+                            MySnackbar.inforSnackbar(OrderDetailActivity.this, parentView, getString(R.string.error_message)).show();
+                        }
+                ) {
+                    @NonNull
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String>  params = new HashMap<>();
+                        params.put("Access-token", jwt);
+                        return params;
+                    }
+                };
+                GeneralProvider.with(this).addToRequestQueue(postRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showErrorMsg();
+            }
         });
 
         mapBtn.setOnClickListener(view -> {
@@ -236,5 +266,14 @@ public class OrderDetailActivity extends AppCompatActivity {
             intent.putExtra("order", true);
             startActivity(intent);
         });
+    }
+
+    private void handleConfirmResponse(JSONObject jsonObject) {
+        getAndShowOrderInfor();
+        MySnackbar.inforSnackbar(this, parentView, "Xác nhận nhận hàng thành công").show();
+    }
+
+    private void showErrorMsg() {
+        MySnackbar.inforSnackbar(this, parentView, getString(R.string.error_message)).show();
     }
 }

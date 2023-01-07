@@ -134,32 +134,6 @@ public class SharedCart extends Cart {
         return total;
     }
 
-//    public void increaseQuantity(int position, ChangeNumItemsListener changeNumItemsListener) {
-//        if (position == -1)
-//            return;
-//
-//        if (items.size() > position) {
-//            items.get(position).setQuantity(items.get(position).getQuantity() + 1);
-//            total += items.get(position).getProduct().getPrice();
-//        }
-//
-//        changeNumItemsListener.onChanged();
-//    }
-//
-//    public void decreaseQuantity(int position, ChangeNumItemsListener changeNumItemsListener) {
-//        if (position == -1)
-//            return;
-//
-//        if (items.size() > position) {
-//            if (items.get(position).getQuantity() > 1) {
-//                items.get(position).setQuantity(items.get(position).getQuantity() - 1);
-//                total -= items.get(position).getProduct().getPrice();
-//            }
-//        }
-//
-//        changeNumItemsListener.onChanged();
-//    }
-
     public String getId() {
         return id;
     }

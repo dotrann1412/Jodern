@@ -146,11 +146,11 @@ public class OrderFormActivity extends AppCompatActivity {
                         params.put("branchid", branchId);
                         params.put("date", date);
                     }
-                    if (cartId != null)
-                        params.put("cartid", cartId);
 
                     JSONObject finalParams = new JSONObject();
                     finalParams.put("order-info", params);
+                    if (cartId != null)
+                        finalParams.put("cartid", cartId);
 
                     orderLoadingWrapper.setVisibility(View.VISIBLE);
                     String entry = "process-order";
@@ -182,11 +182,6 @@ public class OrderFormActivity extends AppCompatActivity {
                             return params;
                         }
                     };
-                    // increase timeout
-//                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
-//                            3000,
-//                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                     GeneralProvider.with(OrderFormActivity.this).addToRequestQueue(postRequest);
                 } catch (JSONException e) {
                     System.out.println(e.getStackTrace());

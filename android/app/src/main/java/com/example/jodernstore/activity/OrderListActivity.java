@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.jodernstore.BuildConfig;
+import com.example.jodernstore.MainActivity;
 import com.example.jodernstore.R;
 import com.example.jodernstore.adapter.OrderListAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
@@ -43,6 +45,7 @@ public class OrderListActivity extends AppCompatActivity {
     private NestedScrollView scrollView;
     private RecyclerView recyclerView;
 
+    private boolean shouldFetchData = false;
 
     private ArrayList<Order> allOrders;
     private ArrayList<Order> shownOrders;
@@ -54,6 +57,18 @@ public class OrderListActivity extends AppCompatActivity {
 
         initViews();
         setEvents();
+        handleAPICall();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!shouldFetchData) {
+            shouldFetchData = true;
+            return;
+        }
+
         handleAPICall();
     }
 
@@ -97,7 +112,8 @@ public class OrderListActivity extends AppCompatActivity {
         });
 
         goToHomeBtn.setOnClickListener(view -> {
-            onBackPressed();
+            Intent intent = new Intent(OrderListActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
         allBtn.setOnClickListener(view -> {

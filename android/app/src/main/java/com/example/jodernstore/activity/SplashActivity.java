@@ -52,6 +52,7 @@ public class SplashActivity extends AppCompatActivity {
                                 branches.add(info);
                             }
                             BranchesProvider.getInstance().setBranches(branches);
+                            System.out.println("Branches: " + branches);
 
                             new Handler().postDelayed(() -> {
                                 FirebaseUser user = mAuth.getCurrentUser();
