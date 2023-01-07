@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cartSummaryDialogWrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="180dp"
+    android:layout_marginBottom="180dp"
+    android:background="@drawable/shape_cart_sum_container"
+    android:paddingTop="8dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Chọn giỏ hàng"
+        android:textAlignment="center"
+        android:textColor="@color/text"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:scrollbarThumbVertical="@color/primary_dark"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:id="@+id/myCartCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center"
+                android:layoutDirection="rtl"
+                android:text="Giỏ hàng cá nhân"
+                android:textColor="@color/primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/mySharedCartsLayoutWrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:id="@+id/mySharedCartCheckAll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center"
+                    android:layoutDirection="rtl"
+                    android:text="Giỏ hàng chia sẻ:"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/mySharedCartsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/myJoinedCartsLayoutWrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:id="@+id/myJoinedCartCheckAll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center"
+                    android:layoutDirection="rtl"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:text="Đang tham gia:"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/myJoinedCartsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/primary_dark"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
+        android:text="Thêm sản phẩm"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
+
+    </LinearLayout>
+    </RelativeLayout>
+

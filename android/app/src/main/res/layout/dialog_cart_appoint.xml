@@ -3,21 +3,105 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cartSummaryDialogWrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:padding="16dp"
+    android:padding="8dp"
+    android:id="@+id/cartSummaryDialogWrapper"
     android:background="@drawable/shape_cart_sum_container"
     android:orientation="vertical"
     android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cái gì gì đó ở đây"
-        android:textColor="@color/text"
-        android:textSize="16sp" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_marginRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chi nhánh:"
+            android:textColor="@color/text"
+            android:textSize="16sp" />
+
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:layout_weight="1"
+            android:id="@+id/cartAppointSpinner"
+            android:textSize="16sp"
+            app:ms_text_color="@color/text"
+            app:ms_hint="Chọn chi nhánh"
+            app:ms_hint_color="@color/text"
+            app:ms_background_color="@color/dark_gray"
+            app:ms_arrow_tint="@color/primary_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày hẹn:"
+            android:textColor="@color/text"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textSize="16sp"
+                android:id="@+id/cartAppointSelectedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dd-mm-yyyy"
+                android:layout_marginRight="8dp"
+                android:textColor="@color/text"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cartAppointChooseDateBtn"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/primary_dark"
+                app:icon="@drawable/ic_date"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cartAppointCheckoutBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/primary_dark"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
+        android:text="Đặt lịch thử"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
 
 </LinearLayout>
 

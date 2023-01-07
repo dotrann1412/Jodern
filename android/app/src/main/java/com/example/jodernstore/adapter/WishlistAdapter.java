@@ -19,8 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodernstore.R;
 import com.example.jodernstore.activity.ProductDetailActivity;
-import com.example.jodernstore.wishlist.WishlistController;
-import com.example.jodernstore.wishlist.wishlistitem.WishlistItem;
+import com.example.jodernstore.model.Wishlist;
 import com.example.jodernstore.interfaces.ChangeNumItemsListener;
 import com.example.jodernstore.model.Product;
 import com.google.android.material.button.MaterialButton;
@@ -28,16 +27,14 @@ import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
 public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder> {
-    private final List<WishlistItem> wishlistItemList;
     private final List<Product> productList;
-    private final WishlistController wishlistController;
+    private final Wishlist currentWishlist;
     private final Context context;
     private final ChangeNumItemsListener changeNumItemsListener;
 
-    public WishlistAdapter(WishlistController wishlistController, Context context, ChangeNumItemsListener changeNumItemsListener) {
-        this.wishlistItemList = wishlistController.getWishlistItemList();
-        this.productList = wishlistController.getProductList();
-        this.wishlistController = wishlistController;
+    public WishlistAdapter(Context context, Wishlist wishlist, ChangeNumItemsListener changeNumItemsListener) {
+        this.productList = wishlist.getItems();
+        this.currentWishlist = wishlist;
         this.context = context;
         this.changeNumItemsListener = changeNumItemsListener;
     }
@@ -46,7 +43,6 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.wishlist_item, parent, false);
-
         return new ViewHolder(inflater);
     }
 
@@ -54,8 +50,6 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Product product = productList.get(position);
-        WishlistItem item = wishlistItemList.get(position);
-
         holder.itemName.setText(product.getName());
         holder.itemPrice.setText(vndFormatPrice(product.getPrice()));
         Glide.with(context)
@@ -67,13 +61,12 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return wishlistItemList.size();
+        return productList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemName, itemPrice;
         ImageView itemImage;
-//        TextView itemRemoveBtn;
         MaterialButton itemRemoveBtn;
         LinearLayout itemWrapper;
 
@@ -92,7 +85,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onClick(View view) {
-                    wishlistController.deleteItem(getAdapterPosition(), new ChangeNumItemsListener() {
+                    currentWishlist.removeItem(getAdapterPosition(), new ChangeNumItemsListener() {
                         @Override
                         public void onChanged() {
                             notifyDataSetChanged();

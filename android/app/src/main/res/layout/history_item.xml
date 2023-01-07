@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Cart history"
+    android:paddingVertical="8dp"
+    android:textAlignment="textStart"
+    android:textColor="@color/text"
+    android:layout_weight="1"
+    android:textSize="14sp" />

@@ -14,30 +14,29 @@ import com.android.volley.toolbox.Volley;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Provider {
-    private static Provider instance = null;
-    private String jwtToken;
+public class GeneralProvider {
+    private static GeneralProvider instance = null;
+    private String jwt;
     private String currentFragment;
     private RequestQueue requestQueue;
     private static Context context;
     private HashMap<String, ArrayList<Category>> categoryListMapping;
     private Intent searchIntent;
-//    private byte[] imageBytes = null;
     private String imageBase64 = null;
 
-    public static Provider with(Context context) {
+    public static GeneralProvider with(Context context) {
         if (instance == null) {
-            synchronized (Provider.class) {
+            synchronized (GeneralProvider.class) {
                 if (instance == null) {
-                    instance = new Provider(context);
+                    instance = new GeneralProvider(context);
                 }
             }
         }
         return instance;
     }
 
-    private Provider(Context context) {
-        Provider.context = context;
+    private GeneralProvider(Context context) {
+        GeneralProvider.context = context;
         currentFragment = HomeFragment.TAG;
 
         if (categoryListMapping == null)
@@ -47,16 +46,26 @@ public class Provider {
         initData();
     }
 
-    public String getJwtToken() {
-        return jwtToken;
+    public String getJWT() {
+        return jwt;
     }
 
-    public void setJwtToken(String jwtToken) {
-        this.jwtToken = jwtToken;
+    public void setJWT(String jwtToken) {
+        this.jwt = jwtToken;
+        // save to shared preferences
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
+                .edit()
+                .putString("jwt", jwtToken)
+                .apply();
     }
 
-    public void clearJwtToken() {
-        this.jwtToken = null;
+    public void clearJWT() {
+        this.jwt = null;
+        // remove from shared preferences
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
+                .edit()
+                .remove("jwt")
+                .apply();
     }
 
     public RequestQueue getRequestQueue() {
@@ -83,14 +92,6 @@ public class Provider {
         return searchIntent;
     }
 
-//    public void setImageBytes(byte[] imageBytes) {
-//        this.imageBytes = imageBytes;
-//    }
-//
-//    public byte[] getImageBytes() {
-//        return imageBytes;
-//    }
-
     public void setImageBase64(String imageBase64) {
         this.imageBase64 = imageBase64;
     }
@@ -105,6 +106,10 @@ public class Provider {
 
     private void initData() {
         initCategories();
+
+        // read jwt from shared preferences
+        jwt = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
+                .getString("jwt", null);
     }
 
     private void initCategories() {

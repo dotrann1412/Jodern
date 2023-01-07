@@ -1,5 +1,6 @@
 package com.example.jodernstore.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -29,7 +30,7 @@ import com.example.jodernstore.adapter.CategoryTagListAdapter;
 import com.example.jodernstore.adapter.ProductListAdapter;
 import com.example.jodernstore.customwidget.MySnackbar;
 import com.example.jodernstore.model.Product;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -47,9 +48,14 @@ public class ProductListFragment extends Fragment {
     private TextView productSearchBarText;
     private LinearLayout searchBar;
     private LinearLayout currentCateWrapper;
-    private LinearLayout loadingWrapper;
+    private LinearLayout loadingWrapper, moreLoadingWrapper;
     private LinearLayout emptyWrapper;
     private FloatingActionButton floatBtn;
+
+    // user for handling scroll event (for sex query only)
+    private int currentPage = 0;
+    private String currentSex = null;
+
 
     public ProductListFragment() {
         // Required empty public constructor
@@ -60,7 +66,7 @@ public class ProductListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_product_list, container, false);
     }
 
@@ -81,6 +87,7 @@ public class ProductListFragment extends Fragment {
         searchBar = getView().findViewById(R.id.productSearchBar);
         currentCateWrapper = getView().findViewById(R.id.productCurrentCateWrapper);
         loadingWrapper = getView().findViewById(R.id.productLoadingWrapper);
+        moreLoadingWrapper = getView().findViewById(R.id.productMoreLoadingWrapper);
         emptyWrapper = getView().findViewById(R.id.productEmptyWrapper);
         floatBtn = getView().findViewById(R.id.productFloatBtn);
 
@@ -115,11 +122,21 @@ public class ProductListFragment extends Fragment {
                 } else {
                     floatBtn.hide();
                 }
+
+                // check if scroll to bottom of the page
+                @SuppressLint("RestrictedApi") int scrollRange = v.computeVerticalScrollRange();
+                @SuppressLint("RestrictedApi") int scrollOffset = v.computeVerticalScrollOffset();
+                if (scrollRange - scrollOffset == v.getHeight()) {
+                    // fetch more data
+                    if (currentSex != null) {
+                        moreLoadingWrapper.setVisibility(View.VISIBLE);
+                        fetchMoreData();
+                    }
+                }
+
             }
         });
-
     }
-
 
     private void setupCategoryLists() {
         // find views
@@ -130,14 +147,14 @@ public class ProductListFragment extends Fragment {
         LinearLayoutManager maleLayout = new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false);
         maleView.setLayoutManager(maleLayout);
         CategoryTagListAdapter maleAdapter = new CategoryTagListAdapter(this);
-        maleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nam", true));
+        maleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nam", true));
         maleView.setAdapter(maleAdapter);
 
         // category list for female
         LinearLayoutManager femaleLayout = new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false);
         femaleView.setLayoutManager(femaleLayout);
         CategoryTagListAdapter femaleAdapter = new CategoryTagListAdapter(this);
-        femaleAdapter.setCategoryList(Provider.with(this.getContext()).getCategoryList("nu", true));
+        femaleAdapter.setCategoryList(GeneralProvider.with(this.getContext()).getCategoryList("nu", true));
 
         femaleView.setAdapter(femaleAdapter);
     }
@@ -170,14 +187,14 @@ public class ProductListFragment extends Fragment {
                         }
                     }
             );
-            Provider.with(this.getContext()).addToRequestQueue(getRequest);
+            GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
         }
         else if (method.equals("post")) {
             // POST requests
             String entry = args.getString("entry");
 //            String query = args.getString("query");
             HashMap<String, String> params = new HashMap<>();
-            params.put("query", Provider.with(getContext()).getImageBase64());
+            params.put("query", GeneralProvider.with(getContext()).getImageBase64());
 
             String url = BuildConfig.SERVER_URL + entry + "/";
             JsonObjectRequest postRequest = new JsonObjectRequest (
@@ -196,9 +213,43 @@ public class ProductListFragment extends Fragment {
                         }
                     }
             );
-            Provider.with(this.getContext()).addToRequestQueue(postRequest);
+            GeneralProvider.with(this.getContext()).addToRequestQueue(postRequest);
         }
     }
+
+    private void fetchMoreData() {
+        String searchParams = parseSearchParams(getArguments());
+        String url = BuildConfig.SERVER_URL + searchParams;
+        JsonObjectRequest getRequest = new JsonObjectRequest (
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ArrayList<Product> productList = parseProductListFromResponse(response);
+                        if (productList.size() > 0) {
+                            // update current page
+                            RecyclerView productListView = getView().findViewById(R.id.productListWrapper);
+                            GridLayoutManager layout = new GridLayoutManager(getContext(), 2);
+                            productListView.setLayoutManager(layout);
+                            ((ProductListAdapter)productListView.getAdapter()).addProducts(productList);
+                            moreLoadingWrapper.setVisibility(View.GONE);
+                        } else
+                            currentSex = null;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleError(error);
+                    }
+                }
+        );
+        GeneralProvider.with(this.getContext()).addToRequestQueue(getRequest);
+    }
+
+
 
     private String parseSearchParams(Bundle args) {
         HashMap<String, String> params = new HashMap<>();
@@ -211,8 +262,12 @@ public class ProductListFragment extends Fragment {
         else if (entry.equals("product-list")) {
             String sex = args.getString("sex");
             String categoryRaw = args.getString("categoryRaw");
-            if (sex != null)
+            if (sex != null) {
                 params.put("sex", sex);
+                params.put("page", this.currentPage + "");
+                this.currentSex = sex;
+                this.currentPage += 1;
+            }
 
             if (categoryRaw != null) {
                 params.remove("sex");
@@ -224,13 +279,12 @@ public class ProductListFragment extends Fragment {
         for (String key : params.keySet()) {
             url.append(key).append("=").append(params.get(key)).append("&");
         }
-        System.out.println(url.toString());
         return url.substring(0, url.length() - 1);
     }
 
     private void handleError(VolleyError error) {
         loadingWrapper.setVisibility(View.GONE);
-        MySnackbar.inforSnackar(getContext(), parentView, getString(R.string.error_message)).show();
+        MySnackbar.inforSnackbar(getContext(), parentView, getString(R.string.error_message)).show();
     }
 
     private void handleResponse(JSONObject response) {

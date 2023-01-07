@@ -20,7 +20,7 @@ import com.example.jodernstore.R;
 import com.example.jodernstore.activity.AuthActivity;
 import com.example.jodernstore.activity.OrderListActivity;
 import com.example.jodernstore.activity.WishlistActivity;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,14 +52,14 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
 
@@ -88,7 +88,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Provider.with(this.getContext()).setCurrentFragment(TAG);
+        GeneralProvider.with(this.getContext()).setCurrentFragment(TAG);
         if (navbarBtn != null)
             navbarBtn.setImageResource(R.drawable.ic_user_filled);
     }
@@ -128,6 +128,7 @@ public class UserFragment extends Fragment {
                 mAuth.signOut();
                 LoginManager.getInstance().logOut();
                 AccessToken.setCurrentAccessToken(null);
+                GeneralProvider.with(getContext()).clearJWT();
 
                 // start AuthActivity without backstack
                 Intent intent = new Intent(getContext(), AuthActivity.class);

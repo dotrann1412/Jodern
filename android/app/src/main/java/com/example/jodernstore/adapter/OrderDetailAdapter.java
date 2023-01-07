@@ -5,6 +5,7 @@ import static com.example.jodernstore.Utils.vndFormatPrice;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +20,20 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jodernstore.R;
 import com.example.jodernstore.activity.ProductDetailActivity;
-import com.example.jodernstore.cart.cartitem.CartItem;
+import com.example.jodernstore.model.CartItem;
 import com.example.jodernstore.model.Product;
 
 import java.util.List;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
+    private static final String TAG = OrderDetailAdapter.class.getName();
     private final Context context;
-    private List<Product> productList;
     private List<CartItem> cartItemList;
 
     public OrderDetailAdapter(Context context) {
         this.context = context;
     }
+
 
     @NonNull
     @Override
@@ -40,17 +42,19 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         return new ViewHolder(inflater);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Product product = productList.get(position);
+        Log.d(TAG, "onBindViewHolder: position: " + position);
         CartItem item = cartItemList.get(position);
+        Product product = item.getProduct();
 
         holder.name.setText(product.getName());
         holder.price.setText(vndFormatPrice(product.getPrice()));
         holder.count.setText(String.valueOf(item.getQuantity()));
         holder.size.setText("Size " + item.getSize());
         Glide.with(context)
-                .load(productList.get(position).getFirstImageURL())
+                .load(product.getFirstImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.item_placeholder)
                 .into(holder.image);
@@ -60,13 +64,9 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         this.cartItemList = cartItemList;
     }
 
-    public void setProducts(List<Product> productList) {
-        this.productList = productList;
-    }
-
     @Override
     public int getItemCount() {
-        return productList.size();
+        return cartItemList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -93,14 +93,11 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         }
 
         private void setEvents() {
-            wrapper.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Product productItem = productList.get(getAdapterPosition());
+            wrapper.setOnClickListener(view -> {
+                    Product productItem = cartItemList.get(getAdapterPosition()).getProduct();
                     Intent intent = new Intent(context, ProductDetailActivity.class);
                     intent.putExtra("productId", productItem.getId());
                     context.startActivity(intent);
-                }
             });
         }
     }

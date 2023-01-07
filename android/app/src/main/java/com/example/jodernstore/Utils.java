@@ -11,8 +11,13 @@ public class Utils {
 
     public static LocalDate stringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate localDate = LocalDate.parse(date, formatter);
-        return localDate;
+        return LocalDate.parse(date, formatter);
+    }
+
+    public static String dateIsoToString(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(date);
+        return localDate.format(formatter);
     }
 
     public static String localDateToString(LocalDate date) {

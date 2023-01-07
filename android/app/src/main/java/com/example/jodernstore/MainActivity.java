@@ -11,14 +11,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.example.jodernstore.activity.CartActivity;
 import com.example.jodernstore.activity.MapActivity;
 import com.example.jodernstore.activity.SearchActivity;
 import com.example.jodernstore.customwidget.MySnackbar;
-import com.example.jodernstore.fragment.CartFragment;
+import com.example.jodernstore.fragment.MyCartFragment;
 import com.example.jodernstore.fragment.HomeFragment;
 import com.example.jodernstore.fragment.ProductListFragment;
 import com.example.jodernstore.fragment.UserFragment;
-import com.example.jodernstore.provider.Provider;
+import com.example.jodernstore.provider.GeneralProvider;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.shape.CornerFamily;
@@ -28,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton homeBtn, mapBtn, cartBtn, userBtn;
     private FloatingActionButton searchBtn;
     private HomeFragment homeFragment;
-    private CartFragment cartFragment;
     private UserFragment userFragment;
     private ConstraintLayout mainParentView;
     private BottomAppBar bottomAppBar;
@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        Provider.with(this.getApplicationContext());
+        GeneralProvider.with(this.getApplicationContext());
+        System.out.println("JWT: " + GeneralProvider.with(this).getJWT());
         initViews();
         setEvents();
         setupInitialFragments();
@@ -50,14 +51,12 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         resetNavbarBtns();
-        String currentFragment = Provider.with(this).getCurrentFragment();
-        System.out.println("Current fragment: " + currentFragment);
-        if (currentFragment.equals(HomeFragment.TAG))
+        String currentFragment = GeneralProvider.with(this).getCurrentFragment();
+        if (currentFragment.equals(HomeFragment.TAG)) {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
-        else if (currentFragment.equals(CartFragment.TAG))
-            cartBtn.setImageResource(R.drawable.ic_cart_filled);
-        else if (currentFragment.equals(UserFragment.TAG))
+        } else if (currentFragment.equals(UserFragment.TAG)) {
             userBtn.setImageResource(R.drawable.ic_user_filled);
+        }
     }
 
     private void initViews() {
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         searchBtn = findViewById(R.id.mainNavBarSearchBtn);
 
         homeFragment = new HomeFragment(homeBtn);
-        cartFragment = new CartFragment(cartBtn);
         userFragment = new UserFragment(userBtn);
 
         bottomAppBar = findViewById(R.id.mainBottomNavBar);
@@ -101,13 +99,10 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             Bundle bundle = null;
             if (nextFragment.equals(ProductListFragment.TAG)) {
-                Provider.with(this).setSearchIntent(intent);
+                GeneralProvider.with(this).setSearchIntent(intent);
                 // Receive data from search activity, forward it to product list fragment
                 fragment = new ProductListFragment();
                 bundle = retrieveBundleForProductListFragment(intent);
-            }
-            else if (nextFragment.equals(CartFragment.TAG)) {
-                fragment = new CartFragment();
             }
             else if (nextFragment.equals(UserFragment.TAG)) {
                 fragment = new UserFragment();
@@ -136,10 +131,6 @@ public class MainActivity extends AppCompatActivity {
             homeBtn.setImageResource(R.drawable.ic_home_filled);
             fragment = homeFragment;
         }
-        else if (prevFragment.equals(CartFragment.TAG)) {
-            cartBtn.setImageResource(R.drawable.ic_cart_filled);
-            fragment = cartFragment;
-        }
         else if (prevFragment.equals(UserFragment.TAG)) {
             userBtn.setImageResource(R.drawable.ic_user_filled);
             fragment = userFragment;
@@ -149,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (prevFragment.equals(ProductListFragment.TAG)) {
             // retrieve search params
-            Intent searchIntent = Provider.with(this).getSearchIntent();
+            Intent searchIntent = GeneralProvider.with(this).getSearchIntent();
             fragment = new ProductListFragment();
             Bundle bundle = retrieveBundleForProductListFragment(searchIntent);
             fragment.setArguments(bundle);
@@ -200,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-            intent.putExtra("previousFragment", Provider.with(MainActivity.this).getCurrentFragment());
+            intent.putExtra("previousFragment", GeneralProvider.with(MainActivity.this).getCurrentFragment());
             startActivity(intent);
         }
     };
@@ -208,10 +199,8 @@ public class MainActivity extends AppCompatActivity {
     private final View.OnClickListener onNavBarBtnClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            resetNavbarBtns();
-
             int viewId = view.getId();
-
+            resetNavbarBtns();
             switch (viewId) {
                 case R.id.mainNavBarHomeBtn:
                     homeBtn.setImageResource(R.drawable.ic_home_filled);
@@ -224,18 +213,26 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, MapActivity.class);
                         startActivity(intent);
                     } catch (Exception e) {
-                        MySnackbar.inforSnackar(MainActivity.this, mainParentView, "Map is not available").show();
+                        MySnackbar.inforSnackbar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
                     }
                     break;
 
                 case R.id.mainNavBarCartBtn:
                     cartBtn.setImageResource(R.drawable.ic_cart_filled);
-                    switchFragment(cartFragment, CartFragment.TAG);
+                    try {
+                        Intent intent = new Intent(MainActivity.this, CartActivity.class);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        MySnackbar.inforSnackbar(MainActivity.this, mainParentView, getString(R.string.error_message)).show();
+                    }
                     break;
 
                 case R.id.mainNavBarUserBtn:
                     userBtn.setImageResource(R.drawable.ic_user_filled);
                     switchFragment(userFragment, UserFragment.TAG);
+                    break;
+
+                default:
                     break;
             }
         }

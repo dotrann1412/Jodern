@@ -3,9 +3,10 @@ package com.example.jodernstore.adapter;
 import android.content.Context;
 
 import com.example.jodernstore.R;
-import com.example.jodernstore.model.BranchLocation;
+import com.example.jodernstore.model.BranchInfo;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +24,10 @@ public class MapMarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
     @Nullable
     @Override
     public View getInfoContents(@NonNull Marker marker) {
-        BranchLocation place = (BranchLocation) marker.getTag();
+        BranchInfo place = (BranchInfo) marker.getTag();
         View view = LayoutInflater.from(context).inflate(R.layout.map_marker_info_content, null);
-        // set something
+        assert place != null;
+        ((TextView)view.findViewById(R.id.markerBranchName)).setText(place.getBranchName());
         return view;
     }
 

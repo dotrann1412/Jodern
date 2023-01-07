@@ -39,6 +39,13 @@
         android:theme="@style/Jodern"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.JoinedCartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SharedCartActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -57,18 +64,19 @@
             android:value="@string/facebook_client_token" />
 
         <activity
-            android:name="com.example.jodernstore.activity.OrderListActivity"
+            android:name=".activity.CartActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.jodernstore.activity.WishlistActivity"
+            android:name=".activity.OrderListActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.jodernstore.activity.AuthActivity"
+            android:name=".activity.WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AuthActivity"
             android:exported="false" /> <!-- Facebook Login Auth -->
-
-
         <activity
-            android:name="com.example.jodernstore.activity.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,19 +85,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.jodernstore.activity.OrderActivity"
+            android:name=".activity.OrderFormActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
-            android:name="com.example.jodernstore.activity.OrderDetailActivity"
-            android:exported="false" />
-
-        <activity
-            android:name="com.example.jodernstore.activity.ProductDetailActivity"
+            android:name=".activity.OrderDetailActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.jodernstore.activity.SearchActivity"
+            android:name=".activity.ProductDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SearchActivity"
             android:exported="false"
             android:hardwareAccelerated="false" />
 
@@ -98,7 +104,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name="com.example.jodernstore.activity.MapActivity"
+            android:name=".activity.MapActivity"
             android:exported="false" />
         <activity
             android:name="com.example.jodernstore.MainActivity"

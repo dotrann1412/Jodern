@@ -49,6 +49,22 @@
                         app:sliderStartAutoCycle="true" />
 
                     <ImageButton
+                        android:id="@+id/detailGoToHomeBtn"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/card_image_shape"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/primary_dark" />
+
+                    <ImageButton
                         android:id="@+id/detailShareBtn"
                         android:layout_width="46dp"
                         android:layout_height="46dp"
