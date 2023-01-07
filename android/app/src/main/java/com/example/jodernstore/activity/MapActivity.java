@@ -101,64 +101,64 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void retrieveBranchLocation() {
-        Log.d(TAG, "retrieveBranchLocation: retrieving the branch locations data");
-        String url = BuildConfig.SERVER_URL + "stores-location";
-        JsonObjectRequest stringRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    parseLocationJSON(response);
-                    Log.d(TAG, "onResponse: successful");
-                },
-                error -> {
-                    MySnackbar.inforSnackbar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
-                    Log.d(TAG, "onErrorResponse: VolleyError: " + error);
-                    loadingWrapper.setVisibility(View.GONE);
-                }
-        );
-        GeneralProvider.with(MapActivity.this).addToRequestQueue(stringRequest);
-    }
-
-    private void parseLocationJSON(JSONObject response) {
-        try {
-            JSONArray branches = response.getJSONArray("branchs");
-            for (int i = 0; i < branches.length(); ++i) {
-                JSONObject branch = (JSONObject) branches.get(i);
-                JSONArray latLng = (JSONArray) branch.get("coordinate");
-                BranchInfo location = new BranchInfo((double) latLng.get(0), (double) latLng.get(1));
-                setBranchMarker(location);
-                if (i == 0) {
-                    Log.d(TAG, "parseLocationJSON: initialize nearest branch " + location);
-                    nearestBranch = location;
-                } else {
-                    if (calculationByDistance(BranchInfo.toLatLng(nearestBranch), BranchInfo.toLatLng(currentLocation))
-                            > calculationByDistance(BranchInfo.toLatLng(location), BranchInfo.toLatLng(currentLocation))) {
-                        Log.d(TAG, "parseLocationJSON: modify nearest branch " + location);
-                        nearestBranch = location;
-                    }
-                }
-            }
-            moveCamera(BranchInfo.toLatLng(nearestBranch));
-//            Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
-//            getPathToLocation(new LatLng(10.7314940, 106.6966400));
-        } catch (Exception e) {
-            Log.d(TAG, "parseLocationJSON: " + e.getMessage());
-        } finally {
-            loadingWrapper.setVisibility(View.GONE);
-
-            // Get Intent from OrderDetailActivity to draw the path
-            Intent intent = getIntent();
-            boolean drawPath = intent.getBooleanExtra("order", false);
-            if (drawPath) {
-                double lat = intent.getDoubleExtra("lat", 0.f);
-                double lng = intent.getDoubleExtra("lng", 0.f);
-                Log.d(TAG, "parseLocationJSON: drawing the path to the branch location (" + lat + ", " + lng + ")");
-                getPathToLocation(new LatLng(lat, lng));
-            }
-        }
-    }
+//    private void retrieveBranchLocation() {
+//        Log.d(TAG, "retrieveBranchLocation: retrieving the branch locations data");
+//        String url = BuildConfig.SERVER_URL + "stores-location";
+//        JsonObjectRequest stringRequest = new JsonObjectRequest(
+//                Request.Method.GET,
+//                url,
+//                null,
+//                response -> {
+//                    parseLocationJSON(response);
+//                    Log.d(TAG, "onResponse: successful");
+//                },
+//                error -> {
+//                    MySnackbar.inforSnackbar(MapActivity.this, mapParentView, getString(R.string.error_message)).show();
+//                    Log.d(TAG, "onErrorResponse: VolleyError: " + error);
+//                    loadingWrapper.setVisibility(View.GONE);
+//                }
+//        );
+//        GeneralProvider.with(MapActivity.this).addToRequestQueue(stringRequest);
+//    }
+//
+//    private void parseLocationJSON(JSONObject response) {
+//        try {
+//            JSONArray branches = response.getJSONArray("branchs");
+//            for (int i = 0; i < branches.length(); ++i) {
+//                JSONObject branch = (JSONObject) branches.get(i);
+//                JSONArray latLng = (JSONArray) branch.get("coordinate");
+//                BranchInfo location = new BranchInfo((double) latLng.get(0), (double) latLng.get(1));
+//                setBranchMarker(location);
+//                if (i == 0) {
+//                    Log.d(TAG, "parseLocationJSON: initialize nearest branch " + location);
+//                    nearestBranch = location;
+//                } else {
+//                    if (calculationByDistance(BranchInfo.toLatLng(nearestBranch), BranchInfo.toLatLng(currentLocation))
+//                            > calculationByDistance(BranchInfo.toLatLng(location), BranchInfo.toLatLng(currentLocation))) {
+//                        Log.d(TAG, "parseLocationJSON: modify nearest branch " + location);
+//                        nearestBranch = location;
+//                    }
+//                }
+//            }
+//            moveCamera(BranchInfo.toLatLng(nearestBranch));
+////            Log.d(TAG, "parseLocationJSON: done with move camera to nearest branch, trying to draw the path");
+////            getPathToLocation(new LatLng(10.7314940, 106.6966400));
+//        } catch (Exception e) {
+//            Log.d(TAG, "parseLocationJSON: " + e.getMessage());
+//        } finally {
+//            loadingWrapper.setVisibility(View.GONE);
+//
+//            // Get Intent from OrderDetailActivity to draw the path
+//            Intent intent = getIntent();
+//            boolean drawPath = intent.getBooleanExtra("order", false);
+//            if (drawPath) {
+//                double lat = intent.getDoubleExtra("lat", 0.f);
+//                double lng = intent.getDoubleExtra("lng", 0.f);
+//                Log.d(TAG, "parseLocationJSON: drawing the path to the branch location (" + lat + ", " + lng + ")");
+//                getPathToLocation(new LatLng(lat, lng));
+//            }
+//        }
+//    }
 
     private double calculationByDistance(@NonNull LatLng StartP, @NonNull LatLng EndP) {
         int Radius = 6371;// radius of earth in Km
@@ -253,7 +253,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (locationPermissionGranted) {
                 @SuppressLint("MissingPermission") Task<Location> location = fusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        System.out.println("LMAO LMAO LMAO" + task.getResult());
                         currentLocation = BranchInfo.fromLocation((Location) task.getResult());
                         Log.d(TAG, "onComplete: current location " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
                         moveCamera(BranchInfo.toLatLng(currentLocation));
@@ -261,6 +262,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         getBranchLocation();
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
+                        if (task.isSuccessful() && task.getResult() == null) {
+                            getDeviceLocation();
+                        }
                     }
                 });
             }
@@ -274,6 +278,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void getBranchLocation() {
         ArrayList<BranchInfo> branchInfoArrayList = BranchesProvider.getInstance().getBranches();
+        System.out.println("LMAO LMAO LMAO find nearest:" + branchInfoArrayList);
         for (int i = 0; i < branchInfoArrayList.size(); ++i) {
             BranchInfo location = branchInfoArrayList.get(i);
             setBranchMarker(location);

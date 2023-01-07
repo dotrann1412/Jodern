@@ -164,6 +164,7 @@ public class OrderFormActivity extends AppCompatActivity {
                                 public void onResponse(JSONObject response) {
                                     orderLoadingWrapper.setVisibility(View.GONE);
                                     handleSuccess(response);
+                                    finish();
                                 }
                             },
                             new Response.ErrorListener() {
@@ -211,6 +212,7 @@ public class OrderFormActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, CartActivity.class);
                 intent.putExtra("nextFragment", MyCartFragment.TAG);
                 intent.putExtra("message", "Đặt hàng thành công. Bạn vui lòng kiểm tra email nhé!");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             } else {
                 MySnackbar.inforSnackbar(OrderFormActivity.this, orderParentView, getString(R.string.error_message)).show();
