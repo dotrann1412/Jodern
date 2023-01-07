@@ -3,10 +3,12 @@ from django.urls import path, include
 from .views import (
     Test, HandleProductsList, HandleProductsByID, 
     SearchEngineInterface, HandleCategoriesTree, StoresLocation,
-    Trending, Highlight, ProcessOrder, RelatedProduct,
-    Login, ValidateAccessToken, AddToWishlist, RemoveFromWishList,
-    FetchWishList, UpdateWishList, FetchCart, AddItemToCart, SaveCart,
-    GetOrder
+    Trending, Highlight, Checkout, RelatedProduct,
+    Login, AddToWishlist, RemoveFromWishList,
+    FetchWishList, UpdateWishList, AddItemToCart, SaveCart,
+    GetOrder, MakeSharedCart, PersonalCart, JoinSharedCart,
+    FetchSharedCarts, FetchJoinedCarts, SharedCartInfo, ChangeSharedItemQuantity,
+    SharedSummary
 )
 
 urlpatterns = [ 
@@ -38,19 +40,31 @@ urlpatterns += [
     path('login/', Login.as_view()),
     path('profile/', Test.as_view()),
     path('wishlist/', FetchWishList.as_view()),
-    path('verify-token', ValidateAccessToken.as_view()),
 ]
 
 urlpatterns += [
     path('add-to-wishlist/', AddToWishlist.as_view()),
     path('remove-from-wishlist/', RemoveFromWishList.as_view()),
     path('update-wishlist/', UpdateWishList.as_view()),
-    path('process-order/', ProcessOrder.as_view()),
+    path('process-order/', Checkout.as_view()),
     path('order-data/', GetOrder.as_view()),
 ]
 
 urlpatterns += [
-    path('cart/', FetchCart.as_view()),
+    path('my-cart/', PersonalCart.as_view()), 
+    path('shared-carts/', FetchSharedCarts.as_view()),
+    path('joined-carts/', FetchJoinedCarts.as_view()),
+    path('shared-summary/', SharedSummary.as_view()),
+]
+
+urlpatterns += [
     path('add-to-cart/', AddItemToCart.as_view()),
     path('save-cart/', SaveCart.as_view())
+]
+
+urlpatterns += [
+    path('make-shared-cart/', MakeSharedCart.as_view()),
+    path('join-shared-cart/', JoinSharedCart.as_view()),
+    path('shared-cart/', SharedCartInfo.as_view()),
+    path('add-shared-item/', ChangeSharedItemQuantity.as_view()),
 ]
