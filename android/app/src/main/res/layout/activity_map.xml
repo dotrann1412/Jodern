@@ -30,15 +30,17 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
     >
-    <TextView android:id="@+id/mapTextView"
-        android:gravity="center_horizontal"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="Jodern luôn ở cạnh bạn ở mọi nơi!  🗺️"
-        android:textSize="16sp"
-        android:textColor="@color/primary"
-        android:textStyle="bold"
-        android:lineHeight="20sp"/>
+
+        <TextView
+            android:id="@+id/mapTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lineHeight="20sp"
+            android:text="Jodern luôn ngay cạnh bạn ở mọi nơi!  🗺️"
+            android:textColor="@color/primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
