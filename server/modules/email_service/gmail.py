@@ -23,7 +23,7 @@ def html_msg(msg, status = None, bold_all=False):
     html = f'<p lang="en" class="message {_class}">{content}</p>'
     return html
 
-def get_item_html_template(image, pName, price, itemCount, size):
+def item_html_template(image, pName, price, itemCount, size):
     return '''<div class="item-block">
         <img src="{image}" class="item-image" alt="image" />
         <div class="item-info">
@@ -48,7 +48,299 @@ from datetime import datetime
 import datetime
 
 def html_mail_pickup_order(**kwargs):
-    pass
+    return '''
+    <div class="container">
+            <h4>Thông tin lịch thử đồ: </h4>
+            <div class="appointment-block">
+                <div>
+                    <p><b>Ngày hẹn: </b> {appointmentDate}</p>
+                    <p><b>Chi nhánh: </b> {addressname}</p>
+                    <p><b>Địa chỉ: </b> {address} </p>
+                </div>
+            </div>
+        </div>
+    '''.format(
+        appointmentDate = kwargs.get('appointmentDate', ''),
+        addressname = kwargs.get('addressname', ''),
+        address = kwargs.get('address', ''),
+    )
+    
+def hr(name):
+    return '''
+        <div class="separator">
+            <hr/><p>Các sản phẩm của {name}</p><hr/>
+        </div>
+    '''.format(name = name)
+
+def hr0():
+    return '<hr width="60%" style="margin-right: 0; margin-top: 50px"/>'
+
+def mail_greeting(greet): # Cảm ơn quý khách đã tin tưởng và sử dụng dịch vụ của chúng tôi! Sau đây là thông tin đơn hàng của quý khách. 
+    return '''
+        <div class="container">
+            <p>{greet}</p>
+        </div>
+    '''.format(
+        greet = greet
+    )
+
+def h4(content):
+    return ''' <h4>{content} </h4> '''.format( content = content )
+
+def carts_info(*args, **kwargs):
+    
+    content = ""
+    
+    total = 0
+    for uid, val in kwargs['items'].items():
+        content += hr(val['username']) + '\n' 
+        for item in val['products']:
+            content += item_html_template(
+                image = item['image'], 
+                pName = item['title'], 
+                price = item['price'], 
+                itemCount = item['quantity'], 
+                size = item['size']
+            ) + '<br/>'
+            
+            total += item['price'] * item['quantity']
+            
+        content += '''
+            <div class="order-summary" >
+                <p><b>Tổng:</b> {total:,.1f} (VND)</p>
+            </div>
+        '''.format(total = total)
+    
+    
+    return '''
+        <div class="container">
+            {content}
+        </div>
+    '''.format(content = content)
+
+def ord_summary(**kwargs):
+    return '''
+        <div class="container order-summary">
+                {l1}
+                {l2}
+                <p><b>Thành tiền:</b> {total:,.1f} (VND)</p>
+            </div>
+            <div class="container">
+                <p>{extra_note}</p>
+            </div>
+        </div>   
+    '''.format(
+        l1 = "<p><b>Sản phẩm: </b>{price:,.1f} (VND)</p>".format(price = kwargs.get('price', 0)) if kwargs.get('price', 0) > 0 else '',
+        l2 = "<p><b>Phí vận chuyển:</b> {shipping_fee:,.1f} (VND)</p>".format(shipping_fee = kwargs.get('shipping_fee', 0)) if kwargs.get('shipping_fee', 0) > 0 else '',
+        total = kwargs.get('total', 0),
+        extra_note = kwargs.get('extra_note', '')
+    )
+    
+def html_mail_2(**kwargs):
+    return '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        * {{
+            box-sizing: border-box;
+        }}
+        
+        html {{
+            font-family: 'Roboto', sans-serif;
+        }}
+        
+        p, td, th, span, ul {{
+            color: #333;
+            font-size: 16px;
+        }}
+        .main {{
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 6px 30px 30px 30px;
+            width: 700px;
+        }}
+        .app__name {{
+            text-align: center;
+            font-size: 24px;
+            color: #1e9d95;
+            font-weight: bold;
+        }}
+        .app__greeting,
+        .app__desc {{
+            text-align: center;
+        }}
+        .divider {{
+            border-bottom: 1px solid #ccc;
+            margin: 20px 0;
+        }}
+        .request {{
+            font-weight: bold;
+            word-break: break-all;
+        }}
+        /* CSS for tables */
+        table {{
+            /* width: 100%; */
+            margin: 0 auto;
+            border-collapse: collapse;
+            overflow: hidden;
+        }}
+        table td, table th {{
+            font-size: 14px;
+        }}
+        table.left {{
+            text-align: left;
+        }}
+        table.center {{
+            text-align: center;
+        }}
+        td,
+        th {{
+            border-top: 1px solid #c6cccde6;
+            padding: 10px 14px;
+        }}
+        th {{
+            background-color: #76dfd8;
+            border-left: 1px solid #c6cbcd;
+            border-right: 1px solid #c6cbcd;
+        }}
+        td {{
+            border-left: 1px solid #c6cbcd;
+            border-right: 1px solid #c6cbcd;
+        }}
+        
+        tr.first-row {{
+            text-align: center;
+        }}
+        tr.last-row {{
+            border-bottom: 1px solid #c6cccde6;
+        }}
+        tr.odd-row td {{
+            background-color: #e6f8f7;
+        }}
+        /* CSS for message */
+        .message {{
+            margin: 0;
+        }}
+        .message.bold {{
+            font-weight: bold;
+        }}
+        .message.ok {{
+            color: #1e9d95;
+        }}
+        .message.error {{
+            color: red;
+        }}
+        .ascii {{
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 0;
+            margin-left: 40px;
+            white-space: pre-wrap;
+            font-weight: bold;
+        }}
+        .item-block {{
+            width: 100%;
+            min-height: 110px;
+            border-radius: 1rem;
+            border: 0.2px solid rgba(80, 80, 80, 1);
+            background-color: #f8fcfc;
+            margin: 5px;
+            padding: 5px;   
+            align-items: center;
+            display: inline-flex;
+        }}
+        
+        .item-name {{
+            font-weight: bold;
+            margin-left: 10px;
+        }}
+
+        .item-image {{
+            max-width: 200px;
+            max-height: 120px;
+            margin: auto;
+            border-radius: 1rem;
+            border: none;
+            padding: 10px;
+            margin-left: 0px;
+        }}
+            
+        .order-summary {{
+            text-align: right;
+            position: relative;
+            padding-right: 20px;
+            margin: 15px;
+        }}
+
+        .item-info {{
+            height: 90%;
+            width: 100%;
+            display: block;
+        }}
+
+        .item-title {{
+            max-width: 100%;
+            display: block;
+            margin-left: 10%;
+            text-align: left;
+            font-size: 24px;
+        }}
+
+        .item-title a:hover {{
+            text-decoration: underline;
+            text-decoration-color: #76dfd8;
+        }}
+
+        .item-title a:link {{
+            text-decoration: none;
+        }}
+
+        .item-title a {{
+            color: #1e9d95;
+        }}
+
+        .item-detail {{
+            width: 100%;
+            display: inline-flex;
+            direction: rtl;
+            margin-right: 10px;
+        }}
+
+        .item-detail div {{
+            margin-right: 15px
+        }}
+        
+        .separator {{
+            margin-top: 30px;
+            margin-bottom: 10px;
+            text-align: center;
+            margin: auto;
+        }}
+
+        .separator hr {{
+            width: 25%;
+            border-color:rgb(111, 52, 52);
+            display: inline-block;
+        }}
+
+        .separator p {{
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }}
+    </style>
+    </head>
+    <body>
+        {content}
+    </body>
+    </html>
+'''.format(
+    content = kwargs['content']
+)
+    
 
 def html_mail(**kwargs):
     total = kwargs.get('price', 0) + kwargs.get('shipping_fee', 0)
@@ -318,10 +610,12 @@ def build_email_content(mail_from, mail_to, subject, content, format = 'html'):
             
     return email_message
 
+import traceback
+
 class MailService:
     def __init__(self):
         self.imap_server = imaplib.IMAP4_SSL(IMAP_HOST)
-        self.smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT)
+        self.smtp_server = SMTP_SSL(SMTP_HOST, port = 465)
         self.email = None
         self.password = None
 
@@ -384,6 +678,8 @@ class MailService:
     def send_mail(self, mail):
         try:
             self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
-        except:
+        except Exception as err:
+            traceback.print_exc()
+            self.smtp_server = SMTP_SSL(SMTP_HOST, port = 465)
             self.login(self.username, self.password)
             self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
