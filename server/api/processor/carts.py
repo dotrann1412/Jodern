@@ -425,7 +425,7 @@ def ProcessGetGetMyJoinedCart(userid):
 def PersonalSharedListInfo(userid):
     query = '''select sc.cartid, cartholder, memberid, cartname from sharedcart sc join (select * from SharedCartMember where memberid = ?) scm on ( 
         sc.cartid = scm.cartid
-    )'''
+    ) where opening = 1'''
     
     cursor = Connector.establishConnection().cursor()
     rows = cursor.execute(query, (userid, )).fetchall()
