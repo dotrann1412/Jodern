@@ -7,8 +7,8 @@ from .views import (
     Login, AddToWishlist, RemoveFromWishList,
     FetchWishList, UpdateWishList, AddItemToCart, SaveCart,
     GetOrder, MakeSharedCart, PersonalCart, JoinSharedCart,
-    FetchSharedCarts, FetchJoinedCarts, SharedCartInfo, ChangeSharedItemQuantity,
-    SharedSummary
+    FetchSharedCarts, FetchJoinedCarts, SharedCartInfo,
+    SharedSummary, MarkAsDelivered
 )
 
 urlpatterns = [ 
@@ -59,12 +59,12 @@ urlpatterns += [
 
 urlpatterns += [
     path('add-to-cart/', AddItemToCart.as_view()),
-    path('save-cart/', SaveCart.as_view())
+    path('save-cart/', SaveCart.as_view()),
+    path('mark-as-delivered/', MarkAsDelivered.as_view()),
 ]
 
 urlpatterns += [
     path('make-shared-cart/', MakeSharedCart.as_view()),
     path('join-shared-cart/', JoinSharedCart.as_view()),
     path('shared-cart/', SharedCartInfo.as_view()),
-    path('add-shared-item/', ChangeSharedItemQuantity.as_view()),
 ]
