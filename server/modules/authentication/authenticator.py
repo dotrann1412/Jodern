@@ -9,6 +9,20 @@ except:
 
 import datetime
 
+import threading
+
+nameMapping = None
+
+def __backgroundUpdateThread(timeout = 10):
+    query = 'select userid, fullname from users'
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query).fetchall()
+    global nameMapping
+    nameMapping = {row[0]: row[1] for row in rows}
+    threading.Timer(timeout, __backgroundUpdateThread).start()
+
+__backgroundUpdateThread()
+
 class Verifier:
     def decode(token):
         return pyjwt.decode(token, Config.getValue('app-secret-key'), algorithms=['HS256'])
@@ -20,21 +34,23 @@ class Verifier:
 
     def verify(**kwargs):
         try: 
-            decodedPayload = pyjwt.decode(kwargs['token'], 'secret', algorithms=['HS256'])
-            if decodedPayload['exp'] < datetime.datetime.now().timestamp():
-                return False
+            pyjwt.decode(kwargs['token'], Config.getValue('app-secret-key'), algorithms=['HS256'])
         except: return False
         return True
 
     def generateToken(**kwargs):
-        return pyjwt.encode(kwargs['payload'], 'secret', algorithm='HS256')        
+        return pyjwt.encode(kwargs['payload'], Config.getValue('app-secret-key'), algorithm='HS256')        
 
-class FacebookAuthenticator:
+class Authenticator:
     def Login(**kwargs):
-        userid = kwargs['userid']
-        token = kwargs['token']
-        
-        if not FacebookAuthenticator.verify(userid, token):
+        userid = kwargs.get("userid", "Unknown")
+        fullname = kwargs.get("fullname", "Unknown")
+        email = kwargs.get("email", "Unknown")
+        phone = kwargs.get("phone", "Unknown")
+        token = kwargs.get("token", "Unknown")
+        avatar = kwargs.get("avatar", "")
+
+        if not Authenticator.verify(userid, token):
             return {
                 "error": "invalid token"
             }
@@ -44,27 +60,20 @@ class FacebookAuthenticator:
         cursor.execute(query, userid)
         row = cursor.fetchone()
         if not row:
-            query = "insert into users (userid, token) values (?, ?)"
-            cursor.execute(query, userid, token)
-            Connector.establishConnection().commit()
+            query = "insert into users (userid, fullname, email, Phone, Address, avatar) values (?, ?, ?, ?, ?, ?)"
+            cursor.execute(query, (userid, fullname, email, phone, "", avatar))
+            cursor.commit()
 
         return {
             "message": "Chào mừng đến với Jodern!",
-            "auth": Verifier.generateToken(
+            "access_token": Verifier.generateToken (
                 payload = {
                     "userid": userid,
-                    "exp": (datetime.datetime.now() + datetime.timedelta(minutes = Config.getValue("exp"))).timestamp()
+                    "email": email,
+                    "phone": phone
                 }
             )
         }
 
-    #@todo: implement this
     def verify(userid, token):
         return True
-
-class GoogleAuthenticator:
-    def Login(**kwargs):
-        pass
-    
-    def verify(**kwargs):
-        pass
