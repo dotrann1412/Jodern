@@ -6,7 +6,7 @@ from .products import categoryMapping, priceMapping
 MOVE_DATA_SYNCING_TO_BACKGROUND = False
     
 def ProcessFetchCartsList(userid):
-    query = "select cartid, totalprice  from cart where cartholder = ? and opening = 1"
+    query = "select cartid, totalprice from cart where cartholder = ? and opening = 1"
     cursor = Connector.establishConnection().cursor()
     row = cursor.execute(query, (userid,)).fetchone()
     
@@ -50,7 +50,8 @@ __backgroundProcessing = False
 __defaultQueries = [
     'delete from sharedcartdetails where quantity <= 0',
     'delete from cartdetail where quantity <= 0',
-    'exec UpdateTotalItems_SharedCart'
+    'exec UpdateTotalItems_SharedCart',
+    'exec CounterHacker'
 ]
     
 def __background(timeout = 0.2):
@@ -118,7 +119,7 @@ def __updateTotalPriceBG(cartid):
 def __updateSharedCartBG(cartid):
     query = '''
         update SharedCart set totalprice = (
-            select sum(quantity * Price) from (
+            select COALESCE(sum(quantity * Price), 0) from (
                     select *
                     from SharedCartDetails 
                     where cartid = ?
@@ -282,7 +283,7 @@ def ProcessJoinSharedCart(cartid, userid):
         query = "insert into SharedCartMember (cartid, memberid) values (?, ?)"
         cursor.execute(query, (cartid, userid))
         cursor.commit()
-        threading.Thread(target=__updateSharedCartBG, args = (cursor, cartid, )).start()
+        threading.Thread(target=__updateSharedCartBG, args = (cartid, ), daemon = True).start()
     except: return {"message": "Something went wrong"}
     
     return { 
@@ -335,7 +336,7 @@ def ProcessSavePersonalCart(userid, data):
     if len(data) != 0:
         cursor.executemany(query, tuple((cartid, item['productid'], item['size'], item['quantity']) for item in data))
         cursor.commit()
-        threading.Thread(target=__updateTotalPriceBG, args = (cursor, cartid, )).start()
+        threading.Thread(target=__updateTotalPriceBG, args = (cartid, ), daemon = True).start()
     
     return { "message": "saved!" }
 
@@ -405,6 +406,10 @@ def ProcessGetGetMyJoinedCart(userid):
     
     cursor = Connector.establishConnection().cursor()
     rows = cursor.execute(query, (userid, userid, )).fetchall()
+    
+    if not __backgroundProcessing:
+        __backgroundQueue.append(['select * from size', ( )])
+    else: __backgroundQueueTMP.append(['select * from size', ( )])
     
     return {
         "joined-carts": [
