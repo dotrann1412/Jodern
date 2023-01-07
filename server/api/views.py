@@ -29,10 +29,10 @@ from .processor.carts import (
     PersonalSharedListInfo
 )
 
-# from modules.retriever import (
-#     ImageRetriever,
-#     TextRetriever
-# )
+from modules.retriever import (
+    ImageRetriever,
+    TextRetriever
+)
 
 class Test(APIView):
     def get(self, request, *args, **kwargs):
@@ -41,8 +41,8 @@ class Test(APIView):
     def post(self, request, *args, **kwargs):
         return Response({"message": "Hello world!"}, status = status.HTTP_200_OK)
 
-# textRetriever = TextRetriever.TextRetriever()
-# imageRetriever = ImageRetriever.ImageRetriever()
+textRetriever = TextRetriever.TextRetriever()
+imageRetriever = ImageRetriever.ImageRetriever()
 import traceback
 class SearchEngineInterface(APIView):
     def get(self, request: Request, *args, **kwargs):
@@ -115,8 +115,15 @@ class Checkout(APIView):
             
             userid = token['userid']
             
-            if 'cartid' not in request.data or request.data['cartid'] == '*': res = ProcessPersonalOrder(userid, request.data.get('order-info', {}))
-            else: res = ProcessSharedOrder(userid, request.data['cartid'], request.data.get('order-info', {}))
+            if 'cartid' not in request.data or request.data['cartid'] == '*': 
+                print('[INFO] Processing personal order]')
+                res = ProcessPersonalOrder(userid, request.data.get('order-info', {}))
+                print('[DEBUG] ', res)
+                
+            else: 
+                print('[INFO] Processing shared order]')
+                res = ProcessSharedOrder(userid, request.data['cartid'], request.data.get('order-info', {}))
+                print('[DEBUG] ', res)
         
         except Exception as e:
             traceback.print_exc()
