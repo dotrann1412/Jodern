@@ -9,6 +9,20 @@ except:
 
 import datetime
 
+import threading
+
+nameMapping = None
+
+def __backgroundUpdateThread(timeout = 10):
+    query = 'select userid, fullname from users'
+    cursor = Connector.establishConnection().cursor()
+    rows = cursor.execute(query).fetchall()
+    global nameMapping
+    nameMapping = {row[0]: row[1] for row in rows}
+    threading.Timer(timeout, __backgroundUpdateThread).start()
+
+__backgroundUpdateThread()
+
 class Verifier:
     def decode(token):
         return pyjwt.decode(token, Config.getValue('app-secret-key'), algorithms=['HS256'])
@@ -34,6 +48,7 @@ class Authenticator:
         email = kwargs.get("email", "Unknown")
         phone = kwargs.get("phone", "Unknown")
         token = kwargs.get("token", "Unknown")
+        avatar = kwargs.get("avatar", "")
 
         if not Authenticator.verify(userid, token):
             return {
@@ -45,8 +60,8 @@ class Authenticator:
         cursor.execute(query, userid)
         row = cursor.fetchone()
         if not row:
-            query = "insert into users (userid, fullname, email, Phone, Address) values (?, ?, ?, ?, ?)"
-            cursor.execute(query, (userid, fullname, email, phone, ""))
+            query = "insert into users (userid, fullname, email, Phone, Address, avatar) values (?, ?, ?, ?, ?, ?)"
+            cursor.execute(query, (userid, fullname, email, phone, "", avatar))
             cursor.commit()
 
         return {
@@ -60,6 +75,5 @@ class Authenticator:
             )
         }
 
-    #@todo: implement this
     def verify(userid, token):
         return True
