@@ -24,7 +24,8 @@ def html_msg(msg, status = None, bold_all=False):
     return html
 
 def item_html_template(image, pName, price, itemCount, size):
-    return '''<div class="item-block">
+    return '''
+    <div class="item-block">
         <img src="{image}" class="item-image" alt="image" />
         <div class="item-info">
             <div class="item-title"><p><a href="{image}">
@@ -50,7 +51,7 @@ import datetime
 def html_mail_pickup_order(**kwargs):
     return '''
     <div class="container">
-            <h4>Thông tin lịch thử đồ: </h4>
+            <h3>Thông tin lịch thử đồ: </h3>
             <div class="appointment-block">
                 <div>
                     <p><b>Ngày hẹn: </b> {appointmentDate}</p>
@@ -91,9 +92,9 @@ def carts_info(*args, **kwargs):
     
     content = ""
     
-    total = 0
     for uid, val in kwargs['items'].items():
-        content += hr(val['username']) + '\n' 
+        content += hr(val['username']) + '\n'
+        total = 0
         for item in val['products']:
             content += item_html_template(
                 image = item['image'], 
@@ -610,14 +611,15 @@ def build_email_content(mail_from, mail_to, subject, content, format = 'html'):
             
     return email_message
 
-import traceback
+import traceback, time
 
 class MailService:
     def __init__(self):
         self.imap_server = imaplib.IMAP4_SSL(IMAP_HOST)
-        self.smtp_server = SMTP_SSL(SMTP_HOST, port = 465)
+        self.smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT)
         self.email = None
         self.password = None
+        self.available = True
 
     def login(self, username, password):   
         # self.imap_server.login(username, password)
@@ -675,7 +677,15 @@ class MailService:
             
         return mail_list
 
+    flag = True
+
     def send_mail(self, mail):
+        
+        while not self.available:
+            time.sleep(0.5)
+        
+        self.available = False
+        print("Sending an email to ", mail['To'])
         try:
             self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
         except Exception as err:
@@ -683,3 +693,5 @@ class MailService:
             self.smtp_server = SMTP_SSL(SMTP_HOST, port = 465)
             self.login(self.username, self.password)
             self.smtp_server.sendmail(mail['From'], mail['To'], str(mail).encode())
+        finally:
+            self.available = True
