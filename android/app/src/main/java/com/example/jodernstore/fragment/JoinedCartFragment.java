@@ -55,7 +55,7 @@ public class JoinedCartFragment extends Fragment {
     private FrameLayout parentView;
     private RecyclerView cartRecyclerView;
     private LinearLayout cartEmptyWrapper, cartLoadingWrapper;
-    private MaterialButton cartGoToShop;
+//    private MaterialButton cartGoToShop;
 
     private FloatingActionButton joinedCartFloatBtn;
 
@@ -124,28 +124,28 @@ public class JoinedCartFragment extends Fragment {
         cartRecyclerView = requireView().findViewById(R.id.joinedCartRecyclerView);
         cartEmptyWrapper = requireView().findViewById(R.id.joinedCartEmptyWrapper);
         cartLoadingWrapper = requireView().findViewById(R.id.joinedCartLoadingWrapper);
-        cartGoToShop = requireView().findViewById(R.id.joinedCartGoToShop);
+//        cartGoToShop = requireView().findViewById(R.id.joinedCartGoToShop);
         joinedCartFloatBtn = requireView().findViewById(R.id.joinedCartFloatBtn);
     }
 
     private void setEvents() {
         Log.d(TAG, "setEvents: ");
-        cartGoToShop.setOnClickListener(view -> {
-            // Back pressed handling
-            Intent searchIntent = new Intent(JoinedCartFragment.this.getContext(), ProductListFragment.class);
-            searchIntent.putExtra("entry", "product-list");
-            searchIntent.putExtra("sex", "nam");
-            searchIntent.putExtra("categoryName", "Thời trang nam");
-            GeneralProvider.with(JoinedCartFragment.this.getContext()).setSearchIntent(searchIntent);
-
-            // Go to product list fragment of main activity
-            Intent intent = new Intent(JoinedCartFragment.this.getContext(), MainActivity.class);
-            intent.putExtra("nextFragment", ProductListFragment.TAG);
-            intent.putExtra("entry", "product-list");
-            intent.putExtra("sex", "nam");
-            intent.putExtra("categoryName", "Thời trang nam");
-            startActivity(intent);
-        });
+//        cartGoToShop.setOnClickListener(view -> {
+//            // Back pressed handling
+//            Intent searchIntent = new Intent(JoinedCartFragment.this.getContext(), ProductListFragment.class);
+//            searchIntent.putExtra("entry", "product-list");
+//            searchIntent.putExtra("sex", "nam");
+//            searchIntent.putExtra("categoryName", "Thời trang nam");
+//            GeneralProvider.with(JoinedCartFragment.this.getContext()).setSearchIntent(searchIntent);
+//
+//            // Go to product list fragment of main activity
+//            Intent intent = new Intent(JoinedCartFragment.this.getContext(), MainActivity.class);
+//            intent.putExtra("nextFragment", ProductListFragment.TAG);
+//            intent.putExtra("entry", "product-list");
+//            intent.putExtra("sex", "nam");
+//            intent.putExtra("categoryName", "Thời trang nam");
+//            startActivity(intent);
+//        });
 
         joinedCartFloatBtn.setOnClickListener(view -> {
             showJoinCartDialog();

@@ -63,14 +63,11 @@ public class SharedCart extends Cart {
 
             JSONArray itemsJson = (JSONArray) response.get("items");
             ArrayList<CartItem> items = new ArrayList<>();
-            int numItems = 0;
             for (int i = 0; i < itemsJson.length(); ++i) {
                 CartItem item = CartItem.parseJSON((JSONObject) itemsJson.get(i));
                 items.add(item);
-                numItems += item.getQuantity();
             }
             sharedCart.items = items;
-            sharedCart.numItems = numItems;
 
             List<String> logs = new ArrayList<>();
             JSONArray logsJson = (JSONArray) response.get("logs");

@@ -54,7 +54,7 @@ public class SharedCartFragment extends Fragment {
     private FrameLayout parentView;
     private RecyclerView cartRecyclerView;
     private LinearLayout cartEmptyWrapper, cartLoadingWrapper;
-    private MaterialButton cartGoToShop;
+//    private MaterialButton cartGoToShop;
 
     private FloatingActionButton addCartFloatBtn;
 
@@ -125,28 +125,28 @@ public class SharedCartFragment extends Fragment {
         cartRecyclerView = requireView().findViewById(R.id.sharedCartRecyclerView);
         cartEmptyWrapper = requireView().findViewById(R.id.sharedCartEmptyWrapper);
         cartLoadingWrapper = requireView().findViewById(R.id.sharedCartLoadingWrapper);
-        cartGoToShop = requireView().findViewById(R.id.sharedCartGoToShop);
+//        cartGoToShop = requireView().findViewById(R.id.sharedCartGoToShop);
         addCartFloatBtn = requireView().findViewById(R.id.addCartFloatBtn);
     }
 
     private void setEvents() {
         Log.d(TAG, "setEvents: ");
-        cartGoToShop.setOnClickListener(view -> {
-            // Back pressed handling
-            Intent searchIntent = new Intent(SharedCartFragment.this.getContext(), ProductListFragment.class);
-            searchIntent.putExtra("entry", "product-list");
-            searchIntent.putExtra("sex", "nam");
-            searchIntent.putExtra("categoryName", "Thời trang nam");
-            GeneralProvider.with(SharedCartFragment.this.getContext()).setSearchIntent(searchIntent);
-
-            // Go to product list fragment of main activity
-            Intent intent = new Intent(SharedCartFragment.this.getContext(), MainActivity.class);
-            intent.putExtra("nextFragment", ProductListFragment.TAG);
-            intent.putExtra("entry", "product-list");
-            intent.putExtra("sex", "nam");
-            intent.putExtra("categoryName", "Thời trang nam");
-            startActivity(intent);
-        });
+//        cartGoToShop.setOnClickListener(view -> {
+//            // Back pressed handling
+//            Intent searchIntent = new Intent(SharedCartFragment.this.getContext(), ProductListFragment.class);
+//            searchIntent.putExtra("entry", "product-list");
+//            searchIntent.putExtra("sex", "nam");
+//            searchIntent.putExtra("categoryName", "Thời trang nam");
+//            GeneralProvider.with(SharedCartFragment.this.getContext()).setSearchIntent(searchIntent);
+//
+//            // Go to product list fragment of main activity
+//            Intent intent = new Intent(SharedCartFragment.this.getContext(), MainActivity.class);
+//            intent.putExtra("nextFragment", ProductListFragment.TAG);
+//            intent.putExtra("entry", "product-list");
+//            intent.putExtra("sex", "nam");
+//            intent.putExtra("categoryName", "Thời trang nam");
+//            startActivity(intent);
+//        });
 
         addCartFloatBtn.setOnClickListener(view -> {
             // TODO: show dialog to add new cart

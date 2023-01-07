@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Danh sách sản phẩm yêu thích của bạn đang trống"
+                android:text="Danh sách của bạn đang trống"
                 android:textAlignment="center"
                 android:textColor="@color/primary"
                 android:textSize="16sp"
