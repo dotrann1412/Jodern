@@ -49,6 +49,7 @@ __backgroundQueueTMP = []
 __backgroundProcessing = False
 __defaultQueries = [
     'delete from sharedcartdetails where quantity <= 0',
+    'delete from cartdetail where quantity <= 0',
     'exec UpdateTotalItems_SharedCart'
 ]
     
@@ -103,17 +104,15 @@ def __updateTotalPriceBG(cartid):
             select sum(cd.quantity * p.price) as s from ( 
                 select productid, quantity from CartDetail where cartid = ?
             ) cd left join product p on cd.productid = p.id
-        ), totalitems = (
-            select count(quantity) from CartDetail where cartid = ?
         ) where cartid = ?
     '''
     
     if MOVE_DATA_SYNCING_TO_BACKGROUND:
-        if not __backgroundProcessing: __backgroundQueue.append([query, (cartid, cartid, cartid)])
-        else: __backgroundQueueTMP.append([query, (cartid, cartid, cartid)])
+        if not __backgroundProcessing: __backgroundQueue.append([query, (cartid, cartid)])
+        else: __backgroundQueueTMP.append([query, (cartid, cartid)])
     else:
         cursor = Connector.establishConnection().cursor()
-        cursor.execute(query, (cartid, cartid, cartid))
+        cursor.execute(query, (cartid, cartid))
         cursor.commit()
     
 def __updateSharedCartBG(cartid):
@@ -240,7 +239,7 @@ def __summaryOfSharedInfo(cartid):
             "name": row[5],
             "avatar": row[6]
         },
-        "numbersOfMembers": row[2],
+        "members": row[2],
         "totalprice": row[3],
         "createdAt": datetime.datetime.strftime(row[4] + datetime.timedelta(hours = 7), '%d-%m-%Y') if row[4] else None,
         "cartname": row[7],
@@ -485,7 +484,7 @@ def ProcessGetSharedCartInfo(cartid, userid):
     
     res["info"] = __summaryOfSharedInfo(cartid)
     
-    res['info']['totalprice'] = sum(row[1] * priceMapping[row[1]] for row in rows)
+    res['info']['totalprice'] = sum(row[3] * priceMapping[row[1]] for row in rows)
     res['info']['totalitems'] = sum(row[3] for row in rows)
     
     res["logs"] = [
