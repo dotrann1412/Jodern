@@ -190,4 +190,6 @@ public class SharedCart extends Cart {
     public void setHistory(List<String> logs) {
         this.history = logs;
     }
+
+    public List<String> getHistory() { return this.history; }
 }

@@ -14,6 +14,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -50,6 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SharedCartActivity extends AppCompatActivity {
@@ -199,14 +201,30 @@ public class SharedCartActivity extends AppCompatActivity {
             // Init views
             LinearLayout cartHistoryLayoutWrapper = dialog.findViewById(R.id.cartHistoryLayoutWrapper);
 
-            // TODO history
+            List<String> logs = sharedCart.getHistory();
 
-            for (int i = 0; i < 30; ++i) {
-                TextView tv = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
-                tv.setText("Log " + i);
-                cartHistoryLayoutWrapper.addView(tv);
+            if (logs.size() == 0) {
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("Giỏ hàng này chưa có thay đổi gì");
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textView.setTypeface(null, Typeface.BOLD);
+                cartHistoryLayoutWrapper.addView(textView);
+
+                textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("Bạn sẽ nhìn thấy lịch sử thay đổi \n của giỏ hàng này tại đây");
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textView.setTypeface(null, Typeface.ITALIC);
+                cartHistoryLayoutWrapper.addView(textView);
+
+                dialog.show();
+                return;
             }
 
+            for (String log : logs) {
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("• " + log);
+                cartHistoryLayoutWrapper.addView(textView);
+            }
 
             dialog.show();
         });
@@ -267,6 +285,7 @@ public class SharedCartActivity extends AppCompatActivity {
                     error -> {
                         sharedCartLayoutParentView.setVisibility(View.VISIBLE);
                         sharedCartLoadingWrapper.setVisibility(View.GONE);
+                        showCartLayout(sharedCart.getItems().isEmpty());
                         MySnackbar.inforSnackbar(SharedCartActivity.this, sharedCartInfoParentView, getString(R.string.error_message)).show();
                     }
             ) {
