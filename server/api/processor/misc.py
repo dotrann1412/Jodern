@@ -23,3 +23,10 @@ def StoresLocationJson():
 def UUID(length = 10):
     global asciiBase
     return ''.join([asciiBase[random.randint(0, len(asciiBase) - 1)] for _ in range(length)])
+
+def BranchInfo(branchid):
+    global storeDict
+    for store in storeDict['branchs']:
+        if store['branch_id'] == branchid:
+            return store
+    return storeDict['branchs'][0]
