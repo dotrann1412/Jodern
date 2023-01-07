@@ -148,7 +148,7 @@ def ProcessSharedOrder(userid, cartid, extraInfo):
         content = {'html': gmail.html_mail_2(content = mailContentBase)}
     )
 
-    threading.Thread(target = __mailInstance.send_mail, args = (mailContent, )).start()
+    threading.Thread(target = __mailInstance.send_mail, args = (mailContent, ), daemon = True).start()
     
     query = 'update sharedcart set opening = 0 where cartid = ?'
     cursor.execute(query, (cartid, ))
@@ -235,44 +235,61 @@ def ProcessPersonalOrder(userid, extraInfo):
         total_price += item['quantity'] * item['price']
 
         cursor.execute(updateTrendingQueryPattern, (item['productid'], item['quantity']))
-            
-    content = ''
+
+    if orderType == 1:
+        store = BranchInfo(branchid)
+    
+    mailContentBase = '''
+        <div class='main'>
+            <div class="container">
+                <p class="app__name">JODERN STORE</p>
+                <div class='divider'></div>
+            </div>
+    '''
+
+    mailContentBase += gmail.mail_greeting(
+        f'Cảm ơn quý khách hàng <b>{customer_name}</b> đã tin tưởng và sử dụng dịch vụ của chúng tôi! Đơn hàng của quý khách gồm có <b>{len(orderData)} sản phẩm</b>, chi tiết như sau:' if orderType == 0 else \
+        f'Cảm ơn quý khách hàng <b>{customer_name}</b> đã tin tưởng và sử dụng dịch vụ của chúng tôi! Sau đây là thông tin lịch hẹn thử đồ và thông tin chi tiết các sản phẩm quý khách đã chọn:'
+    )
+    
+    if orderType == 1:
+        mailContentBase += gmail.html_mail_pickup_order(
+            appointmentDate = date,
+            addressname = store['branch_name'],
+            address = store['address']
+        )
+    
+    mailContentBase += gmail.hr('Quý khách')
+    mailContentBase += '''<div class="container">'''
 
     for item in orderData:
-        content += gmail.item_html_template(
+        mailContentBase += gmail.item_html_template(
             item['imageurl'],
             item['title'],
             item['price'],
             item['quantity'],
             item['sizeid']
         ) + '<br>\n'
-    
-    cost = total_price
-    tax = int(total_price) * 0.06
-    shipping_fee = 30000
-        
-    html_mail = gmail.html_mail(
-        price = cost,
-        tax = tax,
-        shipping_fee = shipping_fee,
-        html_content = content,
-        product_count = len(orderData),
-        customer_name = customer_name,
-        phone_number = phone_number,
-        location = location,
-        preorder_required = preorder_required,
-        orderType = orderType,
-        pickupdate = date,
-    )
 
+    mailContentBase += '''</div>'''
+    mailContentBase += gmail.hr0()
+    delivered_on = datetime.datetime.now() + datetime.timedelta(days = 5)
+    mailContentBase += gmail.ord_summary(
+        price = 0 if orderType == 1 else total_price, 
+        shipping_fee = 0 if orderType == 1 else 30000, 
+        total = (total_price + 30000) if orderType == 0 else total_price, 
+        extra_note = f'Đơn hàng của quý khách sẽ được xác nhận và giao hàng trước ngày <b>{delivered_on.strftime(r"%Y-%m-%d")}</b> đến địa chỉ <b>{location}</b> và liên lạc qua số điện thoại <b>{phone_number}</b>.' if orderType == 0\
+            else 'Mọi sự thay đổi thông tin xin liên hệ với chúng tôi qua số điện thoại <b>1723 0098</b>. Chúc quý khách một ngày tốt lành!'
+    )
+    
     mailContent = gmail.build_email_content(
         'joderm.store@gmail.com', 
         [email], 
-        subject = 'Đơn hàng của bạn đang trên đường vận chuyển!' if orderType == 0 else 'Lịch hẹn thử đồ!', 
-        content = {'html': html_mail}
+        subject = 'Hurray! Đơn hàng của bạn đang trên đường vận chuyển!' if orderType == 0 else 'Hot, hot hot!! Lịch hẹn thử đồ!', 
+        content = {'html': gmail.html_mail_2(content = mailContentBase)}
     )
     
-    threading.Thread(target = __mailInstance.send_mail, args = (mailContent, )).start()
+    threading.Thread(target = __mailInstance.send_mail, args = (mailContent, ), daemon = True).start()
 
     newCartId = UUID()
     
@@ -337,7 +354,7 @@ def GetPersonalOrdersData(userid):
     cursor = Connector.establishConnection().cursor()
     rows = cursor.execute(query, (userid, )).fetchall()
     
-    return {
+    res = {
         "orders": [
             {
                 "orderid": row[0],
@@ -351,6 +368,9 @@ def GetPersonalOrdersData(userid):
             } for row in rows
         ] + GetSharedOrdersData(userid)['orders']
     }
+    
+    res['orders'].sort(key = lambda x: datetime.datetime.strptime(x['createdat'], '%d-%m-%Y'), reverse = True)
+    return res
 
 # o.createdAt, o.PaymentStatus, o.DeliverStatus, o.OrderType, o.branchid, c.totalprice, o.CustomerName, o.CustomerPhone, o.Address, o.Email, o.PickupTime
 def SharedOrderDetails(userid, cartid):
@@ -388,7 +408,7 @@ def SharedOrderDetails(userid, cartid):
         "deliverstatus": generalInfo[2],
         "ordertype": 1 if generalInfo[3] else 0,
         "branchid": generalInfo[4],
-        "cartname": generalInfo[10],
+        "cartname": generalInfo[11],
         "details": [
             {
                 "sizeid": row[1],
