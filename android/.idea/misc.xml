@@ -110,9 +110,13 @@
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_splash.xml" value="0.264" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/activity_temp.xml" value="0.15260416666666668" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/cart_item.xml" value="0.1334853090172239" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/dialog_cart_history.xml" value="0.264" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/order_item.xml" value="0.20244565217391305" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/product_detail_image_item.xml" value="0.1334853090172239" />
         <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/product_preview_view_holder.xml" value="0.1334853090172239" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/trending_item.xml" value="0.20244565217391305" />
+        <entry key="..\:/Learning/Folder Z/FIT HCMUS 20120584/Ki 5/4. Mobile Dev/Mid-term/Jodern/android/app/src/main/res/layout/wishlist_item.xml" value="0.20244565217391305" />
       </map>
     </option>
   </component>

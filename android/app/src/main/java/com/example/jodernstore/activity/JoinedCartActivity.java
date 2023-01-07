@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -143,12 +145,29 @@ public class JoinedCartActivity extends AppCompatActivity {
             // Init views
             LinearLayout cartHistoryLayoutWrapper = dialog.findViewById(R.id.cartHistoryLayoutWrapper);
 
-            // TODO history
+            List<String> logs = joinedCart.getHistory();
 
-            for (int i = 0; i < 15; ++i) {
-                TextView tv = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
-                tv.setText("Log " + i);
-                cartHistoryLayoutWrapper.addView(tv);
+            if (logs.size() == 0) {
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("Giỏ hàng này chưa có thay đổi gì");
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textView.setTypeface(null, Typeface.BOLD);
+                cartHistoryLayoutWrapper.addView(textView);
+
+                textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("Bạn sẽ nhìn thấy lịch sử thay đổi \n của giỏ hàng này tại đây");
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textView.setTypeface(null, Typeface.ITALIC);
+                cartHistoryLayoutWrapper.addView(textView);
+
+                dialog.show();
+                return;
+            }
+
+            for (String log : logs) {
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.history_item, null);
+                textView.setText("• " + log);
+                cartHistoryLayoutWrapper.addView(textView);
             }
 
             dialog.show();

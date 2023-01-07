@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:text="Cart history"
     android:paddingVertical="8dp"
-    android:textAlignment="center"
+    android:textAlignment="textStart"
     android:textColor="@color/text"
     android:layout_weight="1"
     android:textSize="14sp" />
