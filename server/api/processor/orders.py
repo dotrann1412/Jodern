@@ -163,7 +163,7 @@ def ProcessSharedOrder(userid, cartid, extraInfo):
 
     cursor.commit()
     return {
-        "message": "OK"
+        "message": "Done!"
     }
     
 def ProcessPersonalOrder(userid, extraInfo):
@@ -351,14 +351,15 @@ def GetPersonalOrdersData(userid):
             } for row in rows
         ] + GetSharedOrdersData(userid)['orders']
     }
-    
+
+# o.createdAt, o.PaymentStatus, o.DeliverStatus, o.OrderType, o.branchid, c.totalprice, o.CustomerName, o.CustomerPhone, o.Address, o.Email, o.PickupTime
 def SharedOrderDetails(userid, cartid):
     cursor = Connector.establishConnection().cursor()
     
     query = '''
         select 
             createdat, paymentstatus, deliverstatus, ordertype, branchid, 
-            totalprice, customername, CustomerPhone, Email, Pickuptime, cartname
+            totalprice, customername, CustomerPhone, Address, Email, Pickuptime, cartname
         from (
             select scart.cartid, scart.totalprice, scart.totalitems, scart.cartname from (
                 select * from SharedCart where opening = 0 and cartid = ?
@@ -368,17 +369,17 @@ def SharedOrderDetails(userid, cartid):
         ) s left join sharedorders so on (so.cartid = s.cartid)
     '''
     
-    generalInfo = cursor.execute(query, (userid, )).fetchone()
+    generalInfo = cursor.execute(query, (cartid, userid, )).fetchone()
     if not generalInfo:
         raise Exception("permission denied")
     
     query = '''
         select p.id, s.sizeid, s.quantity, p.Title, p.Descriptions, p.Price, p.SexId, p.CategoryId, p.ImageUrl from (
-            select productid, sizeid, quantity from SharedCartDetails where cartid = ''
+            select productid, sizeid, quantity from SharedCartDetails where cartid = ?
         ) s join Product p on ( p.Id = s.productid )
     '''
     
-    rows = cursor.execute(query, (cartid, userid, )).fetchall()
+    rows = cursor.execute(query, (cartid, )).fetchall()
     
     res = {
         "totalprice": generalInfo[5],
