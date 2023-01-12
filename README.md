@@ -25,7 +25,7 @@ This is our's project for midterm exam of the android course at HCMUS.
     - [**Map**](#map)
   - [**Project**](#project)
     - [**Android**](#android)
-    - [Backend](#backend)
+    - [**Backend**](#backend)
 
 ## **Features**
 
@@ -82,9 +82,11 @@ This is our's project for midterm exam of the android course at HCMUS.
 <a name='map'></a>
 ### **Map**
 
+<a name='project'></a>
 ## **Project**
 
+<a name='android'></a>
 ### **Android**
 
-
-### Backend
+<a name='backend'></a>
+### **Backend**
