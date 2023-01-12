@@ -1,10 +1,12 @@
-# Jodern
+<a name='jodern'></a>
+# **Jodern**
 This is our's project for midterm exam of the android course at HCMUS. 
 
-## Navigation
+<a name='navigation'></a>
+## **Navigation**
 
-- [Jodern](#jodern)
-  - [Navigation](#navigation)
+- [**Jodern**](#jodern)
+  - [**Navigation**](#navigation)
   - [**Features**](#features)
     - [**Login**](#login)
     - [**Onboarding**](#onboarding)
