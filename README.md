@@ -33,20 +33,12 @@ This is our's project for midterm exam of the android course at HCMUS.
 
 ## **Features**
 
-<style>
-    img {
-        width: 240px;
-        height: 480px;
-        margin: 10px;
-    }
-</style>
-
 <a name='login'></a>
 ### **Login**
 
 <p align='center'>
-    <img src='./readme-resources/images/login-1.png'>
-    <img src='./readme-resources/images/login-2.png'>
+    <img style='width: 240 px; height: 480px; margin: 10px' src='./readme-resources/images/login-1.png'>
+    <img style='width: 240 px; height: 480px; margin: 10px' src='./readme-resources/images/login-2.png'>
 </p>
 
 
@@ -54,8 +46,8 @@ This is our's project for midterm exam of the android course at HCMUS.
 ### **Onboarding**
 
 <p align='center'>
-    <img src="./readme-resources/images/onboard-1.png">
-    <img src="./readme-resources/images/onboard-2.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/onboard-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/onboard-2.png">
 </p>
 
 
@@ -63,17 +55,17 @@ This is our's project for midterm exam of the android course at HCMUS.
 ### **Shopping Time**
 
 <p align='center'>
-    <img src="./readme-resources/images/shopping-time-1.png">
-    <img src="./readme-resources/images/shopping-time-2.png">
-    <img src="./readme-resources/images/shopping-time-3.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/shopping-time-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/shopping-time-2.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/shopping-time-3.png">
 </p>
 
 <a name='product-details'></a>
 #### **Product details**
 
 <p align='center'>
-    <img src="./readme-resources/images/product-details-1.png">
-    <img src="./readme-resources/images/product-details-2.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/product-details-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/product-details-2.png">
 </p>
 
 <a name='searching'></a>
@@ -83,14 +75,14 @@ This is our's project for midterm exam of the android course at HCMUS.
 #### **Image search**
 
 <p align='center'>
-    <img src="./readme-resources/images/image-search.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/image-search.png">
 </p>
 
 <a name='text-searching'></a>
 #### **Text search**
 
 <p align='center'>
-    <img src="./readme-resources/images/text-search-result.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/text-search-result.png">
 </p>
 
 
@@ -98,8 +90,8 @@ This is our's project for midterm exam of the android course at HCMUS.
 #### **Voice search**
 
 <p align='center'>
-    <img src="./readme-resources/images/voice-search-1.png">
-    <img src="./readme-resources/images/voice-search-2.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/voice-search-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/voice-search-2.png">
 </p>
 
 
@@ -107,38 +99,38 @@ This is our's project for midterm exam of the android course at HCMUS.
 ### **Profile Page**
 
 <p align='center'>
-    <img src="./readme-resources/images/profile-page.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/profile-page.png">
 </p>
 
 <a name='wishlist'></a>
 ### **Wishlist**
 
 <p align='center'>
-    <img src="./readme-resources/images/wishlist.png">
-    <img src="./readme-resources/images/wishlist-empty.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/wishlist.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/wishlist-empty.png">
 </p>
 
 <a name='cart-system'></a>
 ### **Cart System**
 
 <p align='center'>
-    <img src="./readme-resources/images/carts-system.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/carts-system.png">
 </p>
 
 <a name='personal-cart'></a>
 #### **Personal Cart**
 
 <p align='center'>
-    <img src="./readme-resources/images/carts-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/carts-1.png">
 </p>
 
 <a name='personal-cart'></a>
 #### **Shared Cart**
 
 <p align='center'>
-    <img src="./readme-resources/images/create-a-shared-cart.png">
-    <img src="./readme-resources/images/shared-cart-sharing.png">
-    <img src="./readme-resources/images/shared-cart-joining.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/create-a-shared-cart.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/shared-cart-sharing.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/shared-cart-joining.png">
 </p>
 
 
@@ -150,8 +142,8 @@ This is our's project for midterm exam of the android course at HCMUS.
 #### **Delivery Order**
 
 <p align='center' >
-    <img src="./readme-resources/images/information-form.png">
-    <img src="./readme-resources/images/checkout-successfully.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/information-form.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/checkout-successfully.png">
 </p>
 
 
@@ -159,8 +151,8 @@ This is our's project for midterm exam of the android course at HCMUS.
 #### **Pick-up Order**
 
 <p align='center'>
-    <img class="app" src="./readme-resources/images/pickup-order.png">
-    <img class="app" src="./readme-resources/images/pickup-order-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' class="app" src="./readme-resources/images/pickup-order.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' class="app" src="./readme-resources/images/pickup-order-1.png">
 </p>
 
 <a name='order-confirmation'></a>
@@ -174,19 +166,19 @@ This is our's project for midterm exam of the android course at HCMUS.
 ### **Order Details**
 
 <p align='center'>
-    <img src="./readme-resources/images/order-details.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/order-details.png">
 </p>
 
 <p align='center'>
-    <img src="./readme-resources/images/order-tracking.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/order-tracking.png">
 </p>
 
 <a name='map'></a>
 ### **Map**
 
 <p align='center'>
-    <img src="./readme-resources/images/map-1.png">
-    <img src="./readme-resources/images/map-2.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/map-1.png">
+    <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/map-2.png">
 </p>
 
 <a name='project'></a>
