@@ -1,6 +1,6 @@
 <a name='jodern'></a>
 # **Jodern**
-This is our's project for midterm exam of the android course at HCMUS. 
+This is our's project for the Mobile Development course at HCMUS. 
 
 <a name='navigation'></a>
 ## **Navigation**
@@ -25,12 +25,13 @@ This is our's project for midterm exam of the android course at HCMUS.
     - [**On Checkout**](#on-checkout)
       - [**Delivery Order**](#delivery-order)
       - [**Pick-up Order**](#pick-up-order)
-    - [**Order Confirmation* Mail**](#order-confirmation)
+    - [**Order Confirmation Mail**](#order-confirmation)
     - [**Order Details**](#order-details)
     - [**Map**](#map)
-  - [**Project**](#project)
-    - [**Android**](#android)
+  - [**Technologies**](#technologies)
+    - [**Frontend**](#frontend)
     - [**Backend**](#backend)
+  - [**Demo**](#demo)
 
 ## **Features**
 
@@ -197,10 +198,10 @@ This is our's project for midterm exam of the android course at HCMUS.
     <img style='width: 240 px; height: 480px; margin: 10px' src="./readme-resources/images/map-2.png">
 </p>
 
-<a name='project'></a>
+<a name='technologies'></a>
 ## **Technologies**
 
-<a name='android'></a>
+<a name='frontend'></a>
 ### **Frontend**
 - Android Studio (Java)
 
@@ -214,3 +215,8 @@ This is our's project for midterm exam of the android course at HCMUS.
     - Swin Transformer V2 Tiny 
     - Vietnamese-SBERT
 - Faiss library for efficient searching
+
+<a name='demo'></a>
+## **Demo**
+
+- Link video: [Youtube](https://youtu.be/FOR1ISA6ehQ)
