@@ -175,6 +175,7 @@ This is our's project for midterm exam of the android course at HCMUS.
 
 <p align='center'>
     <img src="./readme-resources/images/order-confirmation.png" style='width: 422px'>
+    <img src="./readme-resources/images/mail-order-1.png" style='width: 422px'>
 </p>
 
 <a name='order-detail'></a>
