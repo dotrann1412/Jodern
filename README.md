@@ -1,6 +1,6 @@
 <a name='jodern'></a>
 # **Jodern**
-This is our's project for the Mobile Development course at HCMUS. 
+This is our project for the Mobile Development course at HCMUS. 
 
 <a name='navigation'></a>
 ## **Navigation**
