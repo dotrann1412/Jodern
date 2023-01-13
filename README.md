@@ -25,7 +25,7 @@ This is our's project for midterm exam of the android course at HCMUS.
     - [**On Checkout**](#on-checkout)
       - [**Delivery Order**](#delivery-order)
       - [**Pick-up Order**](#pick-up-order)
-    - [**Order Confirmation* Mail**](#order-confirmation)
+    - [**Order Confirmation Mail**](#order-confirmation)
     - [**Order Details**](#order-details)
     - [**Map**](#map)
   - [**Project**](#project)
